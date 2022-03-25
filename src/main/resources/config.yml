@@ -1,4 +1,4 @@
-#The Tether plugin allows player to attach a lead to any mob in Minecraft.
+#The Tether plugin allows players to attach a lead to any mob in Minecraft.
 
 #Write mobs that you don't want leashable here.
 blacklisted-mobs:
