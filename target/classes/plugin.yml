@@ -1,5 +1,5 @@
 name: Tether
-version: '${project.version}'
+version: '1.0.0'
 main: me.naspo.tether.Tether
 api-version: 1.18
 authors: [ Naspo ]
