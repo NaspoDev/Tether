@@ -20,7 +20,7 @@ public final class Tether extends JavaPlugin {
         Objects.requireNonNull(this.getCommand("tether")).setTabCompleter(tabCompleter);
 
     }
-
+    //test
     @Override
     public void onDisable() {
         super.onDisable();
