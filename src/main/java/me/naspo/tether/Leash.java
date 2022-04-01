@@ -43,7 +43,8 @@ public class Leash implements Listener {
         String[] mobCheck = {
                 "bat",
                 "villager",
-                "ocelot"
+                "ocelot",
+                "slime"
         };
 
         if (player.getInventory().getItemInMainHand().getType().equals(Material.LEAD)) {
@@ -66,7 +67,7 @@ public class Leash implements Listener {
                                 x++;
                             }
                         }
-                        if (x == 3) {
+                        if (x == mobCheck.length) {
                             return;
                         }
                     }
