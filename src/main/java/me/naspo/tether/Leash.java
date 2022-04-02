@@ -3,7 +3,6 @@ package me.naspo.tether;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -40,36 +39,18 @@ public class Leash implements Listener {
             return;
         }
 
-        String[] mobCheck = {
-                "bat",
-                "villager",
-                "ocelot",
-                "slime"
-        };
+        int leads;
 
         if (player.getInventory().getItemInMainHand().getType().equals(Material.LEAD)) {
-            for (String s : plugin.getConfig().getStringList("blacklisted-mobs")) {
-                if (clicked.getType().toString().toLowerCase().equalsIgnoreCase(s.toLowerCase())) {
-                    event.setCancelled(true);
-                    return;
-                }
-            }
+            leads = player.getInventory().getItemInMainHand().getAmount();
 
             Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                 @Override
                 public void run() {
                     clicked.setLeashHolder(player);
                     ItemStack lead = new ItemStack(Material.LEAD, 1);
-                    if (!(clicked instanceof Monster)) {
-                        int x = 0;
-                        for (String s : mobCheck) {
-                            if (!(clicked.getType().toString().toLowerCase().equalsIgnoreCase(s))) {
-                                x++;
-                            }
-                        }
-                        if (x == mobCheck.length) {
-                            return;
-                        }
+                    if (player.getInventory().getItemInMainHand().getAmount() == (leads - 1)) {
+                        return;
                     }
                     player.getInventory().removeItem(lead);
                 }
