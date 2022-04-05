@@ -1,8 +1,20 @@
 #The Tether plugin allows players to attach a lead to any mob in Minecraft.
 
+#Do not touch this!
+config-version: 2
+
 #Write mobs that you don't want leashable here.
 blacklisted-mobs:
   - EXAMPLEMOB
+
+#Player Leash settings
+player-leash:
+  #Should players be leashable? (Also requires the player leashing to have tether.use.players).
+  enabled: false
+  #Should leashed players be able to escape by crouching? (Recommended: true). (Redundant if player-leash is false).
+  escapable: true
+  #Should players receive a message when they've been leashed? (Redundant if player-leash is false).
+  message-on-leashed: true
 
 #Messages
 messages:
