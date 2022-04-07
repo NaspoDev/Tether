@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityUnleashEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -118,6 +119,15 @@ public class LeashPlayer implements Listener {
     public void onDismountNotEscapable(EntityDismountEvent event) {
         if (event.getDismounted().equals(mob)) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onLeadBreak(EntityUnleashEvent event) {
+        if (event.getEntity().equals(mob)) {
+            if (mob.getHealth() > 0) {
+                mob.setHealth(0);
+            }
         }
     }
 
