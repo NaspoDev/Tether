@@ -19,6 +19,7 @@ public class Commands implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (label.equalsIgnoreCase("tether")) {
             if (sender instanceof Player) {
+                //player stuff
                 Player player = (Player) sender;
                 if (!(player.hasPermission("tether.reload"))) {
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(
@@ -32,7 +33,7 @@ public class Commands implements CommandExecutor {
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("reload")) {
-                    plugin.reloadConfig();
+                    Utils.reloadConfigs();
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', Objects.
                             requireNonNull(plugin.getConfig().getString("messages.prefix")) +
                             Objects.requireNonNull(plugin.getConfig().getString("messages.reload"))));
@@ -42,10 +43,11 @@ public class Commands implements CommandExecutor {
                         Objects.requireNonNull(plugin.getConfig().getString("messages.prefix"))
                                 + "Did you mean &6/tether reload?"));
             }
+            //console stuff
             if (args.length == 0) {
                 sender.sendMessage("Did you mean /tether reload?");
             } else if (args[0].equalsIgnoreCase("reload")) {
-                plugin.reloadConfig();
+                Utils.reloadConfigs();
                 sender.sendMessage("Tether has been reloaded");
             } else {
                 sender.sendMessage("Did you mean /tether reload?");

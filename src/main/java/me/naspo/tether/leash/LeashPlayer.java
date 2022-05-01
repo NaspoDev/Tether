@@ -1,6 +1,7 @@
 package me.naspo.tether.leash;
 
 import me.naspo.tether.core.Tether;
+import me.naspo.tether.core.Utils;
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -16,17 +17,12 @@ import org.spigotmc.event.entity.EntityDismountEvent;
 
 public class LeashPlayer implements Listener {
 
-    String prefix;
-    String leashedEscapable;
-    String leashedNotEscapable;
+    private ClaimCheckManager claimCheckManager;
+    private Tether plugin;
 
-    Tether plugin;
-    public LeashPlayer(Tether plugin) {
+    public LeashPlayer(Tether plugin, ClaimCheckManager claimCheckManager) {
         this.plugin = plugin;
-
-        prefix = plugin.getConfig().getString("messages.prefix");
-        leashedEscapable = (prefix + "You've been leashed! Press &6crouch &fto escape.");
-        leashedNotEscapable = (prefix + "You've been leashed!");
+        this.claimCheckManager = claimCheckManager;
     }
 
     @EventHandler
@@ -65,14 +61,23 @@ public class LeashPlayer implements Listener {
 
             if (clicked.getVehicle() != null) {
                 if (!(clicked.getVehicle().equals(mob))) {
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix
-                            + "You cannot leash players that are riding an entity."));
+                    player.sendMessage(Utils.chatColor(Utils.prefix +
+                            plugin.getConfig().getString("messages.cannot-leash-riding-player")));
                     return;
                 }
                 mob.setHealth(0);
                 return;
             }
 
+            //Claim checks.
+            if (!(claimCheckManager.canLeashPlayer(clicked, player))) {
+                event.setCancelled(true);
+                player.sendMessage(Utils.chatColor(Utils.prefix + plugin.getConfig().getString(
+                        "messages.in-claim-deny-player")));
+                return;
+            }
+
+            //Leashing the player.
             World world = clicked.getWorld();
             Location loc = clicked.getLocation();
 
@@ -92,11 +97,11 @@ public class LeashPlayer implements Listener {
                         mob.setLeashHolder(player);
                         if (plugin.getConfig().getBoolean("player-leash.message-on-leashed")) {
                             if (plugin.getConfig().getBoolean("player-leash.escapable")) {
-                                clicked.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                                        leashedEscapable));
+                                clicked.sendMessage(Utils.chatColor(Utils.prefix +
+                                        plugin.getConfig().getString("messages.player-leashed-escapable")));
                             } else {
-                                clicked.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                                        leashedNotEscapable));
+                                clicked.sendMessage(Utils.chatColor(Utils.prefix +
+                                        "messages.player-leashed-not-escapable"));
                             }
                         }
                         ItemStack lead = new ItemStack(Material.LEAD, 1);
@@ -110,20 +115,21 @@ public class LeashPlayer implements Listener {
         }
     }
 
-    public void onDismountEscapable(EntityDismountEvent event) {
+    private void onDismountEscapable(EntityDismountEvent event) {
         if (event.getDismounted().equals(mob)) {
             mob.setHealth(0);
         }
     }
 
-    public void onDismountNotEscapable(EntityDismountEvent event) {
+    private void onDismountNotEscapable(EntityDismountEvent event) {
         if (event.getDismounted().equals(mob)) {
             event.setCancelled(true);
         }
     }
 
+    //Kill the mob on lead break.
     @EventHandler
-    public void onLeadBreak(EntityUnleashEvent event) {
+    private void onLeadBreak(EntityUnleashEvent event) {
         if (event.getEntity().equals(mob)) {
             if (mob.getHealth() > 0) {
                 mob.setHealth(0);
@@ -132,9 +138,10 @@ public class LeashPlayer implements Listener {
     }
 
     @EventHandler
-    public void onMobDeath(EntityDeathEvent event) {
+    private void onMobDeath(EntityDeathEvent event) {
         if (event.getEntity().equals(mob)) {
             event.getDrops().clear();
         }
     }
+
 }

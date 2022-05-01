@@ -1,6 +1,7 @@
 package me.naspo.tether.leash;
 
 import me.naspo.tether.core.Tether;
+import me.naspo.tether.core.Utils;
 import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -11,10 +12,14 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 public class LeashMob implements Listener {
+    private LivingEntity clicked;
 
-    Tether plugin;
-    public LeashMob(Tether plugin) {
+    private ClaimCheckManager claimCheckManager;
+    private Tether plugin;
+
+    public LeashMob(Tether plugin, ClaimCheckManager claimCheckManager) {
         this.plugin = plugin;
+        this.claimCheckManager = claimCheckManager;
     }
 
     @EventHandler
@@ -22,7 +27,10 @@ public class LeashMob implements Listener {
         Player player = event.getPlayer();
 
         if (event.getRightClicked() instanceof LivingEntity) {
-            LivingEntity clicked = (LivingEntity) event.getRightClicked();
+            if (event.getRightClicked() instanceof Player) {
+                return;
+            }
+            clicked = (LivingEntity) event.getRightClicked();
 
             if (event.getHand() == EquipmentSlot.OFF_HAND) {
                 return;
@@ -39,8 +47,16 @@ public class LeashMob implements Listener {
                 return;
             }
 
-            int leads;
+            //Claim checks.
+            if (!(claimCheckManager.canLeashMob(clicked, player))) {
+                event.setCancelled(true);
+                player.sendMessage(Utils.chatColor(Utils.prefix + plugin.getConfig().getString(
+                        "messages.in-claim-deny-mob")));
+                return;
+            }
 
+            //Leashing the mob.
+            int leads;
             if (player.getInventory().getItemInMainHand().getType().equals(Material.LEAD)) {
                 leads = player.getInventory().getItemInMainHand().getAmount();
 
