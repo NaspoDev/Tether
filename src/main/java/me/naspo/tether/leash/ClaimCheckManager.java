@@ -61,7 +61,7 @@ public class ClaimCheckManager {
             return landsPlayerCheck(clicked, player);
         }
 
-        return false;
+        return true;
     }
 
     // ---------- Individual (private) checks ----------

@@ -5,6 +5,7 @@ import me.naspo.tether.leash.LeashMob;
 import me.naspo.tether.leash.LeashPlayer;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 
 public final class Tether extends JavaPlugin {
