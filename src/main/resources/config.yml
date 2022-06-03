@@ -17,10 +17,12 @@ player-leash:
   message-on-leashed: true
 
 #Should Tether hook into the following land management plugins?
+#(Requires restart upon change).
 hooks:
   griefprevention: false
   towny: false
   lands: false
+  griefdefender: false
 
 #Messages
 messages:

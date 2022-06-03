@@ -5,7 +5,6 @@ import me.naspo.tether.leash.LeashMob;
 import me.naspo.tether.leash.LeashPlayer;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Arrays;
 import java.util.logging.Level;
 
 public final class Tether extends JavaPlugin {
@@ -16,11 +15,14 @@ public final class Tether extends JavaPlugin {
     private TabCompleter tabCompleter;
     private ClaimCheckManager claimCheckManager;
 
-    private boolean[] enableHooks = new boolean[3];
+    private boolean[] enableHooks = new boolean[4];
 
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
+        this.getConfig().options().copyDefaults(true);
+        this.saveConfig();
+
         this.getLogger().info("Tether has been enabled!");
 
         hooksCheck();
@@ -69,11 +71,21 @@ public final class Tether extends JavaPlugin {
                 enableHooks[2] = true;
             }
         }
+
+        //GriefDefender check.
+        if (this.getConfig().getBoolean("hooks.griefdefender")) {
+            if (this.getServer().getPluginManager().getPlugin("GriefDefender") == null) {
+                this.getLogger().log(Level.WARNING, "GriefDefender hook set to true in config, but " +
+                        "the plugin does not exist on the server. The hook will not work!");
+            } else {
+                enableHooks[3] = true;
+            }
+        }
     }
 
     private void instantiateClasses() {
         utils = new Utils(this);
-        claimCheckManager = new ClaimCheckManager(this, enableHooks[0], enableHooks[1], enableHooks[2]);
+        claimCheckManager = new ClaimCheckManager(this, enableHooks);
         leashMob = new LeashMob(this, claimCheckManager);
         leashPlayer = new LeashPlayer(this, claimCheckManager);
         commands = new Commands(this);
