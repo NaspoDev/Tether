@@ -13,12 +13,13 @@ import org.bukkit.event.entity.EntityUnleashEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.spigotmc.event.entity.EntityDismountEvent;
 
 public class LeashPlayer implements Listener {
 
-    private ClaimCheckManager claimCheckManager;
-    private Tether plugin;
+    private final ClaimCheckManager claimCheckManager;
+    private final Tether plugin;
 
     public LeashPlayer(Tether plugin, ClaimCheckManager claimCheckManager) {
         this.plugin = plugin;
@@ -43,7 +44,7 @@ public class LeashPlayer implements Listener {
         }
     }
 
-    private LivingEntity mob;
+//    private LivingEntity mob;
 
     public void onInteract(PlayerInteractAtEntityEvent event) {
         Player player = event.getPlayer();
@@ -60,12 +61,12 @@ public class LeashPlayer implements Listener {
             }
 
             if (clicked.getVehicle() != null) {
-                if (!(clicked.getVehicle().equals(mob))) {
+                if (!(clicked.getVehicle().hasMetadata("naspodev_tether_plugin"))) {
                     player.sendMessage(Utils.chatColor(Utils.prefix +
                             plugin.getConfig().getString("messages.cannot-leash-riding-player")));
                     return;
                 }
-                mob.setHealth(0);
+                ((LivingEntity) clicked.getVehicle()).setHealth(0);
                 return;
             }
 
@@ -78,6 +79,14 @@ public class LeashPlayer implements Listener {
             }
 
             //Leashing the player.
+            if (plugin.getConfig().getBoolean("player-leash.prevent-nesting")) {
+                if (player.getVehicle() != null) {
+                    player.sendMessage(Utils.chatColor(Utils.prefix + plugin.getConfig().getString(
+                            "messages.prevent-nesting")));
+                    return;
+                }
+            }
+
             World world = clicked.getWorld();
             Location loc = clicked.getLocation();
 
@@ -86,43 +95,41 @@ public class LeashPlayer implements Listener {
             if (player.getInventory().getItemInMainHand().getType().equals(Material.LEAD)) {
                 leads = player.getInventory().getItemInMainHand().getAmount();
 
-                Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        mob = (LivingEntity) world.spawnEntity(loc, EntityType.CHICKEN);
-                        mob.setInvisible(true);
-                        mob.setInvulnerable(true);
-                        mob.setSilent(true);
-                        mob.addPassenger(clicked);
-                        mob.setLeashHolder(player);
-                        if (plugin.getConfig().getBoolean("player-leash.message-on-leashed")) {
-                            if (plugin.getConfig().getBoolean("player-leash.escapable")) {
-                                clicked.sendMessage(Utils.chatColor(Utils.prefix +
-                                        plugin.getConfig().getString("messages.player-leashed-escapable")));
-                            } else {
-                                clicked.sendMessage(Utils.chatColor(Utils.prefix +
-                                        "messages.player-leashed-not-escapable"));
-                            }
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    LivingEntity mob = (LivingEntity) world.spawnEntity(loc, EntityType.CHICKEN);
+                    mob.setMetadata("naspodev_tether_plugin", new FixedMetadataValue(plugin, "_"));
+                    mob.setInvisible(true);
+                    mob.setInvulnerable(true);
+                    mob.setSilent(true);
+                    mob.addPassenger(clicked);
+                    mob.setLeashHolder(player);
+                    if (plugin.getConfig().getBoolean("player-leash.message-on-leashed")) {
+                        if (plugin.getConfig().getBoolean("player-leash.escapable")) {
+                            clicked.sendMessage(Utils.chatColor(Utils.prefix +
+                                    plugin.getConfig().getString("messages.player-leashed-escapable")));
+                        } else {
+                            clicked.sendMessage(Utils.chatColor(Utils.prefix +
+                                    "messages.player-leashed-not-escapable"));
                         }
-                        ItemStack lead = new ItemStack(Material.LEAD, 1);
-                        if (player.getInventory().getItemInMainHand().getAmount() == (leads - 1)) {
-                            return;
-                        }
-                        player.getInventory().removeItem(lead);
                     }
+                    ItemStack lead = new ItemStack(Material.LEAD, 1);
+                    if (player.getInventory().getItemInMainHand().getAmount() == (leads - 1)) {
+                        return;
+                    }
+                    player.getInventory().removeItem(lead);
                 }, 1L);
             }
         }
     }
 
     private void onDismountEscapable(EntityDismountEvent event) {
-        if (event.getDismounted().equals(mob)) {
-            mob.setHealth(0);
+        if (event.getDismounted().hasMetadata("naspodev_tether_plugin")) {
+            ((LivingEntity) event.getDismounted()).setHealth(0);
         }
     }
 
     private void onDismountNotEscapable(EntityDismountEvent event) {
-        if (event.getDismounted().equals(mob)) {
+        if (event.getDismounted().hasMetadata("naspodev_tether_plugin")) {
             event.setCancelled(true);
         }
     }
@@ -130,16 +137,17 @@ public class LeashPlayer implements Listener {
     //Kill the mob on lead break.
     @EventHandler
     private void onLeadBreak(EntityUnleashEvent event) {
-        if (event.getEntity().equals(mob)) {
-            if (mob.getHealth() > 0) {
-                mob.setHealth(0);
+        if (event.getEntity().hasMetadata("naspodev_tether_plugin")) {
+            LivingEntity entity = (LivingEntity) event.getEntity();
+            if (entity.getHealth() > 0) {
+                entity.setHealth(0);
             }
         }
     }
 
     @EventHandler
     private void onMobDeath(EntityDeathEvent event) {
-        if (event.getEntity().equals(mob)) {
+        if (event.getEntity().hasMetadata("naspodev_tether_plugin")) {
             event.getDrops().clear();
         }
     }
