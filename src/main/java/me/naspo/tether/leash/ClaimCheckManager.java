@@ -27,6 +27,7 @@ public class ClaimCheckManager {
 
     public ClaimCheckManager(Tether plugin, boolean[] checkIsEnabled){
         this.plugin = plugin;
+        // Stores enabled status for hooks.
         this.checkIsEnabled = new HashMap<>();
 
         this.checkIsEnabled.put("griefprevention", checkIsEnabled[0]);
@@ -39,8 +40,7 @@ public class ClaimCheckManager {
         }
     }
 
-    // ---------- Main/called checks for can leash ----------
-
+    // Called when leashing a mob to check if the hooks (land claims) allow it.
     boolean canLeashMob(LivingEntity clicked, Player player) {
         if (checkIsEnabled.get("griefprevention")) {
             return griefPreventionMobCheck(clicked, player);
@@ -58,6 +58,7 @@ public class ClaimCheckManager {
         return true;
     }
 
+    // Called when leashing a player to check if the hooks (land claims) allow it.
     boolean canLeashPlayer(Player clicked, Player player) {
         if (checkIsEnabled.get("griefprevention")) {
             return griefPreventionPlayerCheck(clicked, player);
@@ -75,9 +76,7 @@ public class ClaimCheckManager {
         return true;
     }
 
-    // ---------- Individual (private) checks ----------
-
-    // --- Mob checks ---
+    // The following methods check if leashing of a mob will be allowed, based on land claims...
 
     private boolean griefPreventionMobCheck(LivingEntity clicked, Player player) {
         claimGPR = GriefPrevention.instance.dataStore.getClaimAt(clicked.getLocation(), true, null);
@@ -117,7 +116,7 @@ public class ClaimCheckManager {
         return true;
     }
 
-    // --- Player checks ---
+    // The following methods check if leashing of a player will be allowed, based on land claims...
 
     private boolean griefPreventionPlayerCheck(Player clicked, Player player) {
         claimGPR = GriefPrevention.instance.dataStore.getClaimAt(clicked.getLocation(), true, null);

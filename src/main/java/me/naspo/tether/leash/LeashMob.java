@@ -22,6 +22,7 @@ public class LeashMob implements Listener {
         this.claimCheckManager = claimCheckManager;
     }
 
+    // Leashing the mob, general event.
     @EventHandler
     public void onInteract(PlayerInteractAtEntityEvent event) {
         Player player = event.getPlayer();
@@ -36,6 +37,7 @@ public class LeashMob implements Listener {
                 return;
             }
 
+            // If the mob is already leashed cancel the event.
             if (clicked.isLeashed()) {
                 if (clicked.getLeashHolder().equals(player)) {
                     event.setCancelled(true);
@@ -47,7 +49,7 @@ public class LeashMob implements Listener {
                 return;
             }
 
-            //Claim checks.
+            // Claim checks.
             if (!(claimCheckManager.canLeashMob(clicked, player))) {
                 event.setCancelled(true);
                 player.sendMessage(Utils.chatColor(Utils.prefix + plugin.getConfig().getString(
@@ -55,15 +57,20 @@ public class LeashMob implements Listener {
                 return;
             }
 
-            //Leashing the mob.
+            // Keeps track of the player's leads, prevents duping.
             int leads;
+            // Actually leashing the mob.
             if (player.getInventory().getItemInMainHand().getType().equals(Material.LEAD)) {
                 leads = player.getInventory().getItemInMainHand().getAmount();
 
+                // The actual leashing process has to run in a scheduler with a slight delay,
+                // due to the way the event works.
                 Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                     @Override
                     public void run() {
                         clicked.setLeashHolder(player);
+
+                        // If a lead was not removed from the player's inventory, remove one.
                         ItemStack lead = new ItemStack(Material.LEAD, 1);
                         if (player.getInventory().getItemInMainHand().getAmount() == (leads - 1)) {
                             return;

@@ -19,6 +19,7 @@ public final class Tether extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        // config.yml stuff
         this.saveDefaultConfig();
         this.getConfig().options().copyDefaults(true);
         this.saveConfig();
@@ -28,9 +29,11 @@ public final class Tether extends JavaPlugin {
         hooksCheck();
         instantiateClasses();
 
+        // Register events
         this.getServer().getPluginManager().registerEvents(leashMob, this);
         this.getServer().getPluginManager().registerEvents(leashPlayer, this);
 
+        // Register commands
         this.getCommand("tether").setExecutor(commands);
         this.getCommand("tether").setTabCompleter(tabCompleter);
     }
@@ -40,9 +43,9 @@ public final class Tether extends JavaPlugin {
         this.getLogger().info("Tether has been disabled!");
     }
 
-    //Checks which hooks are enabled.
+    // Checks which hooks are enabled.
     private void hooksCheck() {
-        //GriefPrevention check.
+        // GriefPrevention check.
         if (this.getConfig().getBoolean("hooks.griefprevention")) {
             if (this.getServer().getPluginManager().getPlugin("GriefPrevention") == null) {
                 this.getLogger().log(Level.WARNING, "GriefPrevention hook set to true in config, but " +
@@ -52,7 +55,7 @@ public final class Tether extends JavaPlugin {
             }
         }
 
-        //Towny check.
+        // Towny check.
         if (this.getConfig().getBoolean("hooks.towny")) {
             if (this.getServer().getPluginManager().getPlugin("Towny") == null) {
                 this.getLogger().log(Level.WARNING, "Towny hook set to true in config, but " +
@@ -62,7 +65,7 @@ public final class Tether extends JavaPlugin {
             }
         }
 
-        //Lands check.
+        // Lands check.
         if (this.getConfig().getBoolean("hooks.lands")) {
             if (this.getServer().getPluginManager().getPlugin("Lands") == null) {
                 this.getLogger().log(Level.WARNING, "Lands hook set to true in config, but " +
@@ -72,7 +75,7 @@ public final class Tether extends JavaPlugin {
             }
         }
 
-        //GriefDefender check.
+        // GriefDefender check.
         if (this.getConfig().getBoolean("hooks.griefdefender")) {
             if (this.getServer().getPluginManager().getPlugin("GriefDefender") == null) {
                 this.getLogger().log(Level.WARNING, "GriefDefender hook set to true in config, but " +
