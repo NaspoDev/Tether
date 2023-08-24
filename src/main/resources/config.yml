@@ -13,7 +13,7 @@ player-leash:
   #Should players receive a message when they've been leashed? (Redundant if player-leash is false).
   message-on-leashed: true
   #If you are already riding, you can no longer tether other players, This does not affect leash mobs
-  prevent-nesting: true
+  prevent-nesting: false
 
 #Should Tether hook into the following land management plugins?
 #(Requires restart upon change).
