@@ -78,6 +78,14 @@ public class LeashPlayer implements Listener {
             }
 
             //Leashing the player.
+            if (plugin.getConfig().getBoolean("player-leash.prevent-nesting")) {
+                if (player.getVehicle() != null) {
+                    player.sendMessage(Utils.chatColor(Utils.prefix + plugin.getConfig().getString(
+                            "messages.prevent-nesting")));
+                    return;
+                }
+            }
+
             World world = clicked.getWorld();
             Location loc = clicked.getLocation();
 
