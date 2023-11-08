@@ -1,11 +1,11 @@
-package me.naspo.tether.leash;
+package dev.naspo.tether.leash;
 
 import com.griefdefender.api.GriefDefender;
 import com.griefdefender.api.claim.TrustTypes;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
+import dev.naspo.tether.core.Tether;
 import me.angeschossen.lands.api.integration.LandsIntegration;
-import me.naspo.tether.core.Tether;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.ClaimPermission;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;

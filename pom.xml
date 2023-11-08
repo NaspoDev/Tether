@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>me.naspo</groupId>
+    <groupId>dev.naspo</groupId>
     <artifactId>Tether</artifactId>
     <version>2.7.0</version>
     <packaging>jar</packaging>
@@ -39,7 +39,7 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <outputFile>C:\Users\atsub\IdeaProjects\MC_Plugins\Tether\jar\Tether-${project.version}.jar</outputFile>
+                            <outputFile>C:\Users\atsub\IdeaProjects\Personal_Projects\MC_Plugins\Tether\jar\Tether-${project.version}.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>

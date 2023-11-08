@@ -1,8 +1,8 @@
-package me.naspo.tether.core;
+package dev.naspo.tether.core;
 
-import me.naspo.tether.leash.ClaimCheckManager;
-import me.naspo.tether.leash.LeashMob;
-import me.naspo.tether.leash.LeashPlayer;
+import dev.naspo.tether.leash.ClaimCheckManager;
+import dev.naspo.tether.leash.LeashMob;
+import dev.naspo.tether.leash.LeashPlayer;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;

@@ -1,6 +1,6 @@
 name: Tether
 version: '${project.version}'
-main: me.naspo.tether.core.Tether
+main: dev.naspo.tether.core.Tether
 api-version: 1.18
 authors: [ Naspo ]
 description: Grants the ability to use a lead on any mob, and players.

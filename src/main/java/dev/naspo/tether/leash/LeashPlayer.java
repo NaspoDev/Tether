@@ -1,7 +1,7 @@
-package me.naspo.tether.leash;
+package dev.naspo.tether.leash;
 
-import me.naspo.tether.core.Tether;
-import me.naspo.tether.core.Utils;
+import dev.naspo.tether.core.Tether;
+import dev.naspo.tether.core.Utils;
 import org.bukkit.*;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
