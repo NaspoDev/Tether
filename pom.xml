@@ -6,7 +6,7 @@
 
     <groupId>dev.naspo</groupId>
     <artifactId>Tether</artifactId>
-    <version>2.7.0</version>
+    <version>2.7.1</version>
     <packaging>jar</packaging>
 
     <name>Tether</name>
@@ -39,7 +39,6 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <outputFile>C:\Users\atsub\IdeaProjects\Personal_Projects\MC_Plugins\Tether\jar\Tether-${project.version}.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>
@@ -80,7 +79,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.20.1-R0.1-SNAPSHOT</version>
+            <version>1.21.5-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
