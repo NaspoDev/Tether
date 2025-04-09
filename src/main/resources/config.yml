@@ -1,29 +1,37 @@
-#The Tether plugin allows players to attach a lead to any mob in Minecraft.
+# The Tether plugin allows players to attach a lead to any mob in Minecraft.
 
-#Write mobs that you don't want leashable here.
+# If set to true, the mob blacklist will be ignored and the whitelist will be used.
+use-whitelist-over-blacklist: false
+
+# Write mobs that you don't want leashable here.
 blacklisted-mobs:
   - EXAMPLEMOB
 
-#Player Leash settings
+# Mobs written here will be the only mobs leashable.
+# *Note: Requires that 'use-whitelist-over-blacklist' is set to true above.
+whitelisted-mobs:
+  - EXAMPLEMOB
+
+# Player Leash settings
 player-leash:
-  #Should players be leashable? (Also requires the player leashing to have tether.use.players).
+  # Should players be leashable? (Also requires the player leashing to have tether.use.players).
   enabled: false
-  #Should leashed players be able to escape by crouching? (Recommended: true). (Redundant if player-leash is false).
+  # Should leashed players be able to escape by crouching? (Recommended: true). (Redundant if player-leash is false).
   escapable: true
-  #Should players receive a message when they've been leashed? (Redundant if player-leash is false).
+  # Should players receive a message when they've been leashed? (Redundant if player-leash is false).
   message-on-leashed: true
-  #If you are already riding, you can no longer tether other players, This does not affect leash mobs
+  # If you are already riding, you can no longer tether other players, This does not affect leash mobs
   prevent-nesting: false
 
-#Should Tether hook into the following land management plugins?
-#(Requires restart upon change).
+# Should Tether hook into the following land management plugins?
+# (Requires restart upon change).
 hooks:
   griefprevention: false
   towny: false
   lands: false
   griefdefender: false
 
-#Messages
+# Messages
 messages:
   prefix: "&8[&6&lTether&8] &r"
   reload: "&7Tether has been reloaded!"
