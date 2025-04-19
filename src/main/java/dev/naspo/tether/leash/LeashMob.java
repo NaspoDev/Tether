@@ -52,30 +52,31 @@ public class LeashMob implements Listener {
                 return;
             }
 
-            // Permission check.
-            if (!(player.hasPermission("tether.use"))) {
-                return;
-            }
-
-            // Claim checks.
-            if (!(claimCheckManager.canLeashMob(clicked, player))) {
-                event.setCancelled(true);
-                player.sendMessage(Utils.chatColor(Utils.prefix + plugin.getConfig().getString(
-                        "messages.in-claim-deny-mob")));
-                return;
-            }
-
-            // Checking if clicked entity passes blacklist/whitelist check.
-            if (isEntityRestricted(clicked)) {
-                return;
-            }
-
-            // Keeps track of the player's leads, prevents duping.
-            int leads;
-            // Actually leashing the mob.
+            // If they have a lead in their hand...
             if (player.getInventory().getItemInMainHand().getType().equals(Material.LEAD)) {
+                // Permission check.
+                if (!(player.hasPermission("tether.use"))) {
+                    return;
+                }
+
+                // Claim checks.
+                if (!(claimCheckManager.canLeashMob(clicked, player))) {
+                    event.setCancelled(true);
+                    player.sendMessage(Utils.chatColor(Utils.prefix + plugin.getConfig().getString(
+                            "messages.in-claim-deny-mob")));
+                    return;
+                }
+
+                // Checking if clicked entity passes blacklist/whitelist check.
+                if (isEntityRestricted(clicked)) {
+                    return;
+                }
+
+                // Keep track of the player's leads, prevents duping.
+                int leads;
                 leads = player.getInventory().getItemInMainHand().getAmount();
 
+                // Leashing the mob.
                 // The actual leashing process has to run in a scheduler with a slight delay,
                 // due to the way the event works.
                 Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
