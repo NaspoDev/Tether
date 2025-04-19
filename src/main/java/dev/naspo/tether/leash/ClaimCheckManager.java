@@ -8,6 +8,7 @@ import dev.naspo.tether.core.Tether;
 import me.angeschossen.lands.api.integration.LandsIntegration;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.ClaimPermission;
+import me.ryanhamshire.GriefPrevention.DataStore;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -16,7 +17,7 @@ import java.util.HashMap;
 
 //Manages all protected land checks when leashing a mob or player.
 public class ClaimCheckManager {
-    private Claim claimGPR;
+    private DataStore gpDataStore;
     private Town town;
     private LandsIntegration landsIntegration;
     private com.griefdefender.api.claim.Claim claimGD;
@@ -35,8 +36,12 @@ public class ClaimCheckManager {
         this.checkIsEnabled.put("lands", checkIsEnabled[2]);
         this.checkIsEnabled.put("griefdefender", checkIsEnabled[3]);
 
+        // Initializing anything needed for integrations.
+        if (this.checkIsEnabled.get("griefprevention")) {
+            this.gpDataStore = GriefPrevention.instance.dataStore;
+        }
         if (this.checkIsEnabled.get("lands")) {
-            landsIntegration = new LandsIntegration(plugin);
+            this.landsIntegration = new LandsIntegration(plugin);
         }
     }
 
@@ -79,10 +84,13 @@ public class ClaimCheckManager {
     // The following methods check if leashing of a mob will be allowed, based on land claims...
 
     private boolean griefPreventionMobCheck(LivingEntity clicked, Player player) {
-        claimGPR = GriefPrevention.instance.dataStore.getClaimAt(clicked.getLocation(), true, null);
-        if (claimGPR != null) {
-            return claimGPR.hasExplicitPermission(player.getUniqueId(), ClaimPermission.Access);
+        Claim claim = gpDataStore.getClaimAt(clicked.getLocation(), true, null);
+        // If there is a claim here, return true if the player has explicit permission or is ignoring claims.
+        if (claim != null) {
+            return claim.hasExplicitPermission(player.getUniqueId(), ClaimPermission.Access) ||
+                    GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId()).ignoreClaims;
         }
+        // Otherwise always return true if there is no claim.
         return true;
     }
 
@@ -119,10 +127,13 @@ public class ClaimCheckManager {
     // The following methods check if leashing of a player will be allowed, based on land claims...
 
     private boolean griefPreventionPlayerCheck(Player clicked, Player player) {
-        claimGPR = GriefPrevention.instance.dataStore.getClaimAt(clicked.getLocation(), true, null);
-        if (claimGPR != null) {
-            return claimGPR.hasExplicitPermission(player.getUniqueId(), ClaimPermission.Access);
+        Claim claim = gpDataStore.getClaimAt(clicked.getLocation(), true, null);
+        // If there is a claim here, return true if the player has explicit permission or is ignoring claims.
+        if (claim != null) {
+            return claim.hasExplicitPermission(player.getUniqueId(), ClaimPermission.Access) ||
+                    GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId()).ignoreClaims;
         }
+        // Otherwise always return true if there is no claim.
         return true;
     }
 
