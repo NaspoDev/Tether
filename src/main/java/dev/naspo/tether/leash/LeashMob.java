@@ -44,6 +44,14 @@ public class LeashMob implements Listener {
                 return;
             }
 
+            /*
+            TODO: testing if citizens npcs have a LEASH_PROTECTED property or something that
+             dictates whether it can be leashed or not.
+            */
+            plugin.getServer().broadcastMessage(clicked.hasMetadata("NPC") ? "Entity is NPC" : "Entity is not NPC");
+            plugin.getServer().broadcastMessage(clicked.hasMetadata("LEASH_PROTECTED ") ? "It has the " +
+                    "LEASH_PROTECTED metadata" : "It does NOT have the LEASH_PROTECTED metadata");
+
             // If the mob is already leashed cancel the event.
             if (clicked.isLeashed()) {
                 if (clicked.getLeashHolder().equals(player)) {
