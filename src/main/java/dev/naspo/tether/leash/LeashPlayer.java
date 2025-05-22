@@ -61,6 +61,12 @@ public class LeashPlayer implements Listener {
                 return;
             }
 
+            // If the entity is a Citizens NPC, deny the leash.
+            // Citizen NPCs of type "Player" should not be leashable as per Citizens.
+            if (clicked.hasMetadata("NPC")) {
+                return;
+            }
+
             // If the player is already riding an entity, don't allow the leash.
             if (clicked.getVehicle() != null) {
                 if (!(clicked.getVehicle().hasMetadata("naspodev_tether_plugin"))) {

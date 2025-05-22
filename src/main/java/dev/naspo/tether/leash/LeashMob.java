@@ -2,6 +2,8 @@ package dev.naspo.tether.leash;
 
 import dev.naspo.tether.core.Tether;
 import dev.naspo.tether.core.Utils;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -44,14 +46,6 @@ public class LeashMob implements Listener {
                 return;
             }
 
-            /*
-            TODO: testing if citizens npcs have a LEASH_PROTECTED property or something that
-             dictates whether it can be leashed or not.
-            */
-            plugin.getServer().broadcastMessage(clicked.hasMetadata("NPC") ? "Entity is NPC" : "Entity is not NPC");
-            plugin.getServer().broadcastMessage(clicked.hasMetadata("LEASH_PROTECTED ") ? "It has the " +
-                    "LEASH_PROTECTED metadata" : "It does NOT have the LEASH_PROTECTED metadata");
-
             // If the mob is already leashed cancel the event.
             if (clicked.isLeashed()) {
                 if (clicked.getLeashHolder().equals(player)) {
@@ -73,6 +67,15 @@ public class LeashMob implements Listener {
                     player.sendMessage(Utils.chatColor(Utils.prefix + plugin.getConfig().getString(
                             "messages.in-claim-deny-mob")));
                     return;
+                }
+
+                // If the entity is a Citizens NPC, check if it can be leashed.
+                if (clicked.hasMetadata("NPC")) {
+                    NPC npc = CitizensAPI.getNPCRegistry().getNPC(clicked);
+                    // If the NPC cannot be leashed, return.
+                    if (npc.data().get(NPC.Metadata.LEASH_PROTECTED, true)) {
+                        return;
+                    }
                 }
 
                 // Checking if clicked entity passes blacklist/whitelist check.
