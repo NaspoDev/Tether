@@ -5,15 +5,17 @@ import dev.naspo.tether.core.Utils;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.*;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -112,12 +114,57 @@ public class LeashMob implements Listener {
     @EventHandler
     public void onLeash(PlayerLeashEntityEvent event) {
         Entity entity = event.getEntity();
+        event.getPlayer().sendMessage("Entity: " + entity.getName());
+        if (event.getLeashHolder().getType() == EntityType.LEASH_KNOT) {
+            event.getPlayer().sendMessage("leash knot is the leash holder");
+        } else {
+            event.getPlayer().sendMessage("You are the leash holder");
+        }
 
         // Checking if clicked entity passes blacklist/whitelist check.
         if (isEntityRestricted(entity)) {
+            event.getPlayer().sendMessage("Entity is restricted, cancelling the event");
             event.setCancelled(true);
+            return;
+        }
+
+        // If it's an attempt to attach to a fence...
+        if (event.getLeashHolder().getType() == EntityType.LEASH_KNOT) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage("in here");
+            if (entity instanceof Mob) {
+                Mob mob = (Mob) entity;
+                event.getPlayer().sendMessage("attaching them");
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    mob.setLeashHolder(event.getLeashHolder());
+
+//                    // If a lead was not removed from the player's inventory, remove one.
+//                    ItemStack lead = new ItemStack(Material.LEAD, 1);
+//                    if (player.getInventory().getItemInMainHand().getAmount() == (leads - 1)) {
+//                        return;
+//                    }
+//                    player.getInventory().removeItem(lead);
+                }, 1L);
+            }
         }
     }
+
+//    @EventHandler
+//    private void onPlayerInteract(PlayerInteractEvent event) {
+//        Player player = event.getPlayer();
+//
+//        // If it was a right click.
+//        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+//            // If they are holding a lead (in any hand).
+//            if (player.getInventory().getItemInMainHand().getType() == Material.LEAD ||
+//                    player.getInventory().getItemInOffHand().getType() == Material.LEAD) {
+//                // If they clicked a fence.
+//                if (event.getClickedBlock().getType().name().toLowerCase().endsWith("fence")) {
+//
+//                }
+//            }
+//        }
+//    }
 
     // Checks the whitelist or blacklist to see whether the entity is restricted from being leashed or not.
     private boolean isEntityRestricted(Entity entity) {
