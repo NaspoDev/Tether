@@ -130,7 +130,6 @@ public class LeashMob implements Listener {
         // Ensuring it's a right-click on a fence with the main hand.
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (event.getHand() != EquipmentSlot.HAND) return;
-        if (player.getInventory().getItemInMainHand().getType() != Material.LEAD) return;
         if (!event.getClickedBlock().getType().name().toLowerCase().endsWith("fence")) return;
 
         // Find the mob that the player is currently leashing. If none, return.
