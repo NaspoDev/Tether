@@ -8,11 +8,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.logging.Level;
 
 public final class Tether extends JavaPlugin {
-    private Utils utils;
-    private LeashMob leashMob;
-    private LeashPlayer leashPlayer;
-    private Commands commands;
-    private TabCompleter tabCompleter;
     private ClaimCheckManager claimCheckManager;
 
     private boolean[] enableHooks = new boolean[4];
@@ -28,14 +23,8 @@ public final class Tether extends JavaPlugin {
 
         hooksCheck();
         instantiateClasses();
-
-        // Register events
-        this.getServer().getPluginManager().registerEvents(leashMob, this);
-        this.getServer().getPluginManager().registerEvents(leashPlayer, this);
-
-        // Register commands
-        this.getCommand("tether").setExecutor(commands);
-        this.getCommand("tether").setTabCompleter(tabCompleter);
+        registerEvents();
+        registerCommands();
     }
 
     @Override
@@ -87,11 +76,16 @@ public final class Tether extends JavaPlugin {
     }
 
     private void instantiateClasses() {
-        utils = new Utils(this);
         claimCheckManager = new ClaimCheckManager(this, enableHooks);
-        leashMob = new LeashMob(this, claimCheckManager);
-        leashPlayer = new LeashPlayer(this, claimCheckManager);
-        commands = new Commands(this);
-        tabCompleter = new TabCompleter();
+    }
+
+    private void registerEvents() {
+        this.getServer().getPluginManager().registerEvents(new LeashMob(this, claimCheckManager), this);
+        this.getServer().getPluginManager().registerEvents(new LeashPlayer(this, claimCheckManager), this);
+    }
+
+    private void registerCommands() {
+        this.getCommand("tether").setExecutor(new Commands(this));
+        this.getCommand("tether").setTabCompleter(new TabCompleter());
     }
 }

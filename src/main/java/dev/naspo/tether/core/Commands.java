@@ -11,6 +11,7 @@ import java.util.Objects;
 public class Commands implements CommandExecutor {
 
     Tether plugin;
+
     Commands(Tether plugin) {
         this.plugin = plugin;
     }
@@ -33,7 +34,7 @@ public class Commands implements CommandExecutor {
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("reload")) {
-                    Utils.reloadConfigs();
+                    plugin.reloadConfig();
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', Objects.
                             requireNonNull(plugin.getConfig().getString("messages.prefix")) +
                             Objects.requireNonNull(plugin.getConfig().getString("messages.reload"))));
@@ -47,7 +48,7 @@ public class Commands implements CommandExecutor {
             if (args.length == 0) {
                 sender.sendMessage("Did you mean /tether reload?");
             } else if (args[0].equalsIgnoreCase("reload")) {
-                Utils.reloadConfigs();
+                plugin.reloadConfig();
                 sender.sendMessage("Tether has been reloaded");
             } else {
                 sender.sendMessage("Did you mean /tether reload?");

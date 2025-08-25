@@ -3,25 +3,10 @@ package dev.naspo.tether.core;
 import org.bukkit.ChatColor;
 
 public class Utils {
-    private static Tether plugin;
-
-    public static String prefix;
-
-    Utils(Tether plugin) {
-        Utils.plugin = plugin;
-
-        reloadVars();
-    }
-
-    // Reloads config.yml and call to reload global variables.
-    public static void reloadConfigs() {
-        plugin.reloadConfig();
-        reloadVars();
-    }
-
-    // Reloads (updates) global variables that get values from config.
-    private static void reloadVars() {
-        prefix = plugin.getConfig().getString("messages.prefix");
+    
+    // Returns the plugins prefix.
+    public static String getPrefix(Tether plugin) {
+        return plugin.getConfig().getString("messages.prefix");
     }
 
     // Utility method to make using ChatColor easier.

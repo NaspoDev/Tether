@@ -2,19 +2,22 @@ package dev.naspo.tether.leash;
 
 import dev.naspo.tether.core.Tether;
 import dev.naspo.tether.core.Utils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityDismountEvent;
 import org.bukkit.event.entity.EntityUnleashEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.event.entity.EntityDismountEvent;
 
 public class LeashPlayer implements Listener {
 
@@ -70,7 +73,7 @@ public class LeashPlayer implements Listener {
             // If the player is already riding an entity, don't allow the leash.
             if (clicked.getVehicle() != null) {
                 if (!(clicked.getVehicle().hasMetadata("naspodev_tether_plugin"))) {
-                    player.sendMessage(Utils.chatColor(Utils.prefix +
+                    player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) +
                             plugin.getConfig().getString("messages.cannot-leash-riding-player")));
                     return;
                 }
@@ -83,7 +86,7 @@ public class LeashPlayer implements Listener {
             // Claim checks.
             if (!(claimCheckManager.canLeashPlayer(clicked, player))) {
                 event.setCancelled(true);
-                player.sendMessage(Utils.chatColor(Utils.prefix + plugin.getConfig().getString(
+                player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) + plugin.getConfig().getString(
                         "messages.in-claim-deny-player")));
                 return;
             }
@@ -91,7 +94,7 @@ public class LeashPlayer implements Listener {
             // Nesting check. Checks if the player that clicked the other play is riding an entity.
             if (plugin.getConfig().getBoolean("player-leash.prevent-nesting")) {
                 if (player.getVehicle() != null) {
-                    player.sendMessage(Utils.chatColor(Utils.prefix + plugin.getConfig().getString(
+                    player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) + plugin.getConfig().getString(
                             "messages.prevent-nesting")));
                     return;
                 }
@@ -123,10 +126,10 @@ public class LeashPlayer implements Listener {
                     // based on whether player leashing is set to escapable or not.
                     if (plugin.getConfig().getBoolean("player-leash.message-on-leashed")) {
                         if (plugin.getConfig().getBoolean("player-leash.escapable")) {
-                            clicked.sendMessage(Utils.chatColor(Utils.prefix +
+                            clicked.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) +
                                     plugin.getConfig().getString("messages.player-leashed-escapable")));
                         } else {
-                            clicked.sendMessage(Utils.chatColor(Utils.prefix +
+                            clicked.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) +
                                     "messages.player-leashed-not-escapable"));
                         }
                     }

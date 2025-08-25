@@ -67,7 +67,7 @@ public class LeashMob implements Listener {
                 // Claim checks.
                 if (!(claimCheckManager.canLeashMob(clicked, player))) {
                     event.setCancelled(true);
-                    player.sendMessage(Utils.chatColor(Utils.prefix + plugin.getConfig().getString(
+                    player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) + plugin.getConfig().getString(
                             "messages.in-claim-deny-mob")));
                     return;
                 }
