@@ -18,6 +18,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -132,25 +133,23 @@ public class LeashMob implements Listener {
         if (event.getHand() != EquipmentSlot.HAND) return;
         if (!event.getClickedBlock().getType().name().toLowerCase().endsWith("fence")) return;
 
-        // Find the mob that the player is currently leashing. If none, return.
-        Mob leashedMob = null;
+        // Find the mobs that the player is currently leashing. If none, return.
+        List<Mob> leashedMobs = new ArrayList<>();
 
         for (Entity entity : player.getNearbyEntities(10, 10, 10)) {
             if (entity instanceof Mob mob) {
                 if (mob.isLeashed() && mob.getLeashHolder() instanceof Player holder && holder.equals(player)) {
-                    leashedMob = mob;
-                    break;
+                    leashedMobs.add(mob);
                 }
             }
         }
-        if (leashedMob == null) return;
+        if (leashedMobs.isEmpty()) return;
 
         Block fence = event.getClickedBlock();
         Location fenceLocation = fence.getLocation();
 
         // Waiting for the PlayerLeashEntityEvent (which would have fired at this point) to finish.
         // We need to wait for it to finish so that we can confirm the outcome final of the event.
-        final Mob finalLeashedMob = leashedMob; // making effectively final variable for leashedMob for use in the lambda.
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             // Finding the leash hitch on the fence.
             boolean foundLeashHitch = false;
@@ -168,7 +167,10 @@ public class LeashMob implements Listener {
                 // added to properly visually align the hitch.
                 Location hitchLocation = fenceLocation.clone().add(0.5, 0.5, 0.5);
                 LeashHitch leashHitch = (LeashHitch) fence.getWorld().spawnEntity(hitchLocation, EntityType.LEASH_KNOT);
-                finalLeashedMob.setLeashHolder(leashHitch);
+                // TODO: I actually dont think I can just do this, because some of the mobs leashed may be leashable
+                // by default so the game will handle it, but im also handling it? I need to rethink how Im going to
+                // make sure everything is leashed without conflict.
+                leashedMobs.forEach(mob -> mob.setLeashHolder(leashHitch));
             }
         }, 1L);
     }
