@@ -4,8 +4,10 @@ import dev.naspo.tether.core.Tether;
 import dev.naspo.tether.core.Utils;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
-import org.bukkit.*;
-import org.bukkit.block.data.BlockData;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,7 +17,6 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +33,7 @@ public class LeashMob implements Listener {
     // A more general event than PlayerLeashEntityEvent, used for leashing mobs that
     // are not leasable by default.
     @EventHandler
-    public void onInteract(PlayerInteractAtEntityEvent event) {
+    private void onPlayerInteract(PlayerInteractAtEntityEvent event) {
         Player player = event.getPlayer();
         LivingEntity clicked;
 
@@ -112,59 +113,66 @@ public class LeashMob implements Listener {
     // Specific leash event to apply blacklist/whitelist to mobs that are leashable
     // in the base game. This is not possible to catch with the PlayerInteractAtEntityEvent.
     @EventHandler
-    public void onLeash(PlayerLeashEntityEvent event) {
+    private void onLeash(PlayerLeashEntityEvent event) {
         Entity entity = event.getEntity();
-        event.getPlayer().sendMessage("Entity: " + entity.getName());
-        if (event.getLeashHolder().getType() == EntityType.LEASH_KNOT) {
-            event.getPlayer().sendMessage("leash knot is the leash holder");
-        } else {
-            event.getPlayer().sendMessage("You are the leash holder");
-        }
 
         // Checking if clicked entity passes blacklist/whitelist check.
         if (isEntityRestricted(entity)) {
-            event.getPlayer().sendMessage("Entity is restricted, cancelling the event");
             event.setCancelled(true);
-            return;
-        }
-
-        // If it's an attempt to attach to a fence...
-        if (event.getLeashHolder().getType() == EntityType.LEASH_KNOT) {
-            event.setCancelled(true);
-            event.getPlayer().sendMessage("in here");
-            if (entity instanceof Mob) {
-                Mob mob = (Mob) entity;
-                event.getPlayer().sendMessage("attaching them");
-                Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                    mob.setLeashHolder(event.getLeashHolder());
-
-//                    // If a lead was not removed from the player's inventory, remove one.
-//                    ItemStack lead = new ItemStack(Material.LEAD, 1);
-//                    if (player.getInventory().getItemInMainHand().getAmount() == (leads - 1)) {
-//                        return;
-//                    }
-//                    player.getInventory().removeItem(lead);
-                }, 1L);
-            }
         }
     }
 
-//    @EventHandler
-//    private void onPlayerInteract(PlayerInteractEvent event) {
-//        Player player = event.getPlayer();
-//
-//        // If it was a right click.
-//        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-//            // If they are holding a lead (in any hand).
-//            if (player.getInventory().getItemInMainHand().getType() == Material.LEAD ||
-//                    player.getInventory().getItemInOffHand().getType() == Material.LEAD) {
-//                // If they clicked a fence.
-//                if (event.getClickedBlock().getType().name().toLowerCase().endsWith("fence")) {
-//
-//                }
-//            }
-//        }
-//    }
+    // Used for fence post functionality for mobs that are not leashable by default as fence post functionality
+    // won't work for them.
+    @EventHandler
+    private void onPlayerInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        // Ensuring it's a right-click on a fence with the main hand.
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (event.getHand() != EquipmentSlot.HAND) return;
+        if (player.getInventory().getItemInMainHand().getType() != Material.LEAD) return;
+        if (!event.getClickedBlock().getType().name().toLowerCase().endsWith("fence")) return;
+
+        // Find the mob that the player is currently leashing. If none, return.
+        Mob leashedMob = null;
+
+        for (Entity entity : player.getNearbyEntities(10, 10, 10)) {
+            if (entity instanceof Mob mob) {
+                if (mob.isLeashed() && mob.getLeashHolder() instanceof Player holder && holder.equals(player)) {
+                    leashedMob = mob;
+                    break;
+                }
+            }
+        }
+        if (leashedMob == null) return;
+
+        Block fence = event.getClickedBlock();
+        Location fenceLocation = fence.getLocation();
+
+        // Waiting for the PlayerLeashEntityEvent (which would have fired at this point) to finish.
+        // We need to wait for it to finish so that we can confirm the outcome final of the event.
+        final Mob finalLeashedMob = leashedMob; // making effectively final variable for leashedMob for use in the lambda.
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            // Finding the leash hitch on the fence.
+            boolean foundLeashHitch = false;
+            for (Entity entity : fenceLocation.getWorld().getNearbyEntities(fenceLocation, 5, 5, 5)) {
+                if (entity instanceof LeashHitch) {
+                    foundLeashHitch = true;
+                    break;
+                }
+            }
+
+            // If there is no leash hitch, that means that it's a mob that is not leashable by default.
+            // So we have to create a leash hitch on the fence and set that as the leash holder for the mob.
+            if (!foundLeashHitch) {
+                // The location that the hitch should be. Cloning as to not modify the fenceLocation value. 0.5 is
+                // added to properly visually align the hitch.
+                Location hitchLocation = fenceLocation.clone().add(0.5, 0.5, 0.5);
+                LeashHitch leashHitch = (LeashHitch) fence.getWorld().spawnEntity(hitchLocation, EntityType.LEASH_KNOT);
+                finalLeashedMob.setLeashHolder(leashHitch);
+            }
+        }, 1L);
+    }
 
     // Checks the whitelist or blacklist to see whether the entity is restricted from being leashed or not.
     private boolean isEntityRestricted(Entity entity) {
