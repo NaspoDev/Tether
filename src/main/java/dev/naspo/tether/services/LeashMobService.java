@@ -1,7 +1,9 @@
 package dev.naspo.tether.services;
 
 import dev.naspo.tether.Tether;
-import dev.naspo.tether.Utils;
+import dev.naspo.tether.exceptions.NoPermissionException;
+import dev.naspo.tether.exceptions.leashexception.LeashErrorType;
+import dev.naspo.tether.exceptions.leashexception.LeashException;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
@@ -12,6 +14,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,38 +31,35 @@ public class LeashMobService {
 
     /**
      * Have the player leash a mob if they are allowed.
-     * Checks things like current land claims and player permissions.
+     * Checks things like current land claims, player permissions, and more.
      *
      * @param player The player to be the leash holder.
-     * @param mob    The mob to be leashed.
-     * @throws Exception if the leashing operation cannot be completed.
+     * @param entity The non-player LivingEntity to be leashed. (Not `Mob` because NPCs are supported).
      */
-    public void playerLeashMob(Player player, Mob mob) throws Exception {
+    public void playerLeashMob(Player player, LivingEntity entity) throws InvalidParameterException,
+            NoPermissionException, LeashException {
+        if (entity instanceof Player) throw new InvalidParameterException();
+
         // Permission check.
-        if (!player.hasPermission("tether.use")) throw new Exception("No Permission");
+        if (!player.hasPermission("tether.use")) throw new NoPermissionException();
 
         // Claim checks.
-        if (!(claimCheckService.canLeashMob(mob, player))) {
-            event.setCancelled(true);
-            player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) + plugin.getConfig().getString(
-                    "messages.in-claim-deny-mob")));
-            return;
-        }
+        if (!claimCheckService.canLeashMob(entity, player))
+            throw new LeashException(LeashErrorType.LAND_CLAIM_RESTRICTION);
 
         // If the entity is a Citizens NPC, check if it can be leashed.
-        if (clicked.hasMetadata("NPC")) {
-            net.citizensnpcs.api.npc.NPC npc = CitizensAPI.getNPCRegistry().getNPC(clicked);
+        if (entity.hasMetadata("NPC")) {
+            net.citizensnpcs.api.npc.NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
             // If the NPC cannot be leashed, return.
             if (npc.data().get(NPC.Metadata.LEASH_PROTECTED, true)) {
-                return;
+                throw new LeashException(LeashErrorType.NPC_UNLEASHABLE);
             }
         }
 
         // Checking if clicked entity passes blacklist/whitelist check.
-        if (isEntityRestricted(clicked)) {
-            return;
-        }
+        if (isEntityRestricted(entity)) throw new LeashException(LeashErrorType.MOB_RESTRICTED);
 
+        // Begin the leashing process.
         // Keep track of the player's leads, prevents duping.
         int leads;
         leads = player.getInventory().getItemInMainHand().getAmount();
@@ -67,21 +67,16 @@ public class LeashMobService {
         // Leashing the mob.
         // The actual leashing process has to run in a scheduler with a slight delay,
         // due to the way the event works.
-        Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-            @Override
-            public void run() {
-                clicked.setLeashHolder(player);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            entity.setLeashHolder(player);
 
-                // If a lead was not removed from the player's inventory, remove one.
-                ItemStack lead = new ItemStack(Material.LEAD, 1);
-                if (player.getInventory().getItemInMainHand().getAmount() == (leads - 1)) {
-                    return;
-                }
-                player.getInventory().removeItem(lead);
+            // If a lead was not removed from the player's inventory, remove one.
+            ItemStack lead = new ItemStack(Material.LEAD, 1);
+            if (player.getInventory().getItemInMainHand().getAmount() == (leads - 1)) {
+                return;
             }
+            player.getInventory().removeItem(lead);
         }, 1L);
-
-        return false;
     }
 
     public void handleFenceRightClick(PlayerInteractEvent playerInteractEvent) {

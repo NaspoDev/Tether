@@ -1,8 +1,13 @@
 package dev.naspo.tether.listeners;
 
+import dev.naspo.tether.Tether;
+import dev.naspo.tether.Utils;
+import dev.naspo.tether.exceptions.NoPermissionException;
+import dev.naspo.tether.exceptions.leashexception.LeashErrorType;
+import dev.naspo.tether.exceptions.leashexception.LeashException;
 import dev.naspo.tether.services.LeashMobService;
 import org.bukkit.Material;
-import org.bukkit.entity.Mob;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,9 +15,11 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 public class PlayerInteractAtEntityListener implements Listener {
+    private final Tether plugin;
     private final LeashMobService leashMobService;
 
-    public PlayerInteractAtEntityListener(LeashMobService leashMobService) {
+    public PlayerInteractAtEntityListener(Tether plugin, LeashMobService leashMobService) {
+        this.plugin = plugin;
         this.leashMobService = leashMobService;
     }
 
@@ -24,12 +31,10 @@ public class PlayerInteractAtEntityListener implements Listener {
 
         // Some event filtering before we can confirm it's a player trying to leash a mob.
         if (event.getHand() == EquipmentSlot.OFF_HAND) return;
-        if (!(event.getRightClicked() instanceof Mob)) return;
+        if (!(event.getRightClicked() instanceof LivingEntity entity)) return;
 
-        Mob clickedMob = (Mob) event.getRightClicked();
-
-        if (clickedMob.isLeashed()) return;
-        if (clickedMob.getLeashHolder().equals(player)) {
+        if (entity.isLeashed()) return;
+        if (entity.getLeashHolder().equals(player)) {
             event.setCancelled(true);
             return;
         }
@@ -37,12 +42,16 @@ public class PlayerInteractAtEntityListener implements Listener {
         // If they have a lead in their hand we can try to leash the mob.
         if (player.getInventory().getItemInMainHand().getType().equals(Material.LEAD)) {
             try {
-                leashMobService.playerLeashMob(player, clickedMob);
-            } catch (Exception e) {
-                // Event needs to be cancelled if this fails.
+                leashMobService.playerLeashMob(player, entity);
+            } catch (NoPermissionException e) {
                 event.setCancelled(true);
-                // Send the player a message in accordance of the reason for failure.
-                e.
+            } catch (LeashException e) {
+                // Only need to explicitly handle the LAND_CLAIM_RESTRICTION LeashException type.
+                if (e.getType() == LeashErrorType.LAND_CLAIM_RESTRICTION) {
+                    event.setCancelled(true);
+                    player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) + plugin.getConfig().getString(
+                            "messages.in-claim-deny-mob")));
+                }
             }
         }
     }
