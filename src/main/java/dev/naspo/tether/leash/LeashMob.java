@@ -34,7 +34,7 @@ public class LeashMob implements Listener {
     // A more general event than PlayerLeashEntityEvent, used for leashing mobs that
     // are not leasable by default.
     @EventHandler
-    private void onPlayerInteract(PlayerInteractAtEntityEvent event) {
+    private void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         Player player = event.getPlayer();
         LivingEntity clicked;
 
