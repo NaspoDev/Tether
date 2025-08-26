@@ -1,14 +1,20 @@
-package dev.naspo.tether.core;
+package dev.naspo.tether;
 
-import dev.naspo.tether.leash.ClaimCheckManager;
-import dev.naspo.tether.leash.LeashMob;
+import dev.naspo.tether.commandstuff.Commands;
+import dev.naspo.tether.commandstuff.TabCompleter;
 import dev.naspo.tether.leash.LeashPlayer;
+import dev.naspo.tether.listeners.PlayerInteractAtEntityListener;
+import dev.naspo.tether.listeners.PlayerInteractListener;
+import dev.naspo.tether.listeners.PlayerLeashEntityListener;
+import dev.naspo.tether.services.ClaimCheckService;
+import dev.naspo.tether.services.LeashMobService;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
 
 public final class Tether extends JavaPlugin {
-    private ClaimCheckManager claimCheckManager;
+    private LeashMobService leashMobService;
+    private ClaimCheckService claimCheckService;
 
     private boolean[] enableHooks = new boolean[4];
 
@@ -76,12 +82,15 @@ public final class Tether extends JavaPlugin {
     }
 
     private void instantiateClasses() {
-        claimCheckManager = new ClaimCheckManager(this, enableHooks);
+        leashMobService = new LeashMobService(this);
+        claimCheckService = new ClaimCheckService(this, enableHooks);
     }
 
     private void registerEvents() {
-        this.getServer().getPluginManager().registerEvents(new LeashMob(this, claimCheckManager), this);
-        this.getServer().getPluginManager().registerEvents(new LeashPlayer(this, claimCheckManager), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerInteractAtEntityListener(), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerInteractListener(), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerLeashEntityListener(), this);
+        this.getServer().getPluginManager().registerEvents(new LeashPlayer(this, claimCheckService), this);
     }
 
     private void registerCommands() {

@@ -1,9 +1,9 @@
-package dev.naspo.tether.core;
+package dev.naspo.tether;
 
 import org.bukkit.ChatColor;
 
 public class Utils {
-    
+
     // Returns the plugins prefix.
     public static String getPrefix(Tether plugin) {
         return plugin.getConfig().getString("messages.prefix");

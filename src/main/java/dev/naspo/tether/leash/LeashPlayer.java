@@ -1,7 +1,8 @@
 package dev.naspo.tether.leash;
 
-import dev.naspo.tether.core.Tether;
-import dev.naspo.tether.core.Utils;
+import dev.naspo.tether.Tether;
+import dev.naspo.tether.Utils;
+import dev.naspo.tether.services.ClaimCheckService;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,12 +22,12 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 public class LeashPlayer implements Listener {
 
-    private final ClaimCheckManager claimCheckManager;
+    private final ClaimCheckService claimCheckService;
     private final Tether plugin;
 
-    public LeashPlayer(Tether plugin, ClaimCheckManager claimCheckManager) {
+    public LeashPlayer(Tether plugin, ClaimCheckService claimCheckService) {
         this.plugin = plugin;
-        this.claimCheckManager = claimCheckManager;
+        this.claimCheckService = claimCheckService;
     }
 
     // Checks if player leashing is enabled. (Checks upon PlayerInteractAtEntityEvent).
@@ -84,7 +85,7 @@ public class LeashPlayer implements Listener {
             }
 
             // Claim checks.
-            if (!(claimCheckManager.canLeashPlayer(clicked, player))) {
+            if (!(claimCheckService.canLeashPlayer(clicked, player))) {
                 event.setCancelled(true);
                 player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) + plugin.getConfig().getString(
                         "messages.in-claim-deny-player")));

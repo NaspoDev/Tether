@@ -1,10 +1,10 @@
-package dev.naspo.tether.leash;
+package dev.naspo.tether.services;
 
 import com.griefdefender.api.GriefDefender;
 import com.griefdefender.api.claim.TrustTypes;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
-import dev.naspo.tether.core.Tether;
+import dev.naspo.tether.Tether;
 import me.angeschossen.lands.api.integration.LandsIntegration;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.ClaimPermission;
@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 
 //Manages all protected land checks when leashing a mob or player.
-public class ClaimCheckManager {
+public class ClaimCheckService {
     private DataStore gpDataStore;
     private Town town;
     private LandsIntegration landsIntegration;
@@ -26,7 +26,7 @@ public class ClaimCheckManager {
 
     private Tether plugin;
 
-    public ClaimCheckManager(Tether plugin, boolean[] checkIsEnabled){
+    public ClaimCheckService(Tether plugin, boolean[] checkIsEnabled) {
         this.plugin = plugin;
         // Stores enabled status for hooks.
         this.checkIsEnabled = new HashMap<>();
@@ -64,7 +64,7 @@ public class ClaimCheckManager {
     }
 
     // Called when leashing a player to check if the hooks (land claims) allow it.
-    boolean canLeashPlayer(Player clicked, Player player) {
+    public boolean canLeashPlayer(Player clicked, Player player) {
         if (checkIsEnabled.get("griefprevention")) {
             return griefPreventionPlayerCheck(clicked, player);
         }

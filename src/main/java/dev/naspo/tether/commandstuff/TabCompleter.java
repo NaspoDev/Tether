@@ -1,4 +1,4 @@
-package dev.naspo.tether.core;
+package dev.naspo.tether.commandstuff;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
