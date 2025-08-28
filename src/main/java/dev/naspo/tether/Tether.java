@@ -2,19 +2,18 @@ package dev.naspo.tether;
 
 import dev.naspo.tether.commandstuff.Commands;
 import dev.naspo.tether.commandstuff.TabCompleter;
-import dev.naspo.tether.leash.LeashPlayer;
-import dev.naspo.tether.listeners.PlayerInteractAtEntityListener;
-import dev.naspo.tether.listeners.PlayerInteractListener;
-import dev.naspo.tether.listeners.PlayerLeashEntityListener;
+import dev.naspo.tether.listeners.*;
 import dev.naspo.tether.services.ClaimCheckService;
 import dev.naspo.tether.services.LeashMobService;
+import dev.naspo.tether.services.LeashPlayerService;
 import dev.naspo.tether.services.hookmanager.HookManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Tether extends JavaPlugin {
     private HookManager hookManager;
-    private LeashMobService leashMobService;
     private ClaimCheckService claimCheckService;
+    private LeashMobService leashMobService;
+    private LeashPlayerService leashPlayerService;
 
     @Override
     public void onEnable() {
@@ -38,13 +37,16 @@ public final class Tether extends JavaPlugin {
         hookManager = new HookManager(this); // will perform hook check.
         claimCheckService = new ClaimCheckService(this, hookManager);
         leashMobService = new LeashMobService(this, claimCheckService);
+        leashPlayerService = new LeashPlayerService(this, claimCheckService);
     }
 
     private void registerEvents() {
-        this.getServer().getPluginManager().registerEvents(new PlayerInteractAtEntityListener(this, leashMobService), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerInteractAtEntityListener(this, leashMobService, leashPlayerService), this);
         this.getServer().getPluginManager().registerEvents(new PlayerInteractListener(leashMobService), this);
         this.getServer().getPluginManager().registerEvents(new PlayerLeashEntityListener(leashMobService), this);
-        this.getServer().getPluginManager().registerEvents(new LeashPlayer(this, claimCheckService), this);
+        this.getServer().getPluginManager().registerEvents(new EntityDeathListener(), this);
+        this.getServer().getPluginManager().registerEvents(new EntityDismountListener(this, leashPlayerService), this);
+        this.getServer().getPluginManager().registerEvents(new EntityUnleashListener(), this);
     }
 
     private void registerCommands() {

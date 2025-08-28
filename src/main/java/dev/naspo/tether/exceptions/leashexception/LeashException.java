@@ -3,7 +3,7 @@ package dev.naspo.tether.exceptions.leashexception;
 /**
  * When a leashing operation cannot be completed.
  */
-public class LeashException extends RuntimeException {
+public class LeashException extends Exception {
     private final LeashErrorType leashErrorType;
 
     public LeashException(LeashErrorType leashErrorType) {
