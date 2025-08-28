@@ -39,9 +39,10 @@ public class PlayerInteractAtEntityListener implements Listener {
         if (event.getHand() == EquipmentSlot.OFF_HAND) return;
         if (!(event.getRightClicked() instanceof LivingEntity entity)) return;
 
-        if (entity.isLeashed()) return;
-        if (entity.getLeashHolder().equals(player)) {
-            event.setCancelled(true);
+        if (entity.isLeashed()) {
+            if (entity.getLeashHolder().equals(player)) {
+                event.setCancelled(true);
+            }
             return;
         }
 
