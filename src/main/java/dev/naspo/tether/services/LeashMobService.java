@@ -35,6 +35,9 @@ public class LeashMobService {
      *
      * @param player The player to be the leash holder.
      * @param entity The non-player LivingEntity to be leashed. (Not `Mob` because NPCs are supported).
+     * @throws InvalidParameterException if the LivingEntity passed in is a Player.
+     * @throws NoPermissionException     if the player does not have permission.
+     * @throws LeashException            when the leash operation fails for a given reason (LeashErrorType).
      */
     public void playerLeashMob(Player player, LivingEntity entity) throws InvalidParameterException,
             NoPermissionException, LeashException {
@@ -79,6 +82,7 @@ public class LeashMobService {
         }, 1L);
     }
 
+    // Deals with leashing mobs to a fence post.
     public void handleFenceRightClick(PlayerInteractEvent playerInteractEvent) {
         Player player = playerInteractEvent.getPlayer();
         Block fence = playerInteractEvent.getClickedBlock();

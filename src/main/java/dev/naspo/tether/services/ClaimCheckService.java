@@ -5,6 +5,8 @@ import com.griefdefender.api.claim.TrustTypes;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
 import dev.naspo.tether.Tether;
+import dev.naspo.tether.services.hookmanager.Hook;
+import dev.naspo.tether.services.hookmanager.HookManager;
 import me.angeschossen.lands.api.integration.LandsIntegration;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.ClaimPermission;
@@ -13,8 +15,6 @@ import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-
 //Manages all protected land checks when leashing a mob or player.
 public class ClaimCheckService {
     private DataStore gpDataStore;
@@ -22,41 +22,34 @@ public class ClaimCheckService {
     private LandsIntegration landsIntegration;
     private com.griefdefender.api.claim.Claim claimGD;
 
-    private HashMap<String, Boolean> checkIsEnabled;
-
     private Tether plugin;
+    private HookManager hookManager;
 
-    public ClaimCheckService(Tether plugin, boolean[] checkIsEnabled) {
+    public ClaimCheckService(Tether plugin, HookManager hookManager) {
         this.plugin = plugin;
-        // Stores enabled status for hooks.
-        this.checkIsEnabled = new HashMap<>();
-
-        this.checkIsEnabled.put("griefprevention", checkIsEnabled[0]);
-        this.checkIsEnabled.put("towny", checkIsEnabled[1]);
-        this.checkIsEnabled.put("lands", checkIsEnabled[2]);
-        this.checkIsEnabled.put("griefdefender", checkIsEnabled[3]);
+        this.hookManager = hookManager;
 
         // Initializing anything needed for integrations.
-        if (this.checkIsEnabled.get("griefprevention")) {
+        if (hookManager.isHookEnabled(Hook.GRIEF_PREVENTION)) {
             this.gpDataStore = GriefPrevention.instance.dataStore;
         }
-        if (this.checkIsEnabled.get("lands")) {
+        if (hookManager.isHookEnabled(Hook.LANDS)) {
             this.landsIntegration = new LandsIntegration(plugin);
         }
     }
 
     // Called when leashing a mob to check if the hooks (land claims) allow it.
     boolean canLeashMob(LivingEntity clicked, Player player) {
-        if (checkIsEnabled.get("griefprevention")) {
+        if (hookManager.isHookEnabled(Hook.GRIEF_PREVENTION)) {
             return griefPreventionMobCheck(clicked, player);
         }
-        if (checkIsEnabled.get("towny")) {
+        if (hookManager.isHookEnabled(Hook.TOWNY)) {
             return townyMobCheck(clicked, player);
         }
-        if (checkIsEnabled.get("lands")) {
+        if (hookManager.isHookEnabled(Hook.LANDS)) {
             return landsMobCheck(clicked, player);
         }
-        if (checkIsEnabled.get("griefdefender")) {
+        if (hookManager.isHookEnabled(Hook.GRIEF_DEFENDER)) {
             return griefDefenderMobCheck(clicked, player);
         }
 
@@ -65,16 +58,16 @@ public class ClaimCheckService {
 
     // Called when leashing a player to check if the hooks (land claims) allow it.
     public boolean canLeashPlayer(Player clicked, Player player) {
-        if (checkIsEnabled.get("griefprevention")) {
+        if (hookManager.isHookEnabled(Hook.GRIEF_PREVENTION)) {
             return griefPreventionPlayerCheck(clicked, player);
         }
-        if (checkIsEnabled.get("towny")) {
+        if (hookManager.isHookEnabled(Hook.TOWNY)) {
             return townyPlayerCheck(clicked, player);
         }
-        if (checkIsEnabled.get("lands")) {
+        if (hookManager.isHookEnabled(Hook.LANDS)) {
             return landsPlayerCheck(clicked, player);
         }
-        if (checkIsEnabled.get("griefdefender")) {
+        if (hookManager.isHookEnabled(Hook.GRIEF_DEFENDER)) {
             return griefDefenderPlayerCheck(clicked, player);
         }
 
