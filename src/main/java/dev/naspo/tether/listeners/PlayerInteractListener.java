@@ -22,6 +22,6 @@ public class PlayerInteractListener implements Listener {
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (event.getHand() != EquipmentSlot.HAND) return;
         if (!event.getClickedBlock().getType().name().toLowerCase().endsWith("fence")) return;
-        leashMobService.handleFenceRightClick(event);
+        leashMobService.handleFenceLeashing(event.getPlayer(), event.getClickedBlock().getLocation());
     }
 }

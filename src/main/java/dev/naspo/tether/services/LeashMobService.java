@@ -9,9 +9,7 @@ import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.*;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.security.InvalidParameterException;
@@ -82,58 +80,25 @@ public class LeashMobService {
         }, 1L);
     }
 
-    // Deals with leashing mobs to a fence post.
-    public void handleFenceRightClick(PlayerInteractEvent playerInteractEvent) {
-        Player player = playerInteractEvent.getPlayer();
-        Block fence = playerInteractEvent.getClickedBlock();
-        Location fenceLocation = fence.getLocation();
+    /**
+     * Deals with leashing mobs to and from a fence.
+     *
+     * @param player   The player that right-clicked the fence or leash hitch.
+     * @param location The location of the fence or leash hitch.
+     */
+    public void handleFenceLeashing(Player player, Location location) {
+        // Leashing mobs from a fence:
+        // First wait for the PlayerLeashEntityEvent to finish then set the player as the leash holder for the rest of
+        // the mobs still leashed to the fence. (The mobs still leashed to the fence at that point would be mobs not
+        // leashable by default).
+        if (getMobsLeashedByPlayer(player).isEmpty() && !getMobsLeashedToFence(location).isEmpty()) {
+            Bukkit.getScheduler().runTaskLater(plugin, () -> transferMobsFromFenceToPlayer(player, location), 1L);
+            return;
+        }
 
-        // Waiting for the PlayerLeashEntityEvent (which would have fired at this point) to finish.
-        // We need to wait for it to finish because it's outcome determines what extra stuff we need to do.
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            // Find the mobs that the player may still be currently leashing.
-            // Will be empty if all mobs they tried to attach to the fence are leashable by default, as the
-            // PlayerLeashEntityEvent was handled by the game. This will only catch mobs that are still held on to
-            // by the player because they are not leashable by default.
-            List<Mob> leashedMobs = new ArrayList<>();
-            for (Entity entity : player.getNearbyEntities(10, 10, 10)) {
-                if (entity instanceof Mob mob) {
-                    if (mob.isLeashed() && mob.getLeashHolder() instanceof Player holder && holder.equals(player)) {
-                        leashedMobs.add(mob);
-                    }
-                }
-            }
-
-            // Finding the leash hitch on the fence.
-            LeashHitch leashHitch = null;
-            for (Entity entity : fenceLocation.getWorld().getNearbyEntities(fenceLocation, 5, 5, 5)) {
-                if (entity instanceof LeashHitch lh) {
-                    leashHitch = lh;
-                    break;
-                }
-            }
-
-            // If there is no leash hitch, that means they are trying to leash a mob that is not leashable by default
-            // to the fence. So we have to create a leash hitch on the fence and set that as the leash holder for the mob.
-            if (leashHitch == null) {
-                // The location that the hitch should be. Cloning as to not modify the fenceLocation value. 0.5 is
-                // added to properly visually align the hitch.
-                Location hitchLocation = fenceLocation.clone().add(0.5, 0.5, 0.5);
-                leashHitch = (LeashHitch) fence.getWorld().spawnEntity(hitchLocation, EntityType.LEASH_KNOT);
-                for (Mob mob : leashedMobs) {
-                    mob.setLeashHolder(leashHitch);
-                }
-            } else {
-                // If there is a leash hitch present, then (some or all of) the mob(s) they are trying to leash to the
-                // fence are leashable by default, and the game handled the leash hitch creation and attachment.
-                // At this point, if there are any mobs in our leashedMobs list they are sure to be mobs that
-                // are not leasheable by default, so we need to attach them to the hitch that the game created
-                // for the other mobs.
-                for (Mob mob : leashedMobs) {
-                    mob.setLeashHolder(leashHitch);
-                }
-            }
-        }, 1L);
+        // Leashing mobs to a fence:
+        // Waiting for the PlayerLeashEntityEvent to finish so that we only handle mobs that are not leashable by default.
+        Bukkit.getScheduler().runTaskLater(plugin, () -> transferMobsFromPlayerToFence(player, location), 1L);
     }
 
     // Checks the whitelist or blacklist to see whether the entity is restricted from being leashed or not.
@@ -160,5 +125,81 @@ public class LeashMobService {
             }
         }
         return false;
+    }
+
+    private List<Mob> getMobsLeashedByPlayer(Player player) {
+        List<Mob> leashedMobs = new ArrayList<>();
+        for (Entity entity : player.getNearbyEntities(10, 10, 10)) {
+            if (entity instanceof Mob mob) {
+                if (mob.isLeashed() && mob.getLeashHolder() instanceof Player holder && holder.equals(player)) {
+                    leashedMobs.add(mob);
+                }
+            }
+        }
+        return leashedMobs;
+    }
+
+    /**
+     * @param location The location of the fence or leash hitch.
+     * @return The list of mobs leashed to that fence.
+     */
+    private List<Mob> getMobsLeashedToFence(Location location) {
+        List<Mob> leashedMobs = new ArrayList<>();
+
+        // Find the leash hitch.
+        LeashHitch leashHitch = null;
+        for (Entity entity : location.getWorld().getNearbyEntities(location, 1, 1, 1)) {
+            if (entity instanceof LeashHitch lh) {
+                leashHitch = lh;
+                break;
+            }
+        }
+
+        // If there is a leash hitch, find all entities leashed to it.
+        if (leashHitch != null) {
+            for (Entity entity : leashHitch.getWorld().getNearbyEntities(leashHitch.getLocation(), 10, 10, 10)) {
+                if (entity instanceof Mob mob) {
+                    if (mob.isLeashed() && mob.getLeashHolder() instanceof LeashHitch holder && holder.equals(leashHitch)) {
+                        leashedMobs.add(mob);
+                    }
+                }
+            }
+        }
+        return leashedMobs;
+    }
+
+    private void transferMobsFromFenceToPlayer(Player player, Location fenceLocation) {
+        List<Mob> mobs = getMobsLeashedToFence(fenceLocation);
+        for (Mob mob : mobs) {
+            mob.setLeashHolder(player);
+        }
+    }
+
+    private void transferMobsFromPlayerToFence(Player player, Location fenceLocation) {
+        List<Mob> leashedMobs = getMobsLeashedByPlayer(player);
+
+        // Finding the leash hitch on the fence.
+        LeashHitch leashHitch = null;
+        for (Entity entity : fenceLocation.getWorld().getNearbyEntities(fenceLocation, 1, 1, 1)) {
+            if (entity instanceof LeashHitch lh) {
+                leashHitch = lh;
+                break;
+            }
+        }
+
+        // If there is no leash hitch we have to create one.
+        if (leashHitch == null) {
+            // The location that the hitch should be. Cloning as to not modify the fenceLocation value.
+            // 0.5 is added to properly visually align the hitch.
+            Location hitchLocation = fenceLocation.clone().add(0.5, 0.5, 0.5);
+            leashHitch = (LeashHitch) fenceLocation.getWorld().spawnEntity(hitchLocation, EntityType.LEASH_KNOT);
+            for (Mob mob : leashedMobs) {
+                mob.setLeashHolder(leashHitch);
+            }
+        } else {
+            for (Mob mob : leashedMobs) {
+                mob.setLeashHolder(leashHitch);
+            }
+        }
     }
 }

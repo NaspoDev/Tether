@@ -19,11 +19,6 @@ public class PlayerLeashEntityListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     private void onPlayerLeash(PlayerLeashEntityEvent event) {
         Entity entity = event.getEntity();
-
-        event.getPlayer().sendMessage("entity: " + entity.getName());
-        event.getPlayer().sendMessage("leash holder: " + event.getLeashHolder());
-
-        // Checking if clicked entity passes blacklist/whitelist check.
         if (leashMobService.isEntityRestricted(entity)) {
             event.setCancelled(true);
         }
