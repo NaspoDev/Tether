@@ -97,7 +97,9 @@ public class LeashMobService {
         }
 
         // Leashing mobs to a fence:
-        transferMobsFromPlayerToFence(player, location);
+        if (!getMobsLeashedByPlayer(player).isEmpty()) {
+            transferMobsFromPlayerToFence(player, location);
+        }
     }
 
     // Checks the whitelist or blacklist to see whether the entity is restricted from being leashed or not.
