@@ -44,6 +44,9 @@ public class LeashMobService {
         // Permission check.
         if (!player.hasPermission("tether.use")) throw new NoPermissionException();
 
+        // Blacklist/whitelist check.
+        if (isEntityRestricted(entity)) throw new LeashException(LeashErrorType.MOB_RESTRICTED);
+
         // Claim checks.
         if (!claimCheckService.canLeashMob(entity, player))
             throw new LeashException(LeashErrorType.LAND_CLAIM_RESTRICTION);
@@ -56,9 +59,6 @@ public class LeashMobService {
                 throw new LeashException(LeashErrorType.NPC_UNLEASHABLE);
             }
         }
-
-        // Checking if clicked entity passes blacklist/whitelist check.
-        if (isEntityRestricted(entity)) throw new LeashException(LeashErrorType.MOB_RESTRICTED);
 
         // Begin the leashing process.
         // Keep track of the player's leads, prevents duping.
@@ -87,18 +87,17 @@ public class LeashMobService {
      * @param location The location of the fence or leash hitch.
      */
     public void handleFenceLeashing(Player player, Location location) {
-        // Leashing mobs from a fence:
+        // Transfer mobs from fence to player:
         // First wait for the PlayerLeashEntityEvent to finish then set the player as the leash holder for the rest of
         // the mobs still leashed to the fence. (The mobs still leashed to the fence at that point would be mobs not
         // leashable by default).
         if (getMobsLeashedByPlayer(player).isEmpty() && !getMobsLeashedToFence(location).isEmpty()) {
-            Bukkit.getScheduler().runTaskLater(plugin, () -> transferMobsFromFenceToPlayer(player, location), 1L);
+            transferMobsFromFenceToPlayer(player, location);
             return;
         }
 
         // Leashing mobs to a fence:
-        // Waiting for the PlayerLeashEntityEvent to finish so that we only handle mobs that are not leashable by default.
-        Bukkit.getScheduler().runTaskLater(plugin, () -> transferMobsFromPlayerToFence(player, location), 1L);
+        transferMobsFromPlayerToFence(player, location);
     }
 
     // Checks the whitelist or blacklist to see whether the entity is restricted from being leashed or not.
