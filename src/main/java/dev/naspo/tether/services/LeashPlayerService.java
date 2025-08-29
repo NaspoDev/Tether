@@ -37,7 +37,7 @@ public class LeashPlayerService {
      */
     public void playerLeashPlayer(Player player, Player target) throws NoPermissionException, LeashException {
         // Permission check.
-        if (!player.hasPermission("tether.use.players")) throw new NoPermissionException();
+        if (!player.hasPermission("tether.leashplayers")) throw new NoPermissionException();
 
         // If the target player is a Citizens NPC, deny the leash.
         // Citizen NPCs of type "Player" should not be leashable as per Citizens.

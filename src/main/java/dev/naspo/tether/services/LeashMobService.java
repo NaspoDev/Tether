@@ -41,9 +41,6 @@ public class LeashMobService {
             NoPermissionException, LeashException {
         if (entity instanceof Player) throw new InvalidParameterException();
 
-        // Permission check.
-        if (!player.hasPermission("tether.use")) throw new NoPermissionException();
-
         // Blacklist/whitelist check.
         if (isEntityRestricted(entity)) throw new LeashException(LeashErrorType.MOB_RESTRICTED);
 
