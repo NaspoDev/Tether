@@ -57,6 +57,11 @@ public class PlayerInteractAtEntityListener implements Listener {
 
         Player player = event.getPlayer();
 
+        // If they are sneaking which right-clicking the mob, try leashing mobs together.
+        if (player.isSneaking()) {
+            leashMobService.handleSneakInteract(player, entity);
+        }
+
         if (entity.isLeashed()) {
             if (entity.getLeashHolder().equals(player)) {
                 event.setCancelled(true);

@@ -99,6 +99,22 @@ public class LeashMobService {
         }
     }
 
+    /**
+     * Deals with sneak-interaction, specifically looks for leashing mobs together and will
+     * do so if applicable.
+     *
+     * @param player The player who sneak-interacted with an entity.
+     * @param entity The LivingEntity that was sneak-interacted with. (Not `Mob` because NPCs are supported).
+     */
+    public void handleSneakInteract(Player player, LivingEntity entity) {
+        if (entity instanceof Player) return;
+        if (entity.isLeashed() && entity.getLeashHolder().equals(player)) return;
+
+        for (Mob mob : getMobsLeashedByPlayer(player)) {
+            mob.setLeashHolder(entity);
+        }
+    }
+
     // Checks the whitelist or blacklist to see whether the entity is restricted from being leashed or not.
     public boolean isEntityRestricted(Entity entity) {
         // Use whitelist check.
