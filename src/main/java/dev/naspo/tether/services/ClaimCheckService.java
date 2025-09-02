@@ -1,5 +1,8 @@
 package dev.naspo.tether.services;
 
+import com.bekvon.bukkit.residence.Residence;
+import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import com.griefdefender.api.GriefDefender;
 import com.griefdefender.api.claim.TrustTypes;
 import com.palmergames.bukkit.towny.TownyAPI;
@@ -52,7 +55,9 @@ public class ClaimCheckService {
         if (hookManager.isHookEnabled(Hook.GRIEF_DEFENDER)) {
             return griefDefenderMobCheck(clicked, player);
         }
-
+        if (hookManager.isHookEnabled(Hook.RESIDENCE)) {
+            return residenceMobCheck(clicked, player);
+        }
         return true;
     }
 
@@ -70,7 +75,9 @@ public class ClaimCheckService {
         if (hookManager.isHookEnabled(Hook.GRIEF_DEFENDER)) {
             return griefDefenderPlayerCheck(clicked, player);
         }
-
+        if (hookManager.isHookEnabled(Hook.RESIDENCE)) {
+            return residencePlayerCheck(clicked, player);
+        }
         return true;
     }
 
@@ -117,6 +124,15 @@ public class ClaimCheckService {
         return true;
     }
 
+    private boolean residenceMobCheck(LivingEntity clicked, Player player) {
+        ClaimedResidence residence = Residence.getInstance().getResidenceManager().getByLoc(clicked.getLocation());
+        if (residence != null) {
+            ResidencePermissions perms = residence.getPermissions();
+            return perms.playerHas(player, "leash", true);
+        }
+        return true;
+    }
+
     // The following methods check if leashing of a player will be allowed, based on land claims...
 
     private boolean griefPreventionPlayerCheck(Player clicked, Player player) {
@@ -156,6 +172,15 @@ public class ClaimCheckService {
             } else {
                 return claimGD.isUserTrusted(player.getUniqueId(), TrustTypes.ACCESSOR);
             }
+        }
+        return true;
+    }
+
+    private boolean residencePlayerCheck(Player clicked, Player player) {
+        ClaimedResidence residence = Residence.getInstance().getResidenceManager().getByLoc(clicked.getLocation());
+        if (residence != null) {
+            ResidencePermissions perms = residence.getPermissions();
+            return perms.playerHas(player, "leash", true);
         }
         return true;
     }

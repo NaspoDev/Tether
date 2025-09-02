@@ -4,7 +4,8 @@ public enum Hook {
     GRIEF_PREVENTION("GriefPrevention", "griefprevention"),
     TOWNY("Towny", "towny"),
     LANDS("Lands", "lands"),
-    GRIEF_DEFENDER("GriefDefender", "griefdefender");
+    GRIEF_DEFENDER("GriefDefender", "griefdefender"),
+    RESIDENCE("Residence", "residence");
 
     private final String pluginName;
     private final String configKey;

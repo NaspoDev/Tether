@@ -30,6 +30,7 @@ hooks:
   towny: false
   lands: false
   griefdefender: false
+  residence: false
 
 # Messages
 messages:
