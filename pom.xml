@@ -123,5 +123,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>me.bevkon.residence</groupId>
+            <artifactId>residence5.1.7.7</artifactId>
+            <version>5.1.7.7</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

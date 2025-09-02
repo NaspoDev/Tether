@@ -16,5 +16,6 @@ public class PlayerLeashEntityListener implements Listener {
     @EventHandler
     private void onPlayerLeashEntity(PlayerLeashEntityEvent event) {
         event.setCancelled(true);
+
     }
 }
