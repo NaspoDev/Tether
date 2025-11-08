@@ -123,12 +123,10 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- Residence dependency from local Maven repo. There is no public Maven repo. -->
         <dependency>
-            <groupId>me.bevkon.residence</groupId>
-            <artifactId>residence5.1.7.7</artifactId>
-            <version>5.1.7.7</version>
-            <scope>provided</scope>
+            <groupId>com.github.Zrips</groupId>
+            <artifactId>Residence</artifactId>
+            <version>6.0.0.1</version>
         </dependency>
     </dependencies>
 </project>
