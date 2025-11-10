@@ -5,5 +5,12 @@ api-version: 1.18
 author: Naspo
 description: Grants the ability to use a lead on any mob, and players.
 
+softdepend:
+  - GriefPrevention
+  - Towny
+  - Lands
+  - GriefDefender
+  - Residence
+
 commands:
   tether:
