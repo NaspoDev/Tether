@@ -110,6 +110,12 @@
             <version>2.1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/net.kyori/event-api -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>event-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
         <dependency>
             <groupId>net.citizensnpcs</groupId>
             <artifactId>citizens-main</artifactId>
