@@ -59,13 +59,12 @@ public class LeashMobService {
 
         // Begin the leashing process.
         // Keep track of the player's leads, prevents duping.
-        int leads;
-        leads = player.getInventory().getItemInMainHand().getAmount();
+        int leads = player.getInventory().getItemInMainHand().getAmount();
 
         // Leashing the mob.
         // The actual leashing process has to run in a scheduler with a slight delay,
         // due to the way the event works.
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+        runEntityTaskLater(entity, () -> {
             entity.setLeashHolder(player);
 
             // If a lead was not removed from the player's inventory, remove one.
@@ -83,6 +82,27 @@ public class LeashMobService {
      * @param player   The player that right-clicked the fence or leash hitch.
      * @param location The location of the fence or leash hitch.
      */
+    private void runEntityTaskLater(LivingEntity entity, Runnable task, long delay) {
+        try {
+            if (isFoliaOrPaper()) {
+                 entity.getScheduler().runDelayed(plugin, (scheduledTask) -> task.run(), null, delay);
+                 return;
+            }
+        } catch (Throwable ignored) {
+        }
+
+        Bukkit.getScheduler().runTaskLater(plugin, task, delay);
+    }
+
+    private boolean isFoliaOrPaper() {
+        try {
+            Entity.class.getMethod("getScheduler");
+            return true;
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
+    }
+
     public void handleFenceLeashing(Player player, Location location) {
         // Transfer mobs from fence to player:
         // First wait for the PlayerLeashEntityEvent to finish then set the player as the leash holder for the rest of

@@ -4,6 +4,7 @@ main: dev.naspo.tether.Tether
 api-version: 1.18
 author: Naspo
 description: Grants the ability to use a lead on any mob, and players.
+folia-supported: true
 
 softdepend:
   - GriefPrevention
