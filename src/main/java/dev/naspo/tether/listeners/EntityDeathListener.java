@@ -11,6 +11,7 @@ public class EntityDeathListener implements Listener {
     private void onMobDeath(EntityDeathEvent event) {
         if (event.getEntity().hasMetadata("naspodev_tether_plugin")) {
             event.getDrops().clear();
+            event.setDroppedExp(0);
         }
     }
 }
