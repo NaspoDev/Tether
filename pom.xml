@@ -6,7 +6,7 @@
 
     <groupId>dev.naspo</groupId>
     <artifactId>Tether</artifactId>
-    <version>2.12.3-SNAPSHOT</version>
+    <version>2.12.3</version>
     <packaging>jar</packaging>
 
     <name>Tether</name>
