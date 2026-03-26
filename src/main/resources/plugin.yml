@@ -11,6 +11,7 @@ softdepend:
   - Lands
   - GriefDefender
   - Residence
+  - WorldGuard
 
 commands:
   tether:
