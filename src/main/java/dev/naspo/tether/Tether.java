@@ -2,11 +2,12 @@ package dev.naspo.tether;
 
 import dev.naspo.tether.commandstuff.Commands;
 import dev.naspo.tether.commandstuff.TabCompleter;
+import dev.naspo.tether.integration.WorldGuardIntegration;
+import dev.naspo.tether.integration.hookmanager.HookManager;
 import dev.naspo.tether.listeners.*;
 import dev.naspo.tether.services.ClaimCheckService;
 import dev.naspo.tether.services.LeashMobService;
 import dev.naspo.tether.services.LeashPlayerService;
-import dev.naspo.tether.services.hookmanager.HookManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Tether extends JavaPlugin {
@@ -14,6 +15,7 @@ public final class Tether extends JavaPlugin {
     private ClaimCheckService claimCheckService;
     private LeashMobService leashMobService;
     private LeashPlayerService leashPlayerService;
+    private WorldGuardIntegration worldGuardIntegration;
 
     @Override
     public void onEnable() {
@@ -38,6 +40,7 @@ public final class Tether extends JavaPlugin {
         claimCheckService = new ClaimCheckService(this, hookManager);
         leashMobService = new LeashMobService(this, claimCheckService);
         leashPlayerService = new LeashPlayerService(this, claimCheckService);
+        worldGuardIntegration = new WorldGuardIntegration(this);
     }
 
     private void registerEvents() {

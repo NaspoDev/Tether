@@ -1,4 +1,4 @@
-package dev.naspo.tether.services.hookmanager;
+package dev.naspo.tether.integration.hookmanager;
 
 import dev.naspo.tether.Tether;
 
@@ -26,7 +26,7 @@ public class HookManager {
         for (Hook hook : Hook.values()) {
             // If it's set as enabled in the config...
             if (plugin.getConfig().getBoolean("hooks." + hook.getConfigKey())) {
-                // If the dependency for that hook exists is null, log a warning.
+                // If the hook's dependency is null, log a warning.
                 if (plugin.getServer().getPluginManager().getPlugin(hook.getPluginName()) == null) {
                     plugin.getLogger().log(Level.WARNING, hook.getPluginName() + " hook set to true in config, " +
                             "but the plugin does not exist on the server. The hook will not work!");

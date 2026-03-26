@@ -1,4 +1,4 @@
-package dev.naspo.tether.services.hookmanager;
+package dev.naspo.tether.integration.hookmanager;
 
 public enum Hook {
     GRIEF_PREVENTION("GriefPrevention", "griefprevention"),
