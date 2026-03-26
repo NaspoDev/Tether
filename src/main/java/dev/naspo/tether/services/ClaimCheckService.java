@@ -8,8 +8,8 @@ import com.griefdefender.api.claim.TrustTypes;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
 import dev.naspo.tether.Tether;
-import dev.naspo.tether.integration.hookmanager.Hook;
-import dev.naspo.tether.integration.hookmanager.HookManager;
+import dev.naspo.tether.integration.HookManager;
+import dev.naspo.tether.integration.OptionalHook;
 import me.angeschossen.lands.api.integration.LandsIntegration;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.ClaimPermission;
@@ -33,29 +33,29 @@ public class ClaimCheckService {
         this.hookManager = hookManager;
 
         // Initializing anything needed for integrations.
-        if (hookManager.isHookEnabled(Hook.GRIEF_PREVENTION)) {
+        if (hookManager.isHookEnabled(OptionalHook.GRIEF_PREVENTION)) {
             this.gpDataStore = GriefPrevention.instance.dataStore;
         }
-        if (hookManager.isHookEnabled(Hook.LANDS)) {
+        if (hookManager.isHookEnabled(OptionalHook.LANDS)) {
             this.landsIntegration = new LandsIntegration(plugin);
         }
     }
 
     // Called when leashing a mob to check if the hooks (land claims) allow it.
     boolean canLeashMob(LivingEntity clicked, Player player) {
-        if (hookManager.isHookEnabled(Hook.GRIEF_PREVENTION)) {
+        if (hookManager.isHookEnabled(OptionalHook.GRIEF_PREVENTION)) {
             return griefPreventionMobCheck(clicked, player);
         }
-        if (hookManager.isHookEnabled(Hook.TOWNY)) {
+        if (hookManager.isHookEnabled(OptionalHook.TOWNY)) {
             return townyMobCheck(clicked, player);
         }
-        if (hookManager.isHookEnabled(Hook.LANDS)) {
+        if (hookManager.isHookEnabled(OptionalHook.LANDS)) {
             return landsMobCheck(clicked, player);
         }
-        if (hookManager.isHookEnabled(Hook.GRIEF_DEFENDER)) {
+        if (hookManager.isHookEnabled(OptionalHook.GRIEF_DEFENDER)) {
             return griefDefenderMobCheck(clicked, player);
         }
-        if (hookManager.isHookEnabled(Hook.RESIDENCE)) {
+        if (hookManager.isHookEnabled(OptionalHook.RESIDENCE)) {
             return residenceMobCheck(clicked, player);
         }
         return true;
@@ -63,19 +63,19 @@ public class ClaimCheckService {
 
     // Called when leashing a player to check if the hooks (land claims) allow it.
     public boolean canLeashPlayer(Player clicked, Player player) {
-        if (hookManager.isHookEnabled(Hook.GRIEF_PREVENTION)) {
+        if (hookManager.isHookEnabled(OptionalHook.GRIEF_PREVENTION)) {
             return griefPreventionPlayerCheck(clicked, player);
         }
-        if (hookManager.isHookEnabled(Hook.TOWNY)) {
+        if (hookManager.isHookEnabled(OptionalHook.TOWNY)) {
             return townyPlayerCheck(clicked, player);
         }
-        if (hookManager.isHookEnabled(Hook.LANDS)) {
+        if (hookManager.isHookEnabled(OptionalHook.LANDS)) {
             return landsPlayerCheck(clicked, player);
         }
-        if (hookManager.isHookEnabled(Hook.GRIEF_DEFENDER)) {
+        if (hookManager.isHookEnabled(OptionalHook.GRIEF_DEFENDER)) {
             return griefDefenderPlayerCheck(clicked, player);
         }
-        if (hookManager.isHookEnabled(Hook.RESIDENCE)) {
+        if (hookManager.isHookEnabled(OptionalHook.RESIDENCE)) {
             return residencePlayerCheck(clicked, player);
         }
         return true;

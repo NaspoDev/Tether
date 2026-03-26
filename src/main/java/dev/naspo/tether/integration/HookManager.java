@@ -1,29 +1,38 @@
-package dev.naspo.tether.integration.hookmanager;
+package dev.naspo.tether.integration;
 
+import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import dev.naspo.tether.Tether;
 
 import java.util.HashMap;
 import java.util.logging.Level;
 
-// Responsible for storing the status of hooks.
+// Responsible for managing hooks (integrations).
 public class HookManager {
 
     private Tether plugin;
-    private final HashMap<Hook, Boolean> hookEnabledStatuses;
+    private final HashMap<OptionalHook, Boolean> optionalHookEnabledStatuses;
+
+    // WorldGuard stuff
+    private FlagRegistry flagRegistry;
+    private StateFlag leashFlag;
 
     public HookManager(Tether plugin) {
         this.plugin = plugin;
-        this.hookEnabledStatuses = new HashMap<>();
-        performStartupHooksCheck();
+        this.optionalHookEnabledStatuses = new HashMap<>();
+    }
+
+    public void initializeHooks() {
+        initializeOptionalHooks();
     }
 
     /**
-     * Checks the status of all hooks and stores them. If a hooks is marked as enabled in the config
+     * Checks the status of all optional hooks and stores them. If a hooks is marked as enabled in the config
      * but the dependency for that hook does not exist, a warning will be logged to the console and
      * that hook will not be considered enabled.
      */
-    private void performStartupHooksCheck() {
-        for (Hook hook : Hook.values()) {
+    private void initializeOptionalHooks() {
+        for (OptionalHook hook : OptionalHook.values()) {
             // If it's set as enabled in the config...
             if (plugin.getConfig().getBoolean("hooks." + hook.getConfigKey())) {
                 // If the hook's dependency is null, log a warning.
@@ -32,13 +41,18 @@ public class HookManager {
                             "but the plugin does not exist on the server. The hook will not work!");
                 } else {
                     // Otherwise everything is in order, mark the hook as enabled.
-                    hookEnabledStatuses.put(hook, true);
+                    optionalHookEnabledStatuses.put(hook, true);
                 }
             }
         }
     }
 
-    public boolean isHookEnabled(Hook hook) {
-        return hookEnabledStatuses.getOrDefault(hook, false);
+    // Returns the enabled status of an OptionalHook.
+    public boolean isHookEnabled(OptionalHook hook) {
+        return optionalHookEnabledStatuses.getOrDefault(hook, false);
+    }
+
+    private void initializeWorldGuardHook() {
+
     }
 }

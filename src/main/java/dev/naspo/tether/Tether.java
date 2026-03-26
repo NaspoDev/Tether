@@ -2,8 +2,8 @@ package dev.naspo.tether;
 
 import dev.naspo.tether.commandstuff.Commands;
 import dev.naspo.tether.commandstuff.TabCompleter;
+import dev.naspo.tether.integration.HookManager;
 import dev.naspo.tether.integration.WorldGuardIntegration;
-import dev.naspo.tether.integration.hookmanager.HookManager;
 import dev.naspo.tether.listeners.*;
 import dev.naspo.tether.services.ClaimCheckService;
 import dev.naspo.tether.services.LeashMobService;
@@ -28,6 +28,8 @@ public final class Tether extends JavaPlugin {
         instantiateClasses();
         registerEvents();
         registerCommands();
+
+        hookManager.initializeHooks();
     }
 
     @Override
@@ -36,7 +38,7 @@ public final class Tether extends JavaPlugin {
     }
 
     private void instantiateClasses() {
-        hookManager = new HookManager(this); // will perform hook check.
+        hookManager = new HookManager(this);
         claimCheckService = new ClaimCheckService(this, hookManager);
         leashMobService = new LeashMobService(this, claimCheckService);
         leashPlayerService = new LeashPlayerService(this, claimCheckService);

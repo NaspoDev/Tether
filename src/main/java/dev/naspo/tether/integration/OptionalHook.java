@@ -1,6 +1,7 @@
-package dev.naspo.tether.integration.hookmanager;
+package dev.naspo.tether.integration;
 
-public enum Hook {
+// Represents hooks which are optional, and enabled in the config.
+public enum OptionalHook {
     GRIEF_PREVENTION("GriefPrevention", "griefprevention"),
     TOWNY("Towny", "towny"),
     LANDS("Lands", "lands"),
@@ -10,7 +11,7 @@ public enum Hook {
     private final String pluginName;
     private final String configKey;
 
-    Hook(String pluginName, String configKey) {
+    OptionalHook(String pluginName, String configKey) {
         this.pluginName = pluginName;
         this.configKey = configKey;
     }
