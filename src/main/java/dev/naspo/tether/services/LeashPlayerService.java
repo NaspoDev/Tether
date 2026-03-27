@@ -19,11 +19,11 @@ import org.bukkit.metadata.FixedMetadataValue;
 // Responsible for logic related to leashing players.
 public class LeashPlayerService {
     private final Tether plugin;
-    private final ClaimCheckService claimCheckService;
+    private final LandProtectionService landProtectionService;
 
-    public LeashPlayerService(Tether plugin, ClaimCheckService claimCheckService) {
+    public LeashPlayerService(Tether plugin, LandProtectionService landProtectionService) {
         this.plugin = plugin;
-        this.claimCheckService = claimCheckService;
+        this.landProtectionService = landProtectionService;
     }
 
     /**
@@ -57,7 +57,7 @@ public class LeashPlayerService {
         }
 
         // Claim checks.
-        if (!claimCheckService.canLeashPlayer(target, player))
+        if (!landProtectionService.canLeashPlayer(target, player))
             throw new LeashException(LeashErrorType.LAND_CLAIM_RESTRICTION);
 
         // Nesting check. Checks if the player is riding an entity.

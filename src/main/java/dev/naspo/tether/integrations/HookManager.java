@@ -58,6 +58,10 @@ public class HookManager {
 
     // Initializes WorldGuard integration and registers Tether's custom "leash" flag.
     private void initializeWorldGuardHook() {
+        if (plugin.getServer().getPluginManager().getPlugin("WorldGuard") == null) {
+            return;
+        }
+
         this.flagRegistry = WorldGuard.getInstance().getFlagRegistry();
 
         String leashFlagText = "leash";

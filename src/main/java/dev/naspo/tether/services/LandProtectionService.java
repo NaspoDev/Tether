@@ -15,11 +15,12 @@ import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.ClaimPermission;
 import me.ryanhamshire.GriefPrevention.DataStore;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 //Manages all protected land checks when leashing a mob or player.
-public class ClaimCheckService {
+public class LandProtectionService {
     private DataStore gpDataStore;
     private Town town;
     private LandsIntegration landsIntegration;
@@ -28,7 +29,7 @@ public class ClaimCheckService {
     private Tether plugin;
     private HookManager hookManager;
 
-    public ClaimCheckService(Tether plugin, HookManager hookManager) {
+    public LandProtectionService(Tether plugin, HookManager hookManager) {
         this.plugin = plugin;
         this.hookManager = hookManager;
 
@@ -42,7 +43,11 @@ public class ClaimCheckService {
     }
 
     // Called when leashing a mob to check if the hooks (land claims) allow it.
-    boolean canLeashMob(LivingEntity clicked, Player player) {
+    public boolean canLeashMob(LivingEntity clicked, Player player) {
+        // WorldGuard "leash" check flag check.
+
+
+        // Land claim checks.
         if (hookManager.isHookEnabled(OptionalHook.GRIEF_PREVENTION)) {
             return griefPreventionMobCheck(clicked, player);
         }
@@ -79,6 +84,11 @@ public class ClaimCheckService {
             return residencePlayerCheck(clicked, player);
         }
         return true;
+    }
+
+    // Returns the status of Tether's custom "leash" flag in a WorldGuard region (if there is one).
+    private boolean worldGuardCheck(Location location) {
+
     }
 
     // The following methods check if leashing of a mob will be allowed, based on land claims...
