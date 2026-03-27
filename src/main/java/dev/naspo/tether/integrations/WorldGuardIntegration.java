@@ -6,6 +6,8 @@ import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import dev.naspo.tether.Tether;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 public class WorldGuardIntegration extends Integration {
     private FlagRegistry flagRegistry;
@@ -19,6 +21,12 @@ public class WorldGuardIntegration extends Integration {
     protected boolean onEnable() {
         this.flagRegistry = WorldGuard.getInstance().getFlagRegistry();
         return registerLeashFlag();
+    }
+
+    @Override
+    public boolean canLeash(LivingEntity clicked, Player player) {
+        // TODO: implement
+        return false;
     }
 
     /**
@@ -45,8 +53,4 @@ public class WorldGuardIntegration extends Integration {
         return false;
     }
 
-    public boolean canLeash() {
-        // TODO: implement
-        return false;
-    }
 }

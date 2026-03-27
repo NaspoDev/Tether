@@ -1,6 +1,8 @@
 package dev.naspo.tether.integrations;
 
 import dev.naspo.tether.Tether;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 public abstract class Integration {
     protected final Tether tetherPlugin;
@@ -40,4 +42,13 @@ public abstract class Integration {
     public boolean isEnabled() {
         return enabled;
     }
+
+    /**
+     * Checks if the clicked LivingEntity can be leashed based on this integration.
+     *
+     * @param clicked The clicked LivingEntity. (Includes Player).
+     * @param player  The player trying to leash.
+     * @return true if the player is permitted to leash the clicked LivingEntity.
+     */
+    public abstract boolean canLeash(LivingEntity clicked, Player player);
 }
