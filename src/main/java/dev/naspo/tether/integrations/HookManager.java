@@ -14,7 +14,7 @@ import java.util.logging.Level;
 public class HookManager {
 
     private Tether plugin;
-    private final HashSet<Hook> enabledHooks;
+    private final HashSet<TempHook> enabledHooks;
 
     // WorldGuard stuff
     private FlagRegistry flagRegistry;
@@ -31,7 +31,7 @@ public class HookManager {
      * that hook will not be considered enabled.
      */
     public void initializeHooks() {
-        for (Hook hook : Hook.values()) {
+        for (TempHook hook : TempHook.values()) {
             boolean pluginExists = plugin.getServer().getPluginManager().getPlugin(hook.getPluginName()) != null;
 
             // If it's a toggleable hook, check if it's marked as enabled.
@@ -59,7 +59,7 @@ public class HookManager {
     }
 
     // Returns the enabled status of a Hook.
-    public boolean isHookEnabled(Hook hook) {
+    public boolean isHookEnabled(TempHook hook) {
         return enabledHooks.contains(hook);
     }
 
