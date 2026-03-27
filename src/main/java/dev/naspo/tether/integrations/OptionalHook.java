@@ -1,4 +1,4 @@
-package dev.naspo.tether.integration;
+package dev.naspo.tether.integrations;
 
 // Represents hooks which are optional, and enabled in the config.
 public enum OptionalHook {
