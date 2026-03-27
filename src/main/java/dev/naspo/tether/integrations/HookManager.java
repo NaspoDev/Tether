@@ -7,14 +7,14 @@ import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import dev.naspo.tether.Tether;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.logging.Level;
 
 // Responsible for managing hooks (integrations).
 public class HookManager {
 
     private Tether plugin;
-    private final HashMap<OptionalHook, Boolean> optionalHookEnabledStatuses;
+    private final HashSet<Hook> enabledHooks;
 
     // WorldGuard stuff
     private FlagRegistry flagRegistry;
@@ -22,38 +22,41 @@ public class HookManager {
 
     public HookManager(Tether plugin) {
         this.plugin = plugin;
-        this.optionalHookEnabledStatuses = new HashMap<>();
-    }
-
-    public void initializeHooks() {
-        initializeOptionalHooks();
-        initializeWorldGuardHook();
+        this.enabledHooks = new HashSet<>();
     }
 
     /**
-     * Checks the status of all optional hooks and stores them. If a hooks is marked as enabled in the config
+     * Checks the status of all hooks and stores them. If a toggleable hook is marked as enabled in the config
      * but the dependency for that hook does not exist, a warning will be logged to the console and
      * that hook will not be considered enabled.
      */
-    private void initializeOptionalHooks() {
-        for (OptionalHook hook : OptionalHook.values()) {
-            // If it's set as enabled in the config...
-            if (plugin.getConfig().getBoolean("hooks." + hook.getConfigKey())) {
-                // If the hook's dependency is null, log a warning.
-                if (plugin.getServer().getPluginManager().getPlugin(hook.getPluginName()) == null) {
-                    plugin.getLogger().log(Level.WARNING, hook.getPluginName() + " hook set to true in config, " +
-                            "but the plugin does not exist on the server. The hook will not work!");
-                } else {
-                    // Otherwise everything is in order, mark the hook as enabled.
-                    optionalHookEnabledStatuses.put(hook, true);
+    public void initializeHooks() {
+        for (Hook hook : Hook.values()) {
+            boolean pluginExists = plugin.getServer().getPluginManager().getPlugin(hook.getPluginName()) != null;
+
+            // If it's a toggleable hook, check if it's marked as enabled.
+            if (hook.getConfigKey() != null) {
+                if (plugin.getConfig().getBoolean("hooks." + hook.getConfigKey())) {
+                    // If the hook's dependency is null, log a warning.
+                    if (!pluginExists) {
+                        plugin.getLogger().log(Level.WARNING, hook.getPluginName() + " hook set to true in config, " +
+                                "but the plugin does not exist on the server. The hook will not work!");
+                    } else {
+                        // Otherwise everything is in order, add the hook to enabledHooks.
+                        enabledHooks.add(hook);
+                    }
+                }
+            } else {
+                if (pluginExists) {
+                    enabledHooks.add(hook);
                 }
             }
         }
     }
 
     // Returns the enabled status of an OptionalHook.
-    public boolean isHookEnabled(OptionalHook hook) {
-        return optionalHookEnabledStatuses.getOrDefault(hook, false);
+    public boolean isHookEnabled(Hook hook) {
+        return toggleableHookEnabledStatuses.getOrDefault(hook, false);
     }
 
     // Initializes WorldGuard integration and registers Tether's custom "leash" flag.
