@@ -45,7 +45,7 @@ public class LandProtectionService {
     // Called when leashing a mob to check if the hooks (land claims) allow it.
     public boolean canLeashMob(LivingEntity clicked, Player player) {
         // WorldGuard "leash" check flag check.
-
+        
 
         // Land claim checks.
         if (hookManager.isHookEnabled(Hook.GRIEF_PREVENTION)) {

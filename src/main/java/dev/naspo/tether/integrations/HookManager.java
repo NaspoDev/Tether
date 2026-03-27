@@ -49,14 +49,18 @@ public class HookManager {
             } else {
                 if (pluginExists) {
                     enabledHooks.add(hook);
+
+                    if (hook.getPluginName().equals("WorldGuard")) {
+                        initializeWorldGuardHook();
+                    }
                 }
             }
         }
     }
 
-    // Returns the enabled status of an OptionalHook.
+    // Returns the enabled status of a Hook.
     public boolean isHookEnabled(Hook hook) {
-        return toggleableHookEnabledStatuses.getOrDefault(hook, false);
+        return enabledHooks.contains(hook);
     }
 
     // Initializes WorldGuard integration and registers Tether's custom "leash" flag.
