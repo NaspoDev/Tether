@@ -76,11 +76,11 @@ public class PlayerInteractAtEntityListener implements Listener {
             } catch (NoPermissionException e) {
                 event.setCancelled(true);
             } catch (LeashException e) {
-                // Only need to explicitly handle the LAND_CLAIM_RESTRICTION LeashException type.
-                if (e.getType() == LeashErrorType.LAND_CLAIM_RESTRICTION) {
+                // Only need to explicitly handle the LAND_PROTECTED LeashException type.
+                if (e.getType() == LeashErrorType.LAND_PROTECTED) {
                     event.setCancelled(true);
                     player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) + plugin.getConfig().getString(
-                            "messages.in-claim-deny-mob")));
+                            "messages.target-mob-in-protected-land")));
                 }
             }
         }
@@ -110,10 +110,10 @@ public class PlayerInteractAtEntityListener implements Listener {
             switch (e.getType()) {
                 case TARGET_PLAYER_RIDING -> player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) +
                         plugin.getConfig().getString("messages.cannot-leash-riding-player")));
-                case LAND_CLAIM_RESTRICTION -> {
+                case LAND_PROTECTED -> {
                     event.setCancelled(true);
                     player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) + plugin.getConfig().getString(
-                            "messages.in-claim-deny-player")));
+                            "messages.target-player-in-protected-land")));
                 }
                 case PREVENT_NESTING -> player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) +
                         plugin.getConfig().getString("messages.prevent-nesting")));

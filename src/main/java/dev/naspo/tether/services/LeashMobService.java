@@ -20,11 +20,11 @@ import java.util.stream.Collectors;
 // Responsible for logic related to leashing mobs.
 public class LeashMobService {
     private final Tether plugin;
-    private final LandProtectionService landProtectionService;
+    private final IntegrationManager integrationManager;
 
-    public LeashMobService(Tether plugin, LandProtectionService landProtectionService) {
+    public LeashMobService(Tether plugin, IntegrationManager integrationManager) {
         this.plugin = plugin;
-        this.landProtectionService = landProtectionService;
+        this.integrationManager = integrationManager;
     }
 
     /**
@@ -44,9 +44,10 @@ public class LeashMobService {
         // Blacklist/whitelist check.
         if (isEntityRestricted(entity)) throw new LeashException(LeashErrorType.MOB_RESTRICTED);
 
-        // Claim checks.
-        if (!landProtectionService.canLeashMob(entity, player))
-            throw new LeashException(LeashErrorType.LAND_CLAIM_RESTRICTION);
+        // Integration checks.
+        if (!integrationManager.canLeash(entity, player)) {
+            throw new LeashException(LeashErrorType.LAND_PROTECTED);
+        }
 
         // If the entity is a Citizens NPC, check if it can be leashed.
         if (entity.hasMetadata("NPC")) {

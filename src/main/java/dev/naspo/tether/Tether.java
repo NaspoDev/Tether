@@ -4,14 +4,12 @@ import dev.naspo.tether.commandstuff.Commands;
 import dev.naspo.tether.commandstuff.TabCompleter;
 import dev.naspo.tether.listeners.*;
 import dev.naspo.tether.services.IntegrationManager;
-import dev.naspo.tether.services.LandProtectionService;
 import dev.naspo.tether.services.LeashMobService;
 import dev.naspo.tether.services.LeashPlayerService;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Tether extends JavaPlugin {
     private IntegrationManager integrationManager;
-    private LandProtectionService landProtectionService;
     private LeashMobService leashMobService;
     private LeashPlayerService leashPlayerService;
 
@@ -37,9 +35,8 @@ public final class Tether extends JavaPlugin {
 
     private void instantiateClasses() {
         integrationManager = new IntegrationManager(this);
-        landProtectionService = new LandProtectionService(this, hookManager);
-        leashMobService = new LeashMobService(this, landProtectionService);
-        leashPlayerService = new LeashPlayerService(this, landProtectionService);
+        leashMobService = new LeashMobService(this, integrationManager);
+        leashPlayerService = new LeashPlayerService(this, integrationManager);
     }
 
     private void registerEvents() {

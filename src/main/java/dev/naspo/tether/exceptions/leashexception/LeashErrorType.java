@@ -4,7 +4,7 @@ package dev.naspo.tether.exceptions.leashexception;
  * Specific types of leash errors used for LeashException.
  */
 public enum LeashErrorType {
-    LAND_CLAIM_RESTRICTION, // leash target is in a land claim.
+    LAND_PROTECTED, // leash target is in protected land.
     NPC_UNLEASHABLE, // When an NPC is unleashable.
     MOB_RESTRICTED, // Mob is either blacklisted or not on the whitelist.
     TARGET_PLAYER_RIDING, // The target player is riding an entity and can't be leashed.
