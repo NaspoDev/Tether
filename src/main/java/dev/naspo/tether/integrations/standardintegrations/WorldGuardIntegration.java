@@ -53,16 +53,16 @@ public class WorldGuardIntegration extends Integration {
      * @return true if the flag was successfully registered.
      */
     private boolean registerLeashFlag() {
-        String leashFlagText = "leash";
+        final String LEASH_FLAG_STRING = "leash";
 
         try {
-            StateFlag stateFlag = new StateFlag(leashFlagText, false);
+            StateFlag stateFlag = new StateFlag(LEASH_FLAG_STRING, false);
             flagRegistry.register(stateFlag);
             this.leashFlag = stateFlag;
             return true;
         } catch (FlagConflictException e) {
             // If there is a flag conflict, log that as an error to the console.
-            Flag<?> flag = flagRegistry.get(leashFlagText);
+            Flag<?> flag = flagRegistry.get(LEASH_FLAG_STRING);
             if (flag != null) {
                 tetherPlugin.getLogger().warning("Couldn't register the 'leash' WorldGuard flag! It looks like another " +
                         "plugin registered it. WorldGuard integration with Tether will not work.");
