@@ -15,12 +15,11 @@ public abstract class Integration {
     }
 
     /**
-     * Initializes the integration.
-     * Checks if the integration should enable, and runs logic to do so.
+     * Enables the integration (if it should).
      *
      * @return true if the integration was enabled.
      */
-    public boolean init() {
+    public boolean enable() {
         if (isPluginPresent()) {
             enabled = onEnable();
             return enabled;

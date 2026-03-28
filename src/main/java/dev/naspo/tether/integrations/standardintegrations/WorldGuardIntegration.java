@@ -1,4 +1,4 @@
-package dev.naspo.tether.integrations;
+package dev.naspo.tether.integrations.standardintegrations;
 
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.Flag;
@@ -6,6 +6,7 @@ import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import dev.naspo.tether.Tether;
+import dev.naspo.tether.integrations.Integration;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
