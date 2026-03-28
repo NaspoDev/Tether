@@ -1,16 +1,24 @@
 package dev.naspo.tether.integrations.standardintegrations;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import dev.naspo.tether.Tether;
 import dev.naspo.tether.integrations.Integration;
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 public class WorldGuardIntegration extends Integration {
+    private WorldGuard worldGuardAPI;
     private FlagRegistry flagRegistry;
     private StateFlag leashFlag;
 
@@ -20,14 +28,23 @@ public class WorldGuardIntegration extends Integration {
 
     @Override
     protected boolean onEnable() {
-        this.flagRegistry = WorldGuard.getInstance().getFlagRegistry();
+        this.worldGuardAPI = WorldGuard.getInstance();
+        this.flagRegistry = worldGuardAPI.getFlagRegistry();
         return registerLeashFlag();
     }
 
     @Override
     public boolean canLeash(LivingEntity clicked, Player player) {
-        // TODO: implement
-        return false;
+        // Region data can be accessed via the RegionContainer object.
+        RegionContainer regionContainer = worldGuardAPI.getPlatform().getRegionContainer();
+
+        // Query the state of our custom leash StateFlag at the clicked entity's location for a player.
+        // (Note that conversions using WorldGuardPlugin and WorldGuard's BukkitAdapter are needed as WorldGuard
+        // uses their own custom Player and Location objects).
+         return regionContainer.createQuery().testState(
+                BukkitAdapter.adapt(clicked.getLocation()),
+                WorldGuardPlugin.inst().wrapPlayer(player),
+                leashFlag);
     }
 
     /**
