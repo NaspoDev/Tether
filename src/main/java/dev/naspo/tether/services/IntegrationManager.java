@@ -16,12 +16,14 @@ public class IntegrationManager {
     private Tether plugin;
 
     private final List<Integration> integrations;
-    private final HashSet<Integration> enabledIntegrations;
 
     public IntegrationManager(Tether plugin) {
         this.plugin = plugin;
 
-        integrations = Arrays.asList(
+        // Creating an immutable list of integrations (via List.of()).
+        // Important: Ordering of integrations here is important.
+        // Checks are done in order, so integrations should be added in order of priority descending.
+        integrations = List.of(
                 new WorldGuardIntegration(plugin),
                 new GriefPreventionIntegration(plugin),
                 new TownyIntegration(plugin),
@@ -29,37 +31,22 @@ public class IntegrationManager {
                 new GriefDefenderIntegration(plugin),
                 new ResidenceIntegration(plugin)
         );
-
-        enabledIntegrations = new HashSet<>();
     }
 
     public void enableIntegrations() {
         for (Integration integration : integrations) {
-            if (integration.enable()) {
-                enabledIntegrations.add(integration);
-            }
+            integration.enable();
         }
     }
 
     public boolean canLeash(LivingEntity clicked, Player player) {
-        for (Integration integration : enabledIntegrations) {
-            // Non-toggleable integrations get priority in the check (e.g. WorldGuard).
-            if (!(integration instanceof ToggleableIntegration)) {
+        for (Integration integration : integrations) {
+            if (integration.isEnabled()) {
                 if (!integration.canLeash(clicked, player)) {
                     return false;
                 }
             }
         }
-
-        for (Integration integration : enabledIntegrations) {
-            // Now check toggleable integrations...
-            if (integration instanceof ToggleableIntegration) {
-                if (!integration.canLeash(clicked, player)) {
-                    return false;
-                }
-            }
-        }
-
         return true;
     }
 }

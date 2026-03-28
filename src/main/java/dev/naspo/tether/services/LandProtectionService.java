@@ -8,8 +8,6 @@ import com.griefdefender.api.claim.TrustTypes;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
 import dev.naspo.tether.Tether;
-import dev.naspo.tether.integrations.HookManager;
-import dev.naspo.tether.integrations.TempHook;
 import me.angeschossen.lands.api.integration.LandsIntegration;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.ClaimPermission;
