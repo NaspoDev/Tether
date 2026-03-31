@@ -1,7 +1,7 @@
 package dev.naspo.tether;
 
-import dev.naspo.tether.commandstuff.Commands;
-import dev.naspo.tether.commandstuff.TabCompleter;
+import dev.naspo.tether.commands.Commands;
+import dev.naspo.tether.commands.TabCompleter;
 import dev.naspo.tether.listeners.*;
 import dev.naspo.tether.services.IntegrationManager;
 import dev.naspo.tether.services.LeashMobService;

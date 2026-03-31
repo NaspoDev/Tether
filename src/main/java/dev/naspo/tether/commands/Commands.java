@@ -1,4 +1,4 @@
-package dev.naspo.tether.commandstuff;
+package dev.naspo.tether.commands;
 
 import dev.naspo.tether.Tether;
 import org.bukkit.ChatColor;
