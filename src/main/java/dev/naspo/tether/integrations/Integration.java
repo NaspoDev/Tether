@@ -34,7 +34,7 @@ public abstract class Integration {
      */
     protected abstract boolean onEnable();
 
-    private boolean isPluginPresent() {
+    protected boolean isPluginPresent() {
         return tetherPlugin.getServer().getPluginManager().getPlugin(pluginName) != null;
     }
 
