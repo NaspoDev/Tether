@@ -56,7 +56,7 @@ public class WorldGuardIntegration extends Integration {
         final String LEASH_FLAG_STRING = "leash";
 
         try {
-            StateFlag stateFlag = new StateFlag(LEASH_FLAG_STRING, false);
+            StateFlag stateFlag = new StateFlag(LEASH_FLAG_STRING, true);
             flagRegistry.register(stateFlag);
             this.leashFlag = stateFlag;
             return true;
