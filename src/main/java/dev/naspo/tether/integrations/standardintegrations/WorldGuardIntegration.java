@@ -1,6 +1,7 @@
 package dev.naspo.tether.integrations.standardintegrations;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -35,16 +36,22 @@ public class WorldGuardIntegration extends Integration {
 
     @Override
     public boolean canLeash(LivingEntity clicked, Player player) {
+        // WorldGuard uses their own custom Player, Location, and World objects, so I am converting them here.
+        LocalPlayer wgLocalPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
+        com.sk89q.worldedit.util.Location wgClickedLocation = BukkitAdapter.adapt(clicked.getLocation());
+        com.sk89q.worldedit.world.World wgClickedWorld = BukkitAdapter.adapt(clicked.getWorld());
+
+        // If they have WorldGuard region bypass permission, return true.
+        boolean canBypass = worldGuardAPI.getPlatform().getSessionManager().hasBypass(wgLocalPlayer, wgClickedWorld);
+        if (canBypass) {
+            return true;
+        }
+
         // Region data can be accessed via the RegionContainer object.
         RegionContainer regionContainer = worldGuardAPI.getPlatform().getRegionContainer();
 
         // Query the state of our custom leash StateFlag at the clicked entity's location for a player.
-        // (Note that conversions using WorldGuardPlugin and WorldGuard's BukkitAdapter are needed as WorldGuard
-        // uses their own custom Player and Location objects).
-         return regionContainer.createQuery().testState(
-                BukkitAdapter.adapt(clicked.getLocation()),
-                WorldGuardPlugin.inst().wrapPlayer(player),
-                leashFlag);
+        return regionContainer.createQuery().testState(wgClickedLocation, wgLocalPlayer, leashFlag);
     }
 
     /**
