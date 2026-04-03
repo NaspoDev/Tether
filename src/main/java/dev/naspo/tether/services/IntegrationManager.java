@@ -14,12 +14,10 @@ import java.util.List;
 
 // Manages integrations.
 public class IntegrationManager {
-    private Tether plugin;
 
     private final List<Integration> integrations;
 
     public IntegrationManager(final Tether plugin) {
-        this.plugin = plugin;
 
         // Creating an immutable list of integrations (via List.of()).
         // Important: Ordering of integrations here is important.
