@@ -3,13 +3,14 @@ package dev.naspo.tether.integrations.toggleableintegrations;
 import dev.naspo.tether.Tether;
 import me.angeschossen.lands.api.land.Area;
 import me.angeschossen.lands.api.land.Land;
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 public class LandsIntegration extends ToggleableIntegration {
     private me.angeschossen.lands.api.LandsIntegration landsAPI;
 
-    public LandsIntegration(Tether tetherPlugin) {
+    public LandsIntegration(final Tether tetherPlugin) {
         super(tetherPlugin, "Lands", "lands");
     }
 
@@ -20,10 +21,10 @@ public class LandsIntegration extends ToggleableIntegration {
     }
 
     @Override
-    public boolean canLeash(LivingEntity clicked, Player player) {
-        Area area = landsAPI.getArea(clicked.getLocation());
+    public boolean canLeash(final Location location, final Player player) {
+        final Area area = landsAPI.getArea(location);
         if (area != null) {
-            Land land = area.getLand();
+            final Land land = area.getLand();
             return land.getTrustedPlayers().contains(player.getUniqueId());
         }
         return true;

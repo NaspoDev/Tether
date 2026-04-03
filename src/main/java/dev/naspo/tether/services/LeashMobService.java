@@ -22,7 +22,7 @@ public class LeashMobService {
     private final Tether plugin;
     private final IntegrationManager integrationManager;
 
-    public LeashMobService(Tether plugin, IntegrationManager integrationManager) {
+    public LeashMobService(final Tether plugin, final IntegrationManager integrationManager) {
         this.plugin = plugin;
         this.integrationManager = integrationManager;
     }
@@ -37,7 +37,7 @@ public class LeashMobService {
      * @throws NoPermissionException     if the player does not have permission.
      * @throws LeashException            when the leash operation fails for a given reason (LeashErrorType).
      */
-    public void playerLeashMob(Player player, LivingEntity entity) throws InvalidParameterException,
+    public void playerLeashMob(final Player player, final LivingEntity entity) throws InvalidParameterException,
             NoPermissionException, LeashException {
         if (entity instanceof Player) throw new InvalidParameterException();
 
@@ -45,13 +45,13 @@ public class LeashMobService {
         if (isEntityRestricted(entity)) throw new LeashException(LeashErrorType.MOB_RESTRICTED);
 
         // Integration checks.
-        if (!integrationManager.canLeash(entity, player)) {
+        if (!integrationManager.canLeash(entity.getLocation(), player)) {
             throw new LeashException(LeashErrorType.LAND_PROTECTED);
         }
 
         // If the entity is a Citizens NPC, check if it can be leashed.
         if (entity.hasMetadata("NPC")) {
-            net.citizensnpcs.api.npc.NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
+            final net.citizensnpcs.api.npc.NPC npc = CitizensAPI.getNPCRegistry().getNPC(entity);
             // If the NPC cannot be leashed, return.
             if (npc.data().get(NPC.Metadata.LEASH_PROTECTED, true)) {
                 throw new LeashException(LeashErrorType.NPC_UNLEASHABLE);
@@ -60,7 +60,7 @@ public class LeashMobService {
 
         // Begin the leashing process.
         // Keep track of the player's leads, prevents duping.
-        int leads;
+        final int leads;
         leads = player.getInventory().getItemInMainHand().getAmount();
 
         // Leashing the mob.
@@ -70,7 +70,7 @@ public class LeashMobService {
             entity.setLeashHolder(player);
 
             // If a lead was not removed from the player's inventory, remove one.
-            ItemStack lead = new ItemStack(Material.LEAD, 1);
+            final ItemStack lead = new ItemStack(Material.LEAD, 1);
             if (player.getInventory().getItemInMainHand().getAmount() == (leads - 1)) {
                 return;
             }
@@ -84,7 +84,7 @@ public class LeashMobService {
      * @param player   The player that right-clicked the fence or leash hitch.
      * @param location The location of the fence or leash hitch.
      */
-    public void handleFenceLeashing(Player player, Location location) {
+    public void handleFenceLeashing(final Player player, final Location location) {
         // Transfer mobs from fence to player:
         // First wait for the PlayerLeashEntityEvent to finish then set the player as the leash holder for the rest of
         // the mobs still leashed to the fence. (The mobs still leashed to the fence at that point would be mobs not
@@ -107,23 +107,23 @@ public class LeashMobService {
      * @param player The player who sneak-interacted with an entity.
      * @param entity The LivingEntity that was sneak-interacted with. (Not `Mob` because NPCs are supported).
      */
-    public void handleSneakInteract(Player player, LivingEntity entity) {
+    public void handleSneakInteract(final Player player, final LivingEntity entity) {
         if (entity instanceof Player) return;
         if (entity.isLeashed() && entity.getLeashHolder().equals(player)) return;
 
-        for (Mob mob : getMobsLeashedByPlayer(player)) {
+        for (final Mob mob : getMobsLeashedByPlayer(player)) {
             mob.setLeashHolder(entity);
         }
     }
 
     // Checks the whitelist or blacklist to see whether the entity is restricted from being leashed or not.
-    public boolean isEntityRestricted(Entity entity) {
+    public boolean isEntityRestricted(final Entity entity) {
         // Use whitelist check.
         // If whitelist is set to be used over blacklist, check the whitelist only, else use blacklist.
         if (plugin.getConfig().getBoolean("use-whitelist-over-blacklist")) {
             // Whitelist check.
             // Getting whitelist values and converting all to uppercase.
-            List<String> whitelist = plugin.getConfig().getStringList("whitelisted-mobs")
+            final List<String> whitelist = plugin.getConfig().getStringList("whitelisted-mobs")
                     .stream().map(String::toUpperCase).collect(Collectors.toList());
 
             if (!whitelist.contains(entity.getType().name())) {
@@ -132,7 +132,7 @@ public class LeashMobService {
         } else {
             // Blacklist check.
             // Getting blacklist values and converting all to uppercase.
-            List<String> blacklist = plugin.getConfig().getStringList("blacklisted-mobs")
+            final List<String> blacklist = plugin.getConfig().getStringList("blacklisted-mobs")
                     .stream().map(String::toUpperCase).collect(Collectors.toList());
 
             if (blacklist.contains(entity.getType().name())) {
@@ -142,11 +142,11 @@ public class LeashMobService {
         return false;
     }
 
-    private List<Mob> getMobsLeashedByPlayer(Player player) {
-        List<Mob> leashedMobs = new ArrayList<>();
-        for (Entity entity : player.getNearbyEntities(10, 10, 10)) {
-            if (entity instanceof Mob mob) {
-                if (mob.isLeashed() && mob.getLeashHolder() instanceof Player holder && holder.equals(player)) {
+    private List<Mob> getMobsLeashedByPlayer(final Player player) {
+        final List<Mob> leashedMobs = new ArrayList<>();
+        for (final Entity entity : player.getNearbyEntities(10, 10, 10)) {
+            if (entity instanceof final Mob mob) {
+                if (mob.isLeashed() && mob.getLeashHolder() instanceof final Player holder && holder.equals(player)) {
                     leashedMobs.add(mob);
                 }
             }
@@ -158,13 +158,13 @@ public class LeashMobService {
      * @param location The location of the fence or leash hitch.
      * @return The list of mobs leashed to that fence.
      */
-    private List<Mob> getMobsLeashedToFence(Location location) {
-        List<Mob> leashedMobs = new ArrayList<>();
+    private List<Mob> getMobsLeashedToFence(final Location location) {
+        final List<Mob> leashedMobs = new ArrayList<>();
 
         // Find the leash hitch.
         LeashHitch leashHitch = null;
-        for (Entity entity : location.getWorld().getNearbyEntities(location, 1, 1, 1)) {
-            if (entity instanceof LeashHitch lh) {
+        for (final Entity entity : location.getWorld().getNearbyEntities(location, 1, 1, 1)) {
+            if (entity instanceof final LeashHitch lh) {
                 leashHitch = lh;
                 break;
             }
@@ -172,9 +172,9 @@ public class LeashMobService {
 
         // If there is a leash hitch, find all entities leashed to it.
         if (leashHitch != null) {
-            for (Entity entity : leashHitch.getWorld().getNearbyEntities(leashHitch.getLocation(), 10, 10, 10)) {
-                if (entity instanceof Mob mob) {
-                    if (mob.isLeashed() && mob.getLeashHolder() instanceof LeashHitch holder && holder.equals(leashHitch)) {
+            for (final Entity entity : leashHitch.getWorld().getNearbyEntities(leashHitch.getLocation(), 10, 10, 10)) {
+                if (entity instanceof final Mob mob) {
+                    if (mob.isLeashed() && mob.getLeashHolder() instanceof final LeashHitch holder && holder.equals(leashHitch)) {
                         leashedMobs.add(mob);
                     }
                 }
@@ -183,20 +183,20 @@ public class LeashMobService {
         return leashedMobs;
     }
 
-    private void transferMobsFromFenceToPlayer(Player player, Location fenceLocation) {
-        List<Mob> mobs = getMobsLeashedToFence(fenceLocation);
-        for (Mob mob : mobs) {
+    private void transferMobsFromFenceToPlayer(final Player player, final Location fenceLocation) {
+        final List<Mob> mobs = getMobsLeashedToFence(fenceLocation);
+        for (final Mob mob : mobs) {
             mob.setLeashHolder(player);
         }
     }
 
-    private void transferMobsFromPlayerToFence(Player player, Location fenceLocation) {
-        List<Mob> leashedMobs = getMobsLeashedByPlayer(player);
+    private void transferMobsFromPlayerToFence(final Player player, final Location fenceLocation) {
+        final List<Mob> leashedMobs = getMobsLeashedByPlayer(player);
 
         // Finding the leash hitch on the fence.
         LeashHitch leashHitch = null;
-        for (Entity entity : fenceLocation.getWorld().getNearbyEntities(fenceLocation, 1, 1, 1)) {
-            if (entity instanceof LeashHitch lh) {
+        for (final Entity entity : fenceLocation.getWorld().getNearbyEntities(fenceLocation, 1, 1, 1)) {
+            if (entity instanceof final LeashHitch lh) {
                 leashHitch = lh;
                 break;
             }
@@ -206,13 +206,13 @@ public class LeashMobService {
         if (leashHitch == null) {
             // The location that the hitch should be. Cloning as to not modify the fenceLocation value.
             // 0.5 is added to properly visually align the hitch.
-            Location hitchLocation = fenceLocation.clone().add(0.5, 0.5, 0.5);
+            final Location hitchLocation = fenceLocation.clone().add(0.5, 0.5, 0.5);
             leashHitch = (LeashHitch) fenceLocation.getWorld().spawnEntity(hitchLocation, EntityType.LEASH_KNOT);
-            for (Mob mob : leashedMobs) {
+            for (final Mob mob : leashedMobs) {
                 mob.setLeashHolder(leashHitch);
             }
         } else {
-            for (Mob mob : leashedMobs) {
+            for (final Mob mob : leashedMobs) {
                 mob.setLeashHolder(leashHitch);
             }
         }

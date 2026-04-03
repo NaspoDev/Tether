@@ -4,13 +4,14 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import dev.naspo.tether.Tether;
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 public class ResidenceIntegration extends ToggleableIntegration {
     private Residence residenceAPI;
 
-    public ResidenceIntegration(Tether tetherPlugin) {
+    public ResidenceIntegration(final Tether tetherPlugin) {
         super(tetherPlugin, "Residence", "residence");
     }
 
@@ -21,13 +22,14 @@ public class ResidenceIntegration extends ToggleableIntegration {
     }
 
     @Override
-    public boolean canLeash(LivingEntity clicked, Player player) {
-        ClaimedResidence residence = residenceAPI.getResidenceManager().getByLoc(clicked.getLocation());
+    public boolean canLeash(final Location location, final Player player) {
+        final ClaimedResidence residence = residenceAPI.getResidenceManager().getByLoc(location);
 
         if (residence != null) {
-            ResidencePermissions perms = residence.getPermissions();
+            final ResidencePermissions perms = residence.getPermissions();
             return perms.playerHas(player, "leash", true);
         }
         return true;
     }
+
 }

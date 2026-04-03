@@ -21,7 +21,7 @@ public class LeashPlayerService {
     private final Tether plugin;
     private final IntegrationManager integrationManager;
 
-    public LeashPlayerService(Tether plugin, IntegrationManager integrationManager) {
+    public LeashPlayerService(final Tether plugin, final IntegrationManager integrationManager) {
         this.plugin = plugin;
         this.integrationManager = integrationManager;
     }
@@ -35,7 +35,7 @@ public class LeashPlayerService {
      * @throws NoPermissionException if the player does not have permission.
      * @throws LeashException        when the leash operation fails for a given reason (LeashErrorType).
      */
-    public void playerLeashPlayer(Player player, Player target) throws NoPermissionException, LeashException {
+    public void playerLeashPlayer(final Player player, final Player target) throws NoPermissionException, LeashException {
         // Permission check. ("tether.use.players" is deprecated, here for backwards compatibility).
         if (!player.hasPermission("tether.leashplayers") &&
                 !player.hasPermission("tether.use.players")) throw new NoPermissionException();
@@ -57,7 +57,7 @@ public class LeashPlayerService {
         }
 
         // Claim checks.
-        if (!integrationManager.canLeash(target, player)) {
+        if (!integrationManager.canLeash(target.getLocation(), player)) {
             throw new LeashException(LeashErrorType.LAND_PROTECTED);
         }
 
@@ -70,11 +70,11 @@ public class LeashPlayerService {
 
         // At this point we can actually leash the player.
 
-        World world = target.getWorld();
-        Location loc = target.getLocation();
+        final World world = target.getWorld();
+        final Location loc = target.getLocation();
 
         // Keeps track of leads in the leasher's hand. (Prevents duping).
-        int leads;
+        final int leads;
 
         // If they are holding a lead...
         if (player.getInventory().getItemInMainHand().getType().equals(Material.LEAD)) {
@@ -84,7 +84,7 @@ public class LeashPlayerService {
             // due to the way the event works.
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 // Spawn a chicken (set invisible, invulnerable, etc)
-                LivingEntity mob = (LivingEntity) world.spawnEntity(loc, EntityType.CHICKEN);
+                final LivingEntity mob = (LivingEntity) world.spawnEntity(loc, EntityType.CHICKEN);
                 mob.setMetadata("naspodev_tether_plugin", new FixedMetadataValue(plugin, "_"));
                 mob.setInvisible(true);
                 mob.setInvulnerable(true);
@@ -105,7 +105,7 @@ public class LeashPlayerService {
                 }
 
                 // If a lead wasn't removed from the leasher's inventory, remove one.
-                ItemStack lead = new ItemStack(Material.LEAD, 1);
+                final ItemStack lead = new ItemStack(Material.LEAD, 1);
                 if (player.getInventory().getItemInMainHand().getAmount() == (leads - 1)) {
                     return;
                 }
@@ -115,14 +115,14 @@ public class LeashPlayerService {
     }
 
     // Checks if the mob being dismounted is the plugin's, then sets its health to 0.
-    public void onDismountEscapable(EntityDismountEvent event) {
+    public void onDismountEscapable(final EntityDismountEvent event) {
         if (event.getDismounted().hasMetadata("naspodev_tether_plugin")) {
             ((LivingEntity) event.getDismounted()).setHealth(0);
         }
     }
 
     // Checks if the mob being dismounted is the plugin's, then cancels the event.
-    public void onDismountNotEscapable(EntityDismountEvent event) {
+    public void onDismountNotEscapable(final EntityDismountEvent event) {
         if (event.getDismounted().hasMetadata("naspodev_tether_plugin")) {
             event.setCancelled(true);
         }

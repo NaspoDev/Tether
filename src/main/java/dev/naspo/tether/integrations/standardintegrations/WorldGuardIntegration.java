@@ -23,7 +23,7 @@ public class WorldGuardIntegration extends Integration {
     private FlagRegistry flagRegistry;
     private StateFlag leashFlag;
 
-    public WorldGuardIntegration(Tether tetherPlugin) {
+    public WorldGuardIntegration(final Tether tetherPlugin) {
         super(tetherPlugin, "WorldGuard");
     }
 
@@ -35,23 +35,23 @@ public class WorldGuardIntegration extends Integration {
     }
 
     @Override
-    public boolean canLeash(LivingEntity clicked, Player player) {
+    public boolean canLeash(final Location location, final Player player) {
         // WorldGuard uses their own custom Player, Location, and World objects, so I am converting them here.
-        LocalPlayer wgLocalPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
-        com.sk89q.worldedit.util.Location wgClickedLocation = BukkitAdapter.adapt(clicked.getLocation());
-        com.sk89q.worldedit.world.World wgClickedWorld = BukkitAdapter.adapt(clicked.getWorld());
+        final LocalPlayer wgLocalPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
+        final com.sk89q.worldedit.util.Location wgLocation = BukkitAdapter.adapt(location);
+        final com.sk89q.worldedit.world.World wgWorld = BukkitAdapter.adapt(location.getWorld());
 
         // If they have WorldGuard region bypass permission, return true.
-        boolean canBypass = worldGuardAPI.getPlatform().getSessionManager().hasBypass(wgLocalPlayer, wgClickedWorld);
+        final boolean canBypass = worldGuardAPI.getPlatform().getSessionManager().hasBypass(wgLocalPlayer, wgWorld);
         if (canBypass) {
             return true;
         }
 
         // Region data can be accessed via the RegionContainer object.
-        RegionContainer regionContainer = worldGuardAPI.getPlatform().getRegionContainer();
+        final RegionContainer regionContainer = worldGuardAPI.getPlatform().getRegionContainer();
 
-        // Query the state of our custom leash StateFlag at the clicked entity's location for a player.
-        return regionContainer.createQuery().testState(wgClickedLocation, wgLocalPlayer, leashFlag);
+        // Query the state of our custom leash StateFlag at the location for a player.
+        return regionContainer.createQuery().testState(wgLocation, wgLocalPlayer, leashFlag);
     }
 
     /**
@@ -63,13 +63,13 @@ public class WorldGuardIntegration extends Integration {
         final String LEASH_FLAG_STRING = "leash";
 
         try {
-            StateFlag stateFlag = new StateFlag(LEASH_FLAG_STRING, true);
+            final StateFlag stateFlag = new StateFlag(LEASH_FLAG_STRING, true);
             flagRegistry.register(stateFlag);
             this.leashFlag = stateFlag;
             return true;
-        } catch (FlagConflictException e) {
+        } catch (final FlagConflictException e) {
             // If there is a flag conflict, log that as an error to the console.
-            Flag<?> flag = flagRegistry.get(LEASH_FLAG_STRING);
+            final Flag<?> flag = flagRegistry.get(LEASH_FLAG_STRING);
             if (flag != null) {
                 tetherPlugin.getLogger().warning("Couldn't register the 'leash' WorldGuard flag! It looks like another " +
                         "plugin registered it. WorldGuard integration with Tether will not work.");
