@@ -18,19 +18,25 @@ public class GriefPreventionIntegration extends ToggleableIntegration {
 
     @Override
     protected boolean onEnable() {
-        dataStore = GriefPrevention.instance.dataStore;
         return true;
     }
 
     @Override
     public boolean canLeash(final Location location, final Player player) {
-        final Claim claim = dataStore.getClaimAt(location, true, null);
+        final Claim claim = getDataStore().getClaimAt(location, true, null);
         // If there is a claim here, return true if the player has explicit permission or is ignoring claims.
         if (claim != null) {
             return claim.hasExplicitPermission(player.getUniqueId(), ClaimPermission.Access) ||
-                    dataStore.getPlayerData(player.getUniqueId()).ignoreClaims;
+                    getDataStore().getPlayerData(player.getUniqueId()).ignoreClaims;
         }
         // Otherwise always return true if there is no claim.
         return true;
+    }
+
+    public DataStore getDataStore() {
+        if (dataStore == null) {
+            dataStore = GriefPrevention.instance.dataStore;
+        }
+        return dataStore;
     }
 }

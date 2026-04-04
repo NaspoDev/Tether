@@ -23,11 +23,11 @@ public final class Tether extends JavaPlugin {
     @Override
     public void onLoad() {
         instantiateClasses();
+        integrationManager.enableIntegrations();
     }
 
     @Override
     public void onEnable() {
-        integrationManager.enableIntegrations();
 
         this.saveDefaultConfig();
         this.getConfig().options().copyDefaults(true);

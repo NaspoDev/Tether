@@ -3,13 +3,14 @@ package dev.naspo.tether.services;
 import dev.naspo.tether.Tether;
 import dev.naspo.tether.integrations.Integration;
 import dev.naspo.tether.integrations.standardintegrations.WorldGuardIntegration;
-import dev.naspo.tether.integrations.toggleableintegrations.*;
+import dev.naspo.tether.integrations.toggleableintegrations.GriefDefenderIntegration;
+import dev.naspo.tether.integrations.toggleableintegrations.GriefPreventionIntegration;
+import dev.naspo.tether.integrations.toggleableintegrations.LandsIntegration;
+import dev.naspo.tether.integrations.toggleableintegrations.ResidenceIntegration;
+import dev.naspo.tether.integrations.toggleableintegrations.TownyIntegration;
 import org.bukkit.Location;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 // Manages integrations.
