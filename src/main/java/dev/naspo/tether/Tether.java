@@ -2,7 +2,12 @@ package dev.naspo.tether;
 
 import dev.naspo.tether.commands.Commands;
 import dev.naspo.tether.commands.TabCompleter;
-import dev.naspo.tether.listeners.*;
+import dev.naspo.tether.listeners.EntityDeathListener;
+import dev.naspo.tether.listeners.EntityDismountListener;
+import dev.naspo.tether.listeners.EntityUnleashListener;
+import dev.naspo.tether.listeners.PlayerInteractAtEntityListener;
+import dev.naspo.tether.listeners.PlayerInteractListener;
+import dev.naspo.tether.listeners.PlayerLeashEntityListener;
 import dev.naspo.tether.services.IntegrationManager;
 import dev.naspo.tether.services.LeashMobService;
 import dev.naspo.tether.services.LeashPlayerService;
@@ -18,11 +23,12 @@ public final class Tether extends JavaPlugin {
     @Override
     public void onLoad() {
         instantiateClasses();
-        integrationManager.enableIntegrations();
     }
 
     @Override
     public void onEnable() {
+        integrationManager.enableIntegrations();
+
         this.saveDefaultConfig();
         this.getConfig().options().copyDefaults(true);
         this.saveConfig();
