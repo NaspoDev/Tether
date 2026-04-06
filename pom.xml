@@ -6,13 +6,13 @@
 
     <groupId>dev.naspo</groupId>
     <artifactId>Tether</artifactId>
-    <version>2.13.0</version>
+    <version>2.13.1</version>
     <packaging>jar</packaging>
 
     <name>Tether</name>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>25</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -87,7 +87,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.21.11-R0.2-SNAPSHOT</version>
+            <version>26.1.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
