@@ -2,7 +2,12 @@ package dev.naspo.tether;
 
 import dev.naspo.tether.commands.Commands;
 import dev.naspo.tether.commands.TabCompleter;
-import dev.naspo.tether.listeners.*;
+import dev.naspo.tether.listeners.EntityDeathListener;
+import dev.naspo.tether.listeners.EntityDismountListener;
+import dev.naspo.tether.listeners.EntityUnleashListener;
+import dev.naspo.tether.listeners.PlayerInteractAtEntityListener;
+import dev.naspo.tether.listeners.PlayerInteractListener;
+import dev.naspo.tether.listeners.PlayerLeashEntityListener;
 import dev.naspo.tether.services.IntegrationManager;
 import dev.naspo.tether.services.LeashMobService;
 import dev.naspo.tether.services.LeashPlayerService;
@@ -23,6 +28,7 @@ public final class Tether extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
         this.saveDefaultConfig();
         this.getConfig().options().copyDefaults(true);
         this.saveConfig();
@@ -46,8 +52,8 @@ public final class Tether extends JavaPlugin {
 
     private void registerEvents() {
         this.getServer().getPluginManager().registerEvents(new PlayerInteractAtEntityListener(this, leashMobService, leashPlayerService), this);
-        this.getServer().getPluginManager().registerEvents(new PlayerInteractListener(leashMobService), this);
-        this.getServer().getPluginManager().registerEvents(new PlayerLeashEntityListener(leashMobService), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerInteractListener(leashMobService, integrationManager), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerLeashEntityListener(), this);
         this.getServer().getPluginManager().registerEvents(new EntityDeathListener(), this);
         this.getServer().getPluginManager().registerEvents(new EntityDismountListener(this, leashPlayerService), this);
         this.getServer().getPluginManager().registerEvents(new EntityUnleashListener(), this);

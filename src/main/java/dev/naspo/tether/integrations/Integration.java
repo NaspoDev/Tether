@@ -1,7 +1,7 @@
 package dev.naspo.tether.integrations;
 
 import dev.naspo.tether.Tether;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public abstract class Integration {
@@ -9,7 +9,7 @@ public abstract class Integration {
     protected final String pluginName;
     protected boolean enabled = false;
 
-    public Integration(Tether tetherPlugin, String pluginName) {
+    public Integration(final Tether tetherPlugin, final String pluginName) {
         this.tetherPlugin = tetherPlugin;
         this.pluginName = pluginName;
     }
@@ -43,11 +43,11 @@ public abstract class Integration {
     }
 
     /**
-     * Checks if the clicked LivingEntity can be leashed based on this integration.
+     * Checks if a mob can be leashed at the given location based on this integration.
      *
-     * @param clicked The clicked LivingEntity. (Includes Player).
-     * @param player  The player trying to leash.
-     * @return true if the player is permitted to leash the clicked LivingEntity.
+     * @param location The location the mob is trying to be leashed at.
+     * @param player   The player trying to leash.
+     * @return true if the player is permitted to leash a mob at the given location.
      */
-    public abstract boolean canLeash(LivingEntity clicked, Player player);
+    public abstract boolean canLeash(Location location, Player player);
 }

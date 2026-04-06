@@ -3,22 +3,22 @@ package dev.naspo.tether.services;
 import dev.naspo.tether.Tether;
 import dev.naspo.tether.integrations.Integration;
 import dev.naspo.tether.integrations.standardintegrations.WorldGuardIntegration;
-import dev.naspo.tether.integrations.toggleableintegrations.*;
-import org.bukkit.entity.LivingEntity;
+import dev.naspo.tether.integrations.toggleableintegrations.GriefDefenderIntegration;
+import dev.naspo.tether.integrations.toggleableintegrations.GriefPreventionIntegration;
+import dev.naspo.tether.integrations.toggleableintegrations.LandsIntegration;
+import dev.naspo.tether.integrations.toggleableintegrations.ResidenceIntegration;
+import dev.naspo.tether.integrations.toggleableintegrations.TownyIntegration;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 // Manages integrations.
 public class IntegrationManager {
-    private Tether plugin;
 
     private final List<Integration> integrations;
 
-    public IntegrationManager(Tether plugin) {
-        this.plugin = plugin;
+    public IntegrationManager(final Tether plugin) {
 
         // Creating an immutable list of integrations (via List.of()).
         // Important: Ordering of integrations here is important.
@@ -34,15 +34,15 @@ public class IntegrationManager {
     }
 
     public void enableIntegrations() {
-        for (Integration integration : integrations) {
+        for (final Integration integration : integrations) {
             integration.enable();
         }
     }
 
-    public boolean canLeash(LivingEntity clicked, Player player) {
-        for (Integration integration : integrations) {
+    public boolean canLeash(final Location location, final Player player) {
+        for (final Integration integration : integrations) {
             if (integration.isEnabled()) {
-                if (!integration.canLeash(clicked, player)) {
+                if (!integration.canLeash(location, player)) {
                     return false;
                 }
             }
