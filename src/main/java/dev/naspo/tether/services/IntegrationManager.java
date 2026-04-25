@@ -4,6 +4,7 @@ import dev.naspo.tether.Tether;
 import dev.naspo.tether.integrations.Integration;
 import dev.naspo.tether.integrations.standardintegrations.WorldGuardIntegration;
 import dev.naspo.tether.integrations.toggleableintegrations.*;
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -39,10 +40,10 @@ public class IntegrationManager {
         }
     }
 
-    public boolean canLeash(LivingEntity clicked, Player player) {
+    public boolean canLeash(Location location, Player player) {
         for (Integration integration : integrations) {
             if (integration.isEnabled()) {
-                if (!integration.canLeash(clicked, player)) {
+                if (!integration.canLeash(location, player)) {
                     return false;
                 }
             }

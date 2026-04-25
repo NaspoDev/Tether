@@ -45,7 +45,7 @@ public class LeashMobService {
         if (isEntityRestricted(entity)) throw new LeashException(LeashErrorType.MOB_RESTRICTED);
 
         // Integration checks.
-        if (!integrationManager.canLeash(entity, player)) {
+        if (!integrationManager.canLeash(entity.getLocation(), player)) {
             throw new LeashException(LeashErrorType.LAND_PROTECTED);
         }
 

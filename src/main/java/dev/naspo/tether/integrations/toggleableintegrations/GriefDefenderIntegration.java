@@ -5,7 +5,7 @@ import com.griefdefender.api.GriefDefender;
 import com.griefdefender.api.claim.Claim;
 import com.griefdefender.api.claim.TrustTypes;
 import dev.naspo.tether.Tether;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class GriefDefenderIntegration extends ToggleableIntegration {
@@ -22,8 +22,8 @@ public class GriefDefenderIntegration extends ToggleableIntegration {
     }
 
     @Override
-    public boolean canLeash(LivingEntity clicked, Player player) {
-        Claim claim = griefDefenderAPI.getClaimAt(clicked.getLocation());
+    public boolean canLeash(Location location, Player player) {
+        Claim claim = griefDefenderAPI.getClaimAt(location);
 
         if (claim != null) {
             if (claim.isWilderness()) {

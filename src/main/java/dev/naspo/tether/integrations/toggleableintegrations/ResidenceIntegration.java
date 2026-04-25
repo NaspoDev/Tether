@@ -4,6 +4,7 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import dev.naspo.tether.Tether;
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -21,8 +22,8 @@ public class ResidenceIntegration extends ToggleableIntegration {
     }
 
     @Override
-    public boolean canLeash(LivingEntity clicked, Player player) {
-        ClaimedResidence residence = residenceAPI.getResidenceManager().getByLoc(clicked.getLocation());
+    public boolean canLeash(Location location, Player player) {
+        ClaimedResidence residence = residenceAPI.getResidenceManager().getByLoc(location);
 
         if (residence != null) {
             ResidencePermissions perms = residence.getPermissions();

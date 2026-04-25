@@ -3,6 +3,7 @@ package dev.naspo.tether.integrations.toggleableintegrations;
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.object.Town;
 import dev.naspo.tether.Tether;
+import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -20,10 +21,10 @@ public class TownyIntegration extends ToggleableIntegration {
     }
 
     @Override
-    public boolean canLeash(LivingEntity clicked, Player player) {
+    public boolean canLeash(Location location, Player player) {
         Town town;
         try {
-            town = townyAPI.getTownBlock(clicked.getLocation()).getTown();
+            town = townyAPI.getTownBlock(location).getTown();
         } catch (Exception e) {
             return true;
         }

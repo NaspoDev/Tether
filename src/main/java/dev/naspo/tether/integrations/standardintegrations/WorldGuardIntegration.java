@@ -4,18 +4,14 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
-import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
-import com.sk89q.worldguard.protection.regions.RegionQuery;
 import dev.naspo.tether.Tether;
 import dev.naspo.tether.integrations.Integration;
 import org.bukkit.Location;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 public class WorldGuardIntegration extends Integration {
@@ -35,14 +31,14 @@ public class WorldGuardIntegration extends Integration {
     }
 
     @Override
-    public boolean canLeash(LivingEntity clicked, Player player) {
+    public boolean canLeash(Location location, Player player) {
         // WorldGuard uses their own custom Player, Location, and World objects, so I am converting them here.
         LocalPlayer wgLocalPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
-        com.sk89q.worldedit.util.Location wgClickedLocation = BukkitAdapter.adapt(clicked.getLocation());
-        com.sk89q.worldedit.world.World wgClickedWorld = BukkitAdapter.adapt(clicked.getWorld());
+        com.sk89q.worldedit.util.Location wgLocation = BukkitAdapter.adapt(location);
+        com.sk89q.worldedit.world.World wgWorld = BukkitAdapter.adapt(location.getWorld());
 
         // If they have WorldGuard region bypass permission, return true.
-        boolean canBypass = worldGuardAPI.getPlatform().getSessionManager().hasBypass(wgLocalPlayer, wgClickedWorld);
+        boolean canBypass = worldGuardAPI.getPlatform().getSessionManager().hasBypass(wgLocalPlayer, wgWorld);
         if (canBypass) {
             return true;
         }
@@ -51,7 +47,7 @@ public class WorldGuardIntegration extends Integration {
         RegionContainer regionContainer = worldGuardAPI.getPlatform().getRegionContainer();
 
         // Query the state of our custom leash StateFlag at the clicked entity's location for a player.
-        return regionContainer.createQuery().testState(wgClickedLocation, wgLocalPlayer, leashFlag);
+        return regionContainer.createQuery().testState(wgLocation, wgLocalPlayer, leashFlag);
     }
 
     /**
