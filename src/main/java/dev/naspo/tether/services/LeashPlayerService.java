@@ -56,7 +56,7 @@ public class LeashPlayerService {
             return;
         }
 
-        // Claim checks.
+        // Integration checks.
         if (!integrationManager.canLeash(target.getLocation(), player)) {
             throw new LeashException(LeashErrorType.LAND_PROTECTED);
         }

@@ -44,10 +44,8 @@ public class LeashMobService {
         // Blacklist/whitelist check.
         if (isEntityRestricted(entity)) throw new LeashException(LeashErrorType.MOB_RESTRICTED);
 
-        // Integration checks.
-        if (!integrationManager.canLeash(entity.getLocation(), player)) {
-            throw new LeashException(LeashErrorType.LAND_PROTECTED);
-        }
+        // Land protection integration check.
+        checkLandProtection(entity.getLocation(), player);
 
         // If the entity is a Citizens NPC, check if it can be leashed.
         if (entity.hasMetadata("NPC")) {
@@ -84,7 +82,10 @@ public class LeashMobService {
      * @param player   The player that right-clicked the fence or leash hitch.
      * @param location The location of the fence or leash hitch.
      */
-    public void handleFenceLeashing(Player player, Location location) {
+    public void handleFenceLeashing(Player player, Location location) throws LeashException {
+        // Land protection integration check.
+        checkLandProtection(location, player);
+
         // Transfer mobs from fence to player:
         // First wait for the PlayerLeashEntityEvent to finish then set the player as the leash holder for the rest of
         // the mobs still leashed to the fence. (The mobs still leashed to the fence at that point would be mobs not
@@ -107,9 +108,12 @@ public class LeashMobService {
      * @param player The player who sneak-interacted with an entity.
      * @param entity The LivingEntity that was sneak-interacted with. (Not `Mob` because NPCs are supported).
      */
-    public void handleSneakInteract(Player player, LivingEntity entity) {
+    public void handleSneakInteract(Player player, LivingEntity entity) throws LeashException {
         if (entity instanceof Player) return;
         if (entity.isLeashed() && entity.getLeashHolder().equals(player)) return;
+
+        // Land protection integration check.
+        checkLandProtection(entity.getLocation(), player);
 
         for (Mob mob : getMobsLeashedByPlayer(player)) {
             mob.setLeashHolder(entity);
@@ -140,6 +144,18 @@ public class LeashMobService {
             }
         }
         return false;
+    }
+
+    /**
+     * Checks if leashing is allowed by land protection integrations.
+     * @param location The location where leashing would occur. (i.e. the location of a clicked LivingEntity or fence post).
+     * @param player The player trying to leash.
+     * @throws LeashException
+     */
+    private void checkLandProtection(Location location, Player player) throws LeashException {
+        if (!integrationManager.canLeash(location, player)) {
+            throw new LeashException(LeashErrorType.LAND_PROTECTED);
+        }
     }
 
     private List<Mob> getMobsLeashedByPlayer(Player player) {

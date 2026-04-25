@@ -59,7 +59,15 @@ public class PlayerInteractAtEntityListener implements Listener {
 
         // If they are sneaking which right-clicking the mob, try leashing mobs together.
         if (player.isSneaking()) {
-            leashMobService.handleSneakInteract(player, entity);
+            try {
+                leashMobService.handleSneakInteract(player, entity);
+            } catch (LeashException e) {
+                // Only need to explicitly handle the LAND_PROTECTED LeashException type.
+                if (e.getType() == LeashErrorType.LAND_PROTECTED) {
+                    event.setCancelled(true);
+                    player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) + plugin.getConfig().getString(
+                            "messages.target-mob-in-protected-land")));
+            }
         }
 
         if (entity.isLeashed()) {

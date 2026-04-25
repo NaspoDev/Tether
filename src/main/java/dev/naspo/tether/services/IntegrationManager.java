@@ -53,6 +53,13 @@ public class IntegrationManager {
         }
     }
 
+    /**
+     * Checks if leashing is permitted by all enabled integrations.
+     *
+     * @param location The location where leashing would occur. (i.e. the location of a clicked LivingEntity or fence post).
+     * @param player  The player trying to leash.
+     * @return true if the player is permitted to leash at that location.
+     */
     public boolean canLeash(Location location, Player player) {
         for (Integration integration : integrations) {
             if (integration.isEnabled()) {
