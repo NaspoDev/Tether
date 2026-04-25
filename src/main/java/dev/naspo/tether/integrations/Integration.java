@@ -15,6 +15,11 @@ public abstract class Integration {
     }
 
     /**
+     * Returns the Spigot lifecycle phase in which this integration should be enabled in.
+     */
+    public abstract IntegrationEnablePhase getEnablePhase();
+
+    /**
      * Enables the integration (if it should).
      *
      * @return true if the integration was enabled.

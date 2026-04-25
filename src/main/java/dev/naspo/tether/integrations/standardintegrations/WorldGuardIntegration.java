@@ -11,6 +11,7 @@ import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import dev.naspo.tether.Tether;
 import dev.naspo.tether.integrations.Integration;
+import dev.naspo.tether.integrations.IntegrationEnablePhase;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -21,6 +22,11 @@ public class WorldGuardIntegration extends Integration {
 
     public WorldGuardIntegration(Tether tetherPlugin) {
         super(tetherPlugin, "WorldGuard");
+    }
+
+    @Override
+    public IntegrationEnablePhase getEnablePhase() {
+        return IntegrationEnablePhase.ON_LOAD;
     }
 
     @Override

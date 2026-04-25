@@ -5,6 +5,7 @@ import com.griefdefender.api.GriefDefender;
 import com.griefdefender.api.claim.Claim;
 import com.griefdefender.api.claim.TrustTypes;
 import dev.naspo.tether.Tether;
+import dev.naspo.tether.integrations.IntegrationEnablePhase;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -13,6 +14,11 @@ public class GriefDefenderIntegration extends ToggleableIntegration {
 
     public GriefDefenderIntegration(Tether tetherPlugin) {
         super(tetherPlugin, "GriefDefender", "griefdefender");
+    }
+
+    @Override
+    public IntegrationEnablePhase getEnablePhase() {
+        return IntegrationEnablePhase.ON_ENABLE;
     }
 
     @Override

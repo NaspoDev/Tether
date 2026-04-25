@@ -1,6 +1,7 @@
 package dev.naspo.tether.integrations.toggleableintegrations;
 
 import dev.naspo.tether.Tether;
+import dev.naspo.tether.integrations.IntegrationEnablePhase;
 import me.angeschossen.lands.api.land.Area;
 import me.angeschossen.lands.api.land.Land;
 import org.bukkit.Location;
@@ -12,6 +13,11 @@ public class LandsIntegration extends ToggleableIntegration {
 
     public LandsIntegration(Tether tetherPlugin) {
         super(tetherPlugin, "Lands", "lands");
+    }
+
+    @Override
+    public IntegrationEnablePhase getEnablePhase() {
+        return IntegrationEnablePhase.ON_ENABLE;
     }
 
     @Override

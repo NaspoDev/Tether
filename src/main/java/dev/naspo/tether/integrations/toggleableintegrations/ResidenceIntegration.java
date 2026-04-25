@@ -4,6 +4,7 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import dev.naspo.tether.Tether;
+import dev.naspo.tether.integrations.IntegrationEnablePhase;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -13,6 +14,11 @@ public class ResidenceIntegration extends ToggleableIntegration {
 
     public ResidenceIntegration(Tether tetherPlugin) {
         super(tetherPlugin, "Residence", "residence");
+    }
+
+    @Override
+    public IntegrationEnablePhase getEnablePhase() {
+        return IntegrationEnablePhase.ON_ENABLE;
     }
 
     @Override

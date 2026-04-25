@@ -1,6 +1,7 @@
 package dev.naspo.tether.integrations.toggleableintegrations;
 
 import dev.naspo.tether.Tether;
+import dev.naspo.tether.integrations.IntegrationEnablePhase;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.ClaimPermission;
 import me.ryanhamshire.GriefPrevention.DataStore;
@@ -13,6 +14,11 @@ public class GriefPreventionIntegration extends ToggleableIntegration {
 
     public GriefPreventionIntegration(Tether tetherPlugin) {
         super(tetherPlugin, "GriefPrevention", "griefprevention");
+    }
+
+    @Override
+    public IntegrationEnablePhase getEnablePhase() {
+        return IntegrationEnablePhase.ON_ENABLE;
     }
 
     @Override

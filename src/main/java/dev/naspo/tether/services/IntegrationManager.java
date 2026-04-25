@@ -2,6 +2,7 @@ package dev.naspo.tether.services;
 
 import dev.naspo.tether.Tether;
 import dev.naspo.tether.integrations.Integration;
+import dev.naspo.tether.integrations.IntegrationEnablePhase;
 import dev.naspo.tether.integrations.standardintegrations.WorldGuardIntegration;
 import dev.naspo.tether.integrations.toggleableintegrations.*;
 import org.bukkit.Location;
@@ -34,9 +35,21 @@ public class IntegrationManager {
         );
     }
 
-    public void enableIntegrations() {
+    // Enables integrations that should be enabled during the onLoad plugin lifecycle phase.
+    public void enableIntegrationsOnLoad() {
         for (Integration integration : integrations) {
-            integration.enable();
+            if (integration.getEnablePhase() == IntegrationEnablePhase.ON_LOAD) {
+                integration.enable();
+            }
+        }
+    }
+
+    // Enables integrations that should be enabled during the onEnable plugin lifecycle phase.
+    public void enableIntegrationsOnEnable() {
+        for (Integration integration : integrations) {
+            if (integration.getEnablePhase() == IntegrationEnablePhase.ON_ENABLE) {
+                integration.enable();
+            }
         }
     }
 

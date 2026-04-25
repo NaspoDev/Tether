@@ -13,12 +13,11 @@ public final class Tether extends JavaPlugin {
     private LeashMobService leashMobService;
     private LeashPlayerService leashPlayerService;
 
-    // WorldGuard integration requires that custom flags are registered during onLoad(), i.e. before the plugin
-    // is enabled. (I'm also just enabling all integrations here are this point so it's cleaner).
     @Override
     public void onLoad() {
         instantiateClasses();
-        integrationManager.enableIntegrations();
+        // Some integrations need to be enabled during the onLoad lifecycle phase.
+        integrationManager.enableIntegrationsOnLoad();
     }
 
     @Override
@@ -28,6 +27,8 @@ public final class Tether extends JavaPlugin {
         this.saveConfig();
 
         this.getLogger().info("Tether has been enabled!");
+
+        integrationManager.enableIntegrationsOnEnable();
 
         registerEvents();
         registerCommands();
