@@ -62,33 +62,24 @@ public class PlayerInteractAtEntityListener implements Listener {
             try {
                 leashMobService.handleSneakInteract(player, entity);
             } catch (LeashException e) {
-                // Only need to explicitly handle the LAND_PROTECTED LeashException type.
-                if (e.getType() == LeashErrorType.LAND_PROTECTED) {
-                    event.setCancelled(true);
-                    player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) + plugin.getConfig().getString(
-                            "messages.target-mob-in-protected-land")));
+                handleLeashException(event, e);
             }
-        }
 
-        if (entity.isLeashed()) {
-            if (entity.getLeashHolder().equals(player)) {
-                event.setCancelled(true);
-            }
-            return;
-        }
-
-        // If they have a lead in their hand we can try to leash the mob.
-        if (player.getInventory().getItemInMainHand().getType().equals(Material.LEAD)) {
-            try {
-                leashMobService.playerLeashMob(player, entity);
-            } catch (NoPermissionException e) {
-                event.setCancelled(true);
-            } catch (LeashException e) {
-                // Only need to explicitly handle the LAND_PROTECTED LeashException type.
-                if (e.getType() == LeashErrorType.LAND_PROTECTED) {
+            if (entity.isLeashed()) {
+                if (entity.getLeashHolder().equals(player)) {
                     event.setCancelled(true);
-                    player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) + plugin.getConfig().getString(
-                            "messages.target-mob-in-protected-land")));
+                }
+                return;
+            }
+
+            // If they have a lead in their hand we can try to leash the mob.
+            if (player.getInventory().getItemInMainHand().getType().equals(Material.LEAD)) {
+                try {
+                    leashMobService.playerLeashMob(player, entity);
+                } catch (NoPermissionException e) {
+                    event.setCancelled(true);
+                } catch (LeashException e) {
+                    handleLeashException(event, e);
                 }
             }
         }
@@ -115,17 +106,23 @@ public class PlayerInteractAtEntityListener implements Listener {
             leashPlayerService.playerLeashPlayer(player, (Player) event.getRightClicked());
         } catch (NoPermissionException ignored) {
         } catch (LeashException e) {
-            switch (e.getType()) {
-                case TARGET_PLAYER_RIDING -> player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) +
-                        plugin.getConfig().getString("messages.cannot-leash-riding-player")));
-                case LAND_PROTECTED -> {
-                    event.setCancelled(true);
-                    player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) + plugin.getConfig().getString(
-                            "messages.target-player-in-protected-land")));
-                }
-                case PREVENT_NESTING -> player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) +
-                        plugin.getConfig().getString("messages.prevent-nesting")));
+            handleLeashException(event, e);
+        }
+    }
+
+    private void handleLeashException(PlayerInteractAtEntityEvent event, LeashException exception) {
+        Player player = event.getPlayer();
+
+        switch (exception.getType()) {
+            case TARGET_PLAYER_RIDING -> player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) +
+                    plugin.getConfig().getString("messages.cannot-leash-riding-player")));
+            case LAND_PROTECTED -> {
+                event.setCancelled(true);
+                player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) + plugin.getConfig().getString(
+                        "messages.leash-target-in-protected-land")));
             }
+            case PREVENT_NESTING -> player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) +
+                    plugin.getConfig().getString("messages.prevent-nesting")));
         }
     }
 }
