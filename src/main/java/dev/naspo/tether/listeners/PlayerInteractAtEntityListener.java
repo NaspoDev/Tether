@@ -1,9 +1,9 @@
 package dev.naspo.tether.listeners;
 
 import dev.naspo.tether.Tether;
-import dev.naspo.tether.Utils;
+import dev.naspo.tether.utils.ExceptionUtils;
+import dev.naspo.tether.utils.Utils;
 import dev.naspo.tether.exceptions.NoPermissionException;
-import dev.naspo.tether.exceptions.leashexception.LeashErrorType;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
 import dev.naspo.tether.services.LeashMobService;
 import dev.naspo.tether.services.LeashPlayerService;
@@ -57,12 +57,12 @@ public class PlayerInteractAtEntityListener implements Listener {
 
         Player player = event.getPlayer();
 
-        // If they are sneaking which right-clicking the mob, try leashing mobs together.
+        // If they are sneaking while right-clicking the mob, try leashing mobs together.
         if (player.isSneaking()) {
             try {
                 leashMobService.handleSneakInteract(player, entity);
             } catch (LeashException e) {
-                handleLeashException(event, e);
+                ExceptionUtils.handleLeashException(player, event, e, plugin);
             }
 
             if (entity.isLeashed()) {
@@ -79,7 +79,7 @@ public class PlayerInteractAtEntityListener implements Listener {
                 } catch (NoPermissionException e) {
                     event.setCancelled(true);
                 } catch (LeashException e) {
-                    handleLeashException(event, e);
+                    ExceptionUtils.handleLeashException(player, event, e, plugin);
                 }
             }
         }
@@ -89,7 +89,11 @@ public class PlayerInteractAtEntityListener implements Listener {
         if (!(event.getRightClicked() instanceof LeashHitch)) return;
         if (event.getHand() == EquipmentSlot.OFF_HAND) return;
 
-        leashMobService.handleFenceLeashing(event.getPlayer(), event.getRightClicked().getLocation());
+        try {
+            leashMobService.handleFenceLeashing(event.getPlayer(), event.getRightClicked().getLocation());
+        } catch (LeashException e) {
+            ExceptionUtils.handleLeashException(event.getPlayer(), event, e, plugin);
+        }
     }
 
     private void handlePlayerInteractAtPlayer(PlayerInteractAtEntityEvent event) {
@@ -106,23 +110,7 @@ public class PlayerInteractAtEntityListener implements Listener {
             leashPlayerService.playerLeashPlayer(player, (Player) event.getRightClicked());
         } catch (NoPermissionException ignored) {
         } catch (LeashException e) {
-            handleLeashException(event, e);
-        }
-    }
-
-    private void handleLeashException(PlayerInteractAtEntityEvent event, LeashException exception) {
-        Player player = event.getPlayer();
-
-        switch (exception.getType()) {
-            case TARGET_PLAYER_RIDING -> player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) +
-                    plugin.getConfig().getString("messages.cannot-leash-riding-player")));
-            case LAND_PROTECTED -> {
-                event.setCancelled(true);
-                player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) + plugin.getConfig().getString(
-                        "messages.leash-target-in-protected-land")));
-            }
-            case PREVENT_NESTING -> player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) +
-                    plugin.getConfig().getString("messages.prevent-nesting")));
+            ExceptionUtils.handleLeashException(player, event, e, plugin);
         }
     }
 }

@@ -1,7 +1,7 @@
 package dev.naspo.tether.services;
 
 import dev.naspo.tether.Tether;
-import dev.naspo.tether.Utils;
+import dev.naspo.tether.utils.Utils;
 import dev.naspo.tether.exceptions.NoPermissionException;
 import dev.naspo.tether.exceptions.leashexception.LeashErrorType;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
