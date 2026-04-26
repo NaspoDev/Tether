@@ -64,24 +64,26 @@ public class PlayerInteractAtEntityListener implements Listener {
             } catch (LeashException e) {
                 ExceptionUtils.handleLeashException(player, event, e, plugin);
             }
+            return;
+        }
 
-            if (entity.isLeashed()) {
-                if (entity.getLeashHolder().equals(player)) {
-                    event.setCancelled(true);
-                }
-                return;
+        if (entity.isLeashed()) {
+            if (entity.getLeashHolder().equals(player)) {
+                event.setCancelled(true);
+            }
+            return;
+        }
+
+        // If they have a lead in their hand we can try to leash the mob.
+        if (player.getInventory().getItemInMainHand().getType().equals(Material.LEAD)) {
+            try {
+                leashMobService.playerLeashMob(player, entity);
+            } catch (NoPermissionException e) {
+                event.setCancelled(true);
+            } catch (LeashException e) {
+                ExceptionUtils.handleLeashException(player, event, e, plugin);
             }
 
-            // If they have a lead in their hand we can try to leash the mob.
-            if (player.getInventory().getItemInMainHand().getType().equals(Material.LEAD)) {
-                try {
-                    leashMobService.playerLeashMob(player, entity);
-                } catch (NoPermissionException e) {
-                    event.setCancelled(true);
-                } catch (LeashException e) {
-                    ExceptionUtils.handleLeashException(player, event, e, plugin);
-                }
-            }
         }
     }
 
