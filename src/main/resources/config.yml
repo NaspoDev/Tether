@@ -34,7 +34,7 @@ hooks:
 
 # Messages
 messages:
-  prefix: "&8[&6&lTether&8] &r"
+  prefix: "&8[&6Tether&8] &r"
   reload: "&7Tether has been reloaded!"
   no-permission: "&cYou do not have permission!"
   leash-target-in-protected-land: "&7Leash target is in protected land."
