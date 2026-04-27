@@ -83,6 +83,14 @@ public class LeashMobService {
      * @param location The location of the fence or leash hitch.
      */
     public void handleFenceLeashing(Player player, Location location) throws LeashException {
+        List<Mob> mobsLeashedByPlayer = getMobsLeashedByPlayer(player);
+        List<Mob> mobsLeashedToFence = getMobsLeashedToFence(location);
+
+        // If the following condition is met, then this has nothing to do with fence leashing. Return.
+        if (mobsLeashedByPlayer.isEmpty() && mobsLeashedToFence.isEmpty()) {
+            return;
+        }
+
         // Land protection integration check.
         checkLandProtection(location, player);
 
@@ -90,13 +98,13 @@ public class LeashMobService {
         // First wait for the PlayerLeashEntityEvent to finish then set the player as the leash holder for the rest of
         // the mobs still leashed to the fence. (The mobs still leashed to the fence at that point would be mobs not
         // leashable by default).
-        if (getMobsLeashedByPlayer(player).isEmpty() && !getMobsLeashedToFence(location).isEmpty()) {
+        if (mobsLeashedByPlayer.isEmpty() && !mobsLeashedToFence.isEmpty()) {
             transferMobsFromFenceToPlayer(player, location);
             return;
         }
 
         // Leashing mobs to a fence:
-        if (!getMobsLeashedByPlayer(player).isEmpty()) {
+        if (!mobsLeashedByPlayer.isEmpty()) {
             transferMobsFromPlayerToFence(player, location);
         }
     }
