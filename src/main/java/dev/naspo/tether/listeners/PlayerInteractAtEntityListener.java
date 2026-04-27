@@ -33,11 +33,11 @@ public class PlayerInteractAtEntityListener implements Listener {
 
     @EventHandler
     private void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
-        Bukkit.getServer().broadcastMessage("EntityUnleashEvent Fired");
+        Bukkit.getServer().broadcastMessage("PlayerInteractAtEntityEvent Fired");
         // Including Living entity to include NPCs.
         if (event.getRightClicked() instanceof LivingEntity &&
                 !(event.getRightClicked() instanceof Player)) {
-            Bukkit.getServer().broadcastMessage("EntityUnleashEvent Fired");
+            Bukkit.getServer().broadcastMessage("player interacted at mob");
             handlePlayerInteractAtMob(event);
             return;
         }
@@ -71,8 +71,10 @@ public class PlayerInteractAtEntityListener implements Listener {
         }
 
         if (entity.isLeashed()) {
+            Bukkit.getServer().broadcastMessage("entity is leashed");
             if (entity.getLeashHolder().equals(player)) {
-                event.setCancelled(true);
+                Bukkit.getServer().broadcastMessage("player is the leasholder of the entity");
+//                event.setCancelled(true);
             }
             return;
         }
