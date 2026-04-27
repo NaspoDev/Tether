@@ -7,6 +7,7 @@ import dev.naspo.tether.exceptions.NoPermissionException;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
 import dev.naspo.tether.services.LeashMobService;
 import dev.naspo.tether.services.LeashPlayerService;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.LeashHitch;
 import org.bukkit.entity.LivingEntity;
@@ -32,9 +33,11 @@ public class PlayerInteractAtEntityListener implements Listener {
 
     @EventHandler
     private void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
+        Bukkit.getServer().broadcastMessage("EntityUnleashEvent Fired");
         // Including Living entity to include NPCs.
         if (event.getRightClicked() instanceof LivingEntity &&
                 !(event.getRightClicked() instanceof Player)) {
+            Bukkit.getServer().broadcastMessage("EntityUnleashEvent Fired");
             handlePlayerInteractAtMob(event);
             return;
         }
