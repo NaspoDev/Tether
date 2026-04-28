@@ -9,6 +9,7 @@ import dev.naspo.tether.services.LeashMobService;
 import dev.naspo.tether.services.LeashPlayerService;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LeashHitch;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -70,17 +71,36 @@ public class PlayerInteractAtEntityListener implements Listener {
             return;
         }
 
-        if (entity.isLeashed()) {
-            Bukkit.getServer().broadcastMessage("entity is leashed");
-            if (entity.getLeashHolder().equals(player)) {
-                Bukkit.getServer().broadcastMessage("player is the leasholder of the entity");
-//                event.setCancelled(true);
-            }
-            return;
-        }
+        // TODO: add this to  leashMobService.playerLeashMob() - MAYBE not acutally I think it works
+//        if (entity.isLeashed()) {
+//            Bukkit.getServer().broadcastMessage("entity is leashed. Leash holder:");
+//            Bukkit.getServer().broadcastMessage(entity.getLeashHolder().getName());
+//            if (entity.getLeashHolder() instanceof Player) {
+//                return;
+//            }
+//
+//            if (entity.getType().equals(EntityType.LEASH_KNOT)) {
+//                Bukkit.getServer().broadcastMessage("The leash holder is a leash knot");
+//                // TODO: unleash the entity from the leash knot (then we can continue with leashing them normally below)
+//            }
+//        }
+//        Bukkit.getServer().broadcastMessage("entity is not leashed");
 
-        // If they have a lead in their hand we can try to leash the mob.
+
+        // If they have a lead in their hand...
         if (player.getInventory().getItemInMainHand().getType().equals(Material.LEAD)) {
+            Bukkit.getServer().broadcastMessage("player has a lead in their hand");
+
+            // If the entity is already leashed by a player, return. Explanation:
+            // Either the leash holder is the player in this event, in which case the game can handle unleashing the mob;
+            // or it's leashed by another player, in which case the game can handle denying them the leash.
+            if (entity.isLeashed() && entity.getLeashHolder() instanceof Player) {
+                Bukkit.getServer().broadcastMessage("entity is leashed by a player. Leash holder:");
+                Bukkit.getServer().broadcastMessage(entity.getLeashHolder().getName());
+                return;
+            }
+
+            // Try to leash the mob.
             try {
                 leashMobService.playerLeashMob(player, entity);
             } catch (NoPermissionException e) {

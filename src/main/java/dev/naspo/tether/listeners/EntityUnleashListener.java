@@ -1,6 +1,7 @@
 package dev.naspo.tether.listeners;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Leashable;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,6 +12,7 @@ public class EntityUnleashListener implements Listener {
     @EventHandler
     private void onEntityUnleashEvent(EntityUnleashEvent event) {
         Bukkit.getServer().broadcastMessage("EntityUnleashEvent Fired");
+
         // If it's the plugin's entity for player leashing that was unleashed, kill it.
         if (event.getEntity().hasMetadata("naspodev_tether_plugin")) {
             LivingEntity entity = (LivingEntity) event.getEntity();
@@ -18,5 +20,7 @@ public class EntityUnleashListener implements Listener {
                 entity.setHealth(0);
             }
         }
+
+
     }
 }
