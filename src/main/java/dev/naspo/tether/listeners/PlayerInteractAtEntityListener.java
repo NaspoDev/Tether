@@ -76,7 +76,7 @@ public class PlayerInteractAtEntityListener implements Listener {
             Bukkit.getServer().broadcastMessage("player has a lead in their hand");
 
             // If the entity is already leashed by a player, return. Explanation:
-            // Either the leash holder is the player in this event, in which case the game can handle unleashing the mob;
+            // Either the leash holder is the player in this event, in which case other game events can handle unleashing the mob;
             // or it's leashed by another player, in which case the game can handle denying them the leash.
             if (entity.isLeashed() && entity.getLeashHolder() instanceof Player) {
                 Bukkit.getServer().broadcastMessage("entity is leashed by a player. Leash holder:");
