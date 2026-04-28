@@ -71,22 +71,6 @@ public class PlayerInteractAtEntityListener implements Listener {
             return;
         }
 
-        // TODO: add this to  leashMobService.playerLeashMob() - MAYBE not acutally I think it works
-//        if (entity.isLeashed()) {
-//            Bukkit.getServer().broadcastMessage("entity is leashed. Leash holder:");
-//            Bukkit.getServer().broadcastMessage(entity.getLeashHolder().getName());
-//            if (entity.getLeashHolder() instanceof Player) {
-//                return;
-//            }
-//
-//            if (entity.getType().equals(EntityType.LEASH_KNOT)) {
-//                Bukkit.getServer().broadcastMessage("The leash holder is a leash knot");
-//                // TODO: unleash the entity from the leash knot (then we can continue with leashing them normally below)
-//            }
-//        }
-//        Bukkit.getServer().broadcastMessage("entity is not leashed");
-
-
         // If they have a lead in their hand...
         if (player.getInventory().getItemInMainHand().getType().equals(Material.LEAD)) {
             Bukkit.getServer().broadcastMessage("player has a lead in their hand");
