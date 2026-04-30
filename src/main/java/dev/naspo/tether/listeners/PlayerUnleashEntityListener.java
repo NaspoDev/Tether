@@ -22,5 +22,9 @@ public class PlayerUnleashEntityListener implements Listener {
         event.setCancelled(true);
         Bukkit.getServer().broadcastMessage("Setting leash holder to null");
         entity.setLeashHolder(null);
+
+        // TODO: I think i'd need to check if it'll duplicate with the manual lead dropping in LeashMobService
+        Bukkit.getServer().broadcastMessage("dropping a lead");
+        entity.getWorld().dropItemNaturally(entity.getLocation(), new ItemStack(Material.LEAD, 1));
     }
 }
