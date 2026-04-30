@@ -100,7 +100,7 @@ public class LeashPlayerService {
                                 plugin.getConfig().getString("messages.player-leashed-escapable")));
                     } else {
                         target.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) +
-                                "messages.player-leashed-not-escapable"));
+                                plugin.getConfig().getString("messages.player-leashed-not-escapable")));
                     }
                 }
 
