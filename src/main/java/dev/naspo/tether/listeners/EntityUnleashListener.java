@@ -1,7 +1,5 @@
 package dev.naspo.tether.listeners;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Leashable;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,7 +16,5 @@ public class EntityUnleashListener implements Listener {
                 entity.setHealth(0);
             }
         }
-
-
     }
 }
