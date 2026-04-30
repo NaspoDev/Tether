@@ -11,8 +11,6 @@ public class EntityUnleashListener implements Listener {
 
     @EventHandler
     private void onEntityUnleashEvent(EntityUnleashEvent event) {
-        Bukkit.getServer().broadcastMessage("EntityUnleashEvent Fired");
-
         // If it's the plugin's entity for player leashing that was unleashed, kill it.
         if (event.getEntity().hasMetadata("naspodev_tether_plugin")) {
             LivingEntity entity = (LivingEntity) event.getEntity();

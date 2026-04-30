@@ -32,11 +32,9 @@ public class PlayerInteractAtEntityListener implements Listener {
 
     @EventHandler
     private void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
-        Bukkit.getServer().broadcastMessage("PlayerInteractAtEntityEvent Fired");
         // Including Living entity to include NPCs.
         if (event.getRightClicked() instanceof LivingEntity &&
                 !(event.getRightClicked() instanceof Player)) {
-            Bukkit.getServer().broadcastMessage("player interacted at mob");
             handlePlayerInteractAtMob(event);
             return;
         }
@@ -71,16 +69,10 @@ public class PlayerInteractAtEntityListener implements Listener {
 
         // If they have a lead in their hand...
         if (player.getInventory().getItemInMainHand().getType().equals(Material.LEAD)) {
-            Bukkit.getServer().broadcastMessage("player has a lead in their hand");
-
             // If the entity is already leashed by a player, return. Explanation:
             // Either the leash holder is the player in this event, in which case other game events can handle unleashing the mob;
             // or it's leashed by another player, in which case the game can handle denying them the leash.
-            if (entity.isLeashed() && entity.getLeashHolder() instanceof Player) {
-                Bukkit.getServer().broadcastMessage("entity is leashed by a player. Leash holder:");
-                Bukkit.getServer().broadcastMessage(entity.getLeashHolder().getName());
-                return;
-            }
+            if (entity.isLeashed() && entity.getLeashHolder() instanceof Player) return;
 
             // Try to leash the mob.
             try {

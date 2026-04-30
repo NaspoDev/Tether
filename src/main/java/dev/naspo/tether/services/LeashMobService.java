@@ -62,12 +62,11 @@ public class LeashMobService {
         /*
         If the entity is leashed to a fence or other mob, trigger a PlayerUnleashEntityEvent so that it can handle
         unleashing the mob and dropping a lead. We have to manually call this event is because it doesn't
-        trigger for mobs that aren't leashable by default that are being unleashed from a fence/mob.
+        trigger for mobs that aren't leashable by default that are being transferred from a fence or mob to a player.
         (There is logic in my listener for it to check for duplicate calls, since we are still manually calling this
         even for mobs that are leashable by default).
          */
         if (entity.isLeashed() && (entity.getLeashHolder() instanceof LeashHitch || entity.getLeashHolder() instanceof Mob)) {
-            Bukkit.getServer().broadcastMessage("entity is leashed to a fence/mob, trigger the event!");
             plugin.getServer().getPluginManager().callEvent(new PlayerUnleashEntityEvent(entity, player, EquipmentSlot.HAND));
         }
 
