@@ -10,6 +10,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
+import org.bukkit.event.entity.EntityUnleashEvent;
+import org.bukkit.event.player.PlayerUnleashEntityEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.security.InvalidParameterException;
@@ -54,6 +57,11 @@ public class LeashMobService {
             if (npc.data().get(NPC.Metadata.LEASH_PROTECTED, true)) {
                 throw new LeashException(LeashErrorType.NPC_UNLEASHABLE);
             }
+        }
+
+        if (entity.isLeashed() && entity.getLeashHolder() instanceof LeashHitch) {
+            Bukkit.getServer().broadcastMessage("entity was/is leashed to a leash hitch, dropping a lead");
+            entity.getWorld().dropItemNaturally(entity.getLocation(), new ItemStack(Material.LEAD, 1));
         }
 
         // Begin the leashing process.
