@@ -13,6 +13,7 @@ import com.sk89q.worldguard.protection.regions.RegionContainer;
 import dev.naspo.tether.Tether;
 import dev.naspo.tether.integrations.Integration;
 import dev.naspo.tether.integrations.IntegrationEnablePhase;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -60,7 +61,16 @@ public class WorldGuardIntegration extends Integration {
         // First check the "interact" flag, as Tether's custom "leash" flag should respect the "interact" flag first.
         // If it's false, deny the leash.
         if (!interact) {
+            Bukkit.getServer().broadcastMessage("wg interact flag is false, denying");
             return false;
+        }
+        Bukkit.getServer().broadcastMessage("wg interact flag is true");
+
+        //TEMP TODO: remove this
+        if (leash) {
+            Bukkit.getServer().broadcastMessage("wg leash flag is true");
+        } else {
+            Bukkit.getServer().broadcastMessage("wg leash flag is false");
         }
 
         // At this point the "interact" flag is true, now the leash operation depends on the state of the leash flag.
