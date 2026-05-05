@@ -5,6 +5,7 @@ import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.flags.Flag;
+import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
@@ -52,8 +53,18 @@ public class WorldGuardIntegration extends Integration {
         // Region data can be accessed via the RegionContainer object.
         RegionContainer regionContainer = worldGuardAPI.getPlatform().getRegionContainer();
 
-        // Query the state of our custom leash StateFlag at the clicked entity's location for a player.
-        return regionContainer.createQuery().testState(wgLocation, wgLocalPlayer, leashFlag);
+        // Query for the state of the default "interact" flag and Tether's custom "leash" flag.
+        boolean interact = regionContainer.createQuery().testState(wgLocation, wgLocalPlayer, Flags.INTERACT);
+        boolean leash = regionContainer.createQuery().testState(wgLocation, wgLocalPlayer, leashFlag);
+
+        // First check the "interact" flag, as Tether's custom "leash" flag should respect the "interact" flag first.
+        // If it's false, deny the leash.
+        if (!interact) {
+            return false;
+        }
+
+        // At this point the "interact" flag is true, now the leash operation depends on the state of the leash flag.
+        return leash;
     }
 
     /**
