@@ -16,12 +16,14 @@ Available on [Spigot](https://www.spigotmc.org/resources/tether.100941/), [Modri
 
 ## Integrations
 Tether integrates with the following plugins (for both mob and player leashing):
+- WorldGuard (using the "leash" flag).
+  - The "leash" flag respects the default INTERACT flag, which in turn respects the BUILD flag.
+  - However, in the \_\_global\_\_ region, only BUILD is checked.
 - GriefPrevention
 - Towny
 - Lands
 - GriefDefender
 - Residence (using the "leash" flag).
-- WorldGuard (using the "leash" flag).
 - Citizens - Respects your NPCs' "leashable" setting.
 
 ## Commands
