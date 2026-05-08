@@ -142,6 +142,24 @@ public class LeashMobService {
         }
     }
 
+    /**
+     * Handles interacting with a mob with shears in hand.
+     * Specifically checks if the player has permission to unleash the mob.
+     * @param player The player who interacted with an entity while holding shears.
+     * @param entity The LivingEntity that was sneak-interacted with. (Not `Mob` because NPCs are supported).
+     * @throws LeashException
+     */
+    public void handleShearsInteract(Player player, LivingEntity entity) throws LeashException {
+        if (entity instanceof Player) return;
+
+        if (entity.isLeashed()) {
+            if (entity.getLeashHolder().equals(player)) {
+                return;
+            }
+            checkLandProtection(entity.getLocation(), player);
+        }
+    }
+
     // Checks the whitelist or blacklist to see whether the entity is restricted from being leashed or not.
     public boolean isEntityRestricted(Entity entity) {
         // Use whitelist check.

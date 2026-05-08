@@ -57,6 +57,17 @@ public class PlayerInteractAtEntityListener implements Listener {
 
         Player player = event.getPlayer();
 
+        // If they are holding shears, try to process the interaction.
+        if (player.getInventory().getItemInMainHand().getType().equals(Material.SHEARS)) {
+            try {
+                leashMobService.handleShearsInteract(player, entity);
+            } catch (LeashException e) {
+                // If the interaction is denied, we must cancel the event.
+                event.setCancelled(true);
+                ExceptionUtils.handleLeashException(player, event, e, plugin);
+            }
+        }
+
         // If they are sneaking while right-clicking the mob, try leashing mobs together.
         if (player.isSneaking()) {
             try {
