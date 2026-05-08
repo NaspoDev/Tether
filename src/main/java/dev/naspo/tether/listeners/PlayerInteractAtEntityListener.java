@@ -66,6 +66,7 @@ public class PlayerInteractAtEntityListener implements Listener {
                 event.setCancelled(true);
                 ExceptionUtils.handleLeashException(player, event, e, plugin);
             }
+            return;
         }
 
         // If they are sneaking while right-clicking the mob, try leashing mobs together.
@@ -93,7 +94,6 @@ public class PlayerInteractAtEntityListener implements Listener {
             } catch (LeashException e) {
                 ExceptionUtils.handleLeashException(player, event, e, plugin);
             }
-
         }
     }
 
