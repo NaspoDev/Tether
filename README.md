@@ -1,7 +1,8 @@
 ![Tether Banner](https://i.imgur.com/32kVuw7.png)
 
 ## Overview
-The Tether plugin allows players to leash any mob, and other players.
+Tether is the ultimate leashing solution. You can leash any mob or player, and can take full control over leashing 
+across your server with a multitude of configuration options and integrations.
 
 It supports all default leashing mechanics, has a mob whitelist and blacklist, and integrates with your favourite land management plugins.
 
@@ -9,8 +10,8 @@ Available on [Spigot](https://www.spigotmc.org/resources/tether.100941/), [Modri
 
 ## Features
 - Leash any mob in Minecraft.
-- Attach a leashed mob to a fence (right-click the fence).
-- Leash mobs together (sneak + right-click the mob).
+- Attach any leashed mob to a fence (right-click the fence).
+- Leash any mobs together (sneak + right-click the mob).
 - Mob leash blacklist and whitelist.
 - Leash players.
 
