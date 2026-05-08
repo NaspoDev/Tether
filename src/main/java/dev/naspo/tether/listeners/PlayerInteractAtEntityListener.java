@@ -2,11 +2,11 @@ package dev.naspo.tether.listeners;
 
 import dev.naspo.tether.Tether;
 import dev.naspo.tether.utils.ExceptionUtils;
-import dev.naspo.tether.utils.Utils;
 import dev.naspo.tether.exceptions.NoPermissionException;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
 import dev.naspo.tether.services.LeashMobService;
 import dev.naspo.tether.services.LeashPlayerService;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.LeashHitch;
 import org.bukkit.entity.LivingEntity;
@@ -57,6 +57,18 @@ public class PlayerInteractAtEntityListener implements Listener {
 
         Player player = event.getPlayer();
 
+        // If they are holding shears, try to process the interaction.
+        if (player.getInventory().getItemInMainHand().getType().equals(Material.SHEARS)) {
+            try {
+                leashMobService.handleShearsInteract(player, entity);
+            } catch (LeashException e) {
+                // If the interaction is denied, we must cancel the event.
+                event.setCancelled(true);
+                ExceptionUtils.handleLeashException(player, event, e, plugin);
+            }
+            return;
+        }
+
         // If they are sneaking while right-clicking the mob, try leashing mobs together.
         if (player.isSneaking()) {
             try {
@@ -67,15 +79,14 @@ public class PlayerInteractAtEntityListener implements Listener {
             return;
         }
 
-        if (entity.isLeashed()) {
-            if (entity.getLeashHolder().equals(player)) {
-                event.setCancelled(true);
-            }
-            return;
-        }
-
-        // If they have a lead in their hand we can try to leash the mob.
+        // If they have a lead in their hand...
         if (player.getInventory().getItemInMainHand().getType().equals(Material.LEAD)) {
+            // If the entity is already leashed by a player, return. Explanation:
+            // Either the leash holder is the player in this event, in which case other game events can handle unleashing the mob;
+            // or it's leashed by another player, in which case the game can handle denying them the leash.
+            if (entity.isLeashed() && entity.getLeashHolder() instanceof Player) return;
+
+            // Try to leash the mob.
             try {
                 leashMobService.playerLeashMob(player, entity);
             } catch (NoPermissionException e) {
@@ -83,7 +94,6 @@ public class PlayerInteractAtEntityListener implements Listener {
             } catch (LeashException e) {
                 ExceptionUtils.handleLeashException(player, event, e, plugin);
             }
-
         }
     }
 

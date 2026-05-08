@@ -6,11 +6,9 @@ import dev.naspo.tether.integrations.IntegrationEnablePhase;
 import dev.naspo.tether.integrations.standardintegrations.WorldGuardIntegration;
 import dev.naspo.tether.integrations.toggleableintegrations.*;
 import org.bukkit.Location;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 
 // Manages integrations.
@@ -22,17 +20,8 @@ public class IntegrationManager {
     public IntegrationManager(Tether plugin) {
         this.plugin = plugin;
 
-        // Creating an immutable list of integrations (via List.of()).
-        // Important: Ordering of integrations here is important.
-        // Checks are done in order, so integrations should be added in order of priority descending.
-        integrations = List.of(
-                new WorldGuardIntegration(plugin),
-                new GriefPreventionIntegration(plugin),
-                new TownyIntegration(plugin),
-                new LandsIntegration(plugin),
-                new GriefDefenderIntegration(plugin),
-                new ResidenceIntegration(plugin)
-        );
+        // Immutable list of integrations.
+        integrations = initializeIntegrationClasses();
     }
 
     // Enables integrations that should be enabled during the onLoad plugin lifecycle phase.
@@ -57,7 +46,7 @@ public class IntegrationManager {
      * Checks if leashing is permitted by all enabled integrations.
      *
      * @param location The location where leashing would occur. (i.e. the location of a clicked LivingEntity or fence post).
-     * @param player  The player trying to leash.
+     * @param player   The player trying to leash.
      * @return true if the player is permitted to leash at that location.
      */
     public boolean canLeash(Location location, Player player) {
@@ -69,5 +58,38 @@ public class IntegrationManager {
             }
         }
         return true;
+    }
+
+    // Returns an immutable list of initialized integrations classes.
+    // Important: Ordering of integrations here is important.
+    // Checks are done in order, so integrations should be added in order of priority descending.
+    private List<Integration> initializeIntegrationClasses() {
+        List<Integration> list = new ArrayList<>();
+
+        if (isPluginPresent("WorldGuard")) {
+            list.add(new WorldGuardIntegration(plugin));
+        }
+        if (isPluginPresent("GriefPrevention")) {
+            list.add(new GriefPreventionIntegration(plugin));
+        }
+        if (isPluginPresent("Towny")) {
+            list.add(new TownyIntegration(plugin));
+        }
+        if (isPluginPresent("Lands")) {
+            list.add(new LandsIntegration(plugin));
+        }
+        if (isPluginPresent("GriefDefender")) {
+            list.add(new GriefDefenderIntegration(plugin));
+        }
+        if (isPluginPresent("Residence")) {
+            list.add(new ResidenceIntegration(plugin));
+        }
+
+        // Return an immutable list by making a copy of our temporary mutable builder list.
+        return List.copyOf(list);
+    }
+
+    private boolean isPluginPresent(String pluginName) {
+        return plugin.getServer().getPluginManager().getPlugin(pluginName) != null;
     }
 }

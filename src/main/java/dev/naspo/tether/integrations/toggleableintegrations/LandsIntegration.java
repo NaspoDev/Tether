@@ -28,6 +28,15 @@ public class LandsIntegration extends ToggleableIntegration {
 
     @Override
     public boolean canLeash(Location location, Player player) {
+        // If they have the Lands bypass permission applicable to leashing, allow.
+        // (I also check if they have the general interact bypass permission and the bypass permission specifically
+        // for villagers, as Lands has a separate flag for just villager interaction that won't play nice with  Tether
+        // if I don't do this).
+        if (player.hasPermission("lands.bypass.interact_general") ||
+                (player.hasPermission("lands.bypass.interact_general") && player.hasPermission("lands.bypass.interact_villager"))) {
+            return true;
+        }
+
         Area area = landsAPI.getArea(location);
         if (area != null) {
             Land land = area.getLand();

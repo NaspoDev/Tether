@@ -10,6 +10,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
+import org.bukkit.event.entity.EntityUnleashEvent;
+import org.bukkit.event.player.PlayerUnleashEntityEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.security.InvalidParameterException;
@@ -54,6 +57,17 @@ public class LeashMobService {
             if (npc.data().get(NPC.Metadata.LEASH_PROTECTED, true)) {
                 throw new LeashException(LeashErrorType.NPC_UNLEASHABLE);
             }
+        }
+
+        /*
+        If the entity is leashed to a fence or other mob, trigger a PlayerUnleashEntityEvent so that it can handle
+        unleashing the mob and dropping a lead. We have to manually call this event is because it doesn't
+        trigger for mobs that aren't leashable by default that are being transferred from a fence or mob to a player.
+        (There is logic in my listener for it to check for duplicate calls, since we are still manually calling this
+        even for mobs that are leashable by default).
+         */
+        if (entity.isLeashed() && (entity.getLeashHolder() instanceof LeashHitch || entity.getLeashHolder() instanceof Mob)) {
+            plugin.getServer().getPluginManager().callEvent(new PlayerUnleashEntityEvent(entity, player, EquipmentSlot.HAND));
         }
 
         // Begin the leashing process.
@@ -125,6 +139,24 @@ public class LeashMobService {
 
         for (Mob mob : getMobsLeashedByPlayer(player)) {
             mob.setLeashHolder(entity);
+        }
+    }
+
+    /**
+     * Handles interacting with a mob with shears in hand.
+     * Specifically checks if the player has permission to unleash the mob.
+     * @param player The player who interacted with an entity while holding shears.
+     * @param entity The LivingEntity that was sneak-interacted with. (Not `Mob` because NPCs are supported).
+     * @throws LeashException
+     */
+    public void handleShearsInteract(Player player, LivingEntity entity) throws LeashException {
+        if (entity instanceof Player) return;
+
+        if (entity.isLeashed()) {
+            if (entity.getLeashHolder().equals(player)) {
+                return;
+            }
+            checkLandProtection(entity.getLocation(), player);
         }
     }
 
