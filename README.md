@@ -37,7 +37,7 @@ Tether integrates with the following plugins (for both mob and player leashing):
 ## Images
 ![Leashing Villager](https://cdn.modrinth.com/data/cached_images/e8b4f5636bd2877dd899c48164c53dbc3d0d7476.png)
 
-![Leashing Player](https://cdn.modrinth.com/data/cached_images/c3df1876a73ad9fdfaaebe504fceb4f1024bbc0d.png)
+![Leashing Player](https://i.imgur.com/lwu19ne.png)
 
 ![Leashing Multiple Unleashable Mobs](https://cdn.modrinth.com/data/cached_images/bb276111001c757b2f64495ee64e69b9512756e0.png)
 
