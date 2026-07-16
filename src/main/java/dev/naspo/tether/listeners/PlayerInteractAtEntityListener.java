@@ -32,7 +32,7 @@ public class PlayerInteractAtEntityListener implements Listener {
 
     @EventHandler
     private void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
-        // Including Living entity to include NPCs.
+        // Including LivingEntity to include NPCs.
         if (event.getRightClicked() instanceof LivingEntity &&
                 !(event.getRightClicked() instanceof Player)) {
             handlePlayerInteractAtMob(event);
@@ -81,7 +81,8 @@ public class PlayerInteractAtEntityListener implements Listener {
 
         // If they have a lead in their hand...
         if (player.getInventory().getItemInMainHand().getType().equals(Material.LEAD)) {
-            // If the entity is already leashed by a player, return. Explanation:
+            // If the entity is already leashed by a player, return.
+            // Explanation:
             // Either the leash holder is the player in this event, in which case other game events can handle unleashing the mob;
             // or it's leashed by another player, in which case the game can handle denying them the leash.
             if (entity.isLeashed() && entity.getLeashHolder() instanceof Player) return;

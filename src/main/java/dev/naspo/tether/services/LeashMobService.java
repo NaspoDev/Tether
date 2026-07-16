@@ -72,8 +72,9 @@ public class LeashMobService {
 
         // Begin the leashing process.
         // Keep track of the player's leads, prevents duping.
-        int leads;
-        leads = player.getInventory().getItemInMainHand().getAmount();
+        // (itemStackInMainHand will be a lead).
+        ItemStack itemStackInMainHand = player.getInventory().getItemInMainHand();
+        int leads = itemStackInMainHand.getAmount();
 
         // Leashing the mob.
         // The actual leashing process has to run in a scheduler with a slight delay,
@@ -82,11 +83,16 @@ public class LeashMobService {
             entity.setLeashHolder(player);
 
             // If a lead was not removed from the player's inventory, remove one.
-            ItemStack lead = new ItemStack(Material.LEAD, 1);
             if (player.getInventory().getItemInMainHand().getAmount() == (leads - 1)) {
                 return;
             }
-            player.getInventory().removeItem(lead);
+            // If there is more than one lead in the ItemStack, simply reduce the amount by 1.
+            if (leads > 1) {
+                itemStackInMainHand.setAmount(leads - 1);
+                // Otherwise if there is only one lead in the ItemStack, remove the ItemStack entirely.
+            } else {
+                player.getInventory().setItemInMainHand(null);
+            }
         }, 1L);
     }
 
