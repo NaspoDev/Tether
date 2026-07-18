@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -20,6 +21,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 public class LeashPlayerService {
     private final Tether plugin;
     private final IntegrationManager integrationManager;
+    public final static String PLAYER_LEASH_MOB_METADATA_KEY = "naspodev_tether_plugin";
 
     public LeashPlayerService(Tether plugin, IntegrationManager integrationManager) {
         this.plugin = plugin;
@@ -47,10 +49,10 @@ public class LeashPlayerService {
         // If the target is already riding an entity...
         if (target.getVehicle() != null) {
             // If the entity they are riding is now the plugin's player leashing entity, don't allow the leash.
-            if (!(target.getVehicle().hasMetadata("naspodev_tether_plugin"))) {
+            if (!(target.getVehicle().hasMetadata(LeashPlayerService.PLAYER_LEASH_MOB_METADATA_KEY))) {
                 throw new LeashException(LeashErrorType.TARGET_PLAYER_RIDING);
             }
-            // If they are riding the plugin's player leashing entity (i.e hasMetadata("naspodev_tether_plugin"),
+            // If they are riding the plugin's player leashing entity, i.e. hasMetadata(LeashPlayerService.PLAYER_LEASH_MOB_METADATA_KEY),
             // kill the entity.
             ((LivingEntity) target.getVehicle()).setHealth(0);
             return;
@@ -85,7 +87,7 @@ public class LeashPlayerService {
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 // Spawn a chicken (set invisible, invulnerable, etc)
                 LivingEntity mob = (LivingEntity) world.spawnEntity(loc, EntityType.CHICKEN);
-                mob.setMetadata("naspodev_tether_plugin", new FixedMetadataValue(plugin, "_"));
+                mob.setMetadata(LeashPlayerService.PLAYER_LEASH_MOB_METADATA_KEY, new FixedMetadataValue(plugin, "_"));
                 mob.setInvisible(true);
                 mob.setInvulnerable(true);
                 mob.setSilent(true);
@@ -114,17 +116,35 @@ public class LeashPlayerService {
         }
     }
 
-    // Checks if the mob being dismounted is the plugin's, then sets its health to 0.
+    // Kills the player leashing mob, allowing the mounted player to leave.
     public void onDismountEscapable(EntityDismountEvent event) {
-        if (event.getDismounted().hasMetadata("naspodev_tether_plugin")) {
-            ((LivingEntity) event.getDismounted()).setHealth(0);
-        }
+        ((LivingEntity) event.getDismounted()).setHealth(0);
     }
 
-    // Checks if the mob being dismounted is the plugin's, then cancels the event.
+    // Cancels the EntityDismountEvent, preventing the player from dismounting.
     public void onDismountNotEscapable(EntityDismountEvent event) {
-        if (event.getDismounted().hasMetadata("naspodev_tether_plugin")) {
-            event.setCancelled(true);
-        }
+        event.setCancelled(true);
+    }
+
+    /**
+     * Returns true if player leashing is enabled.
+     */
+    public boolean isPlayerLeashEnabled() {
+        return plugin.getConfig().getBoolean("player-leash.enabled");
+    }
+
+    /**
+     * Returns true if player leashing is set to escapable.
+     */
+    public boolean isPlayerLeashEscapable() {
+        return plugin.getConfig().getBoolean("player-leash.escapable");
+    }
+
+    /**
+     * Returns true if the entity provided is the special invisible entity used during player leashing.
+     * @param entity The entity to check.
+     */
+    public boolean isPlayerLeashMob(Entity entity) {
+        return entity.hasMetadata(LeashPlayerService.PLAYER_LEASH_MOB_METADATA_KEY);
     }
 }

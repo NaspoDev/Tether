@@ -32,20 +32,14 @@ public class PlayerInteractAtEntityListener implements Listener {
 
     @EventHandler
     private void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
-        // Including LivingEntity to include NPCs.
-        if (event.getRightClicked() instanceof LivingEntity &&
-                !(event.getRightClicked() instanceof Player)) {
-            handlePlayerInteractAtMob(event);
-            return;
-        }
-
-        if (event.getRightClicked() instanceof LeashHitch) {
-            handlePlayerInteractAtLeashHitch(event);
-            return;
-        }
-
-        if (event.getRightClicked() instanceof Player) {
-            handlePlayerInteractAtPlayer(event);
+        switch (event.getRightClicked()) {
+            case Player _ -> handlePlayerInteractAtPlayer(event);
+            // It's important that the LivingEntity check happens after the Player check, as we want to exclude
+            // player from mob handling logic. But we still need to check for LivingEntity to include NPCs. (We
+            // treat NPCs as mobs here).
+            case LivingEntity _ -> handlePlayerInteractAtMob(event);
+            case LeashHitch _ -> handlePlayerInteractAtLeashHitch(event);
+            default -> {}
         }
     }
 

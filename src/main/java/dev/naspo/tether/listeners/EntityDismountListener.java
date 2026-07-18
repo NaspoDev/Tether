@@ -17,9 +17,11 @@ public class EntityDismountListener implements Listener {
 
     @EventHandler
     public void onEntityDismount(EntityDismountEvent event) {
-        if (plugin.getConfig().getBoolean("player-leash.enabled")) {
-            // Checks if players can escape being leashed. (Checks upon EntityDismountEvent).
-            if (plugin.getConfig().getBoolean("player-leash.escapable")) {
+        // Player-leash check.
+        // Since player leashing uses an invisible entity that the player mounts, we
+        // concern ourselves with EntityDismountEvent.
+        if (leashPlayerService.isPlayerLeashEnabled() && leashPlayerService.isPlayerLeashMob(event.getDismounted())) {
+            if (leashPlayerService.isPlayerLeashEscapable()) {
                 leashPlayerService.onDismountEscapable(event);
             } else {
                 leashPlayerService.onDismountNotEscapable(event);
