@@ -1,5 +1,6 @@
 package dev.naspo.tether
 
+import org.bukkit.Bukkit
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Mob
 import org.bukkit.entity.Monster
@@ -102,11 +103,21 @@ private val conditionalDefaultLeashableMobs: Map<EntityType, List<LeashCondition
  */
 fun isMobLeashableByDefault(mob: Mob): Boolean {
     return if (unconditionalDefaultLeashableMobs.contains(mob.type)) {
+        Bukkit.getServer().logger.info("The mob ${mob.type.name} is unconditionally leashable by default.")
         true
     } else if (conditionalDefaultLeashableMobs.keys.contains(mob.type)) {
         // Check if leash conditions are met for the mob.
         val leashConditions: List<LeashCondition> = conditionalDefaultLeashableMobs[mob.type] ?: return false
-        leashConditions.all { it.isMet(mob) }
+//        leashConditions.all { it.isMet(mob) }
+
+        // TODO: TEMP - uncomment above and remove when done
+        val res = leashConditions.all { it.isMet(mob) }
+        if (res) {
+            Bukkit.getServer().logger.info("The mob ${mob.type.name} is conditionally leashable by default, and all conditions passed.")
+        } else {
+            Bukkit.getServer().logger.info("The mob ${mob.type.name} is conditionally leashable by default, conditions did NOT pass.")
+        }
+        res
     } else {
         false
     }

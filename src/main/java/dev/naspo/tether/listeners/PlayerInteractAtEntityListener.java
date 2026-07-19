@@ -1,5 +1,6 @@
 package dev.naspo.tether.listeners;
 
+import dev.naspo.tether.DefaultLeashableMobsKt;
 import dev.naspo.tether.Tether;
 import dev.naspo.tether.utils.ExceptionUtils;
 import dev.naspo.tether.exceptions.NoPermissionException;
@@ -10,12 +11,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.LeashHitch;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
+// PlayerInteractAtEntityEvent is used as its more general than PlayerLeashEntityEvent, which is needed
+// for handling mobs that are not leasable by default.
 public class PlayerInteractAtEntityListener implements Listener {
     private final Tether plugin;
     private final LeashMobService leashMobService;
@@ -43,12 +47,26 @@ public class PlayerInteractAtEntityListener implements Listener {
         }
     }
 
-    // Using PlayerInteractAtEntityEvent as its more general than PlayerLeashEntityEvent.
-    // It's used for handling mobs that are not leasable by default.
+    private void handlePlayerInteractAtPlayer(PlayerInteractAtEntityEvent event) {
+        if (event.getHand() == EquipmentSlot.OFF_HAND) return;
+        if (!leashPlayerService.isPlayerLeashEnabled()) return;
+
+        Player player = event.getPlayer();
+
+        // Try to leash the player.
+        try {
+            leashPlayerService.playerLeashPlayer(player, (Player) event.getRightClicked());
+        } catch (NoPermissionException ignored) {
+        } catch (LeashException e) {
+            ExceptionUtils.handleLeashException(player, event, e, plugin);
+        }
+    }
+
     private void handlePlayerInteractAtMob(PlayerInteractAtEntityEvent event) {
-        if (!(event.getRightClicked() instanceof LivingEntity entity)) return;
         if (event.getHand() == EquipmentSlot.OFF_HAND) return;
 
+        // We cast to LivingEntity because we also treat NPCs as mobs here.
+        LivingEntity entity = (LivingEntity) event.getRightClicked();
         Player player = event.getPlayer();
 
         // If they are holding shears, try to process the interaction.
@@ -93,31 +111,12 @@ public class PlayerInteractAtEntityListener implements Listener {
     }
 
     private void handlePlayerInteractAtLeashHitch(PlayerInteractAtEntityEvent event) {
-        if (!(event.getRightClicked() instanceof LeashHitch)) return;
         if (event.getHand() == EquipmentSlot.OFF_HAND) return;
 
         try {
             leashMobService.handleFenceLeashing(event.getPlayer(), event.getRightClicked().getLocation());
         } catch (LeashException e) {
             ExceptionUtils.handleLeashException(event.getPlayer(), event, e, plugin);
-        }
-    }
-
-    private void handlePlayerInteractAtPlayer(PlayerInteractAtEntityEvent event) {
-        if (!(event.getRightClicked() instanceof Player)) return;
-        if (event.getHand() == EquipmentSlot.OFF_HAND) return;
-
-        // If player leashing is disabled, return.
-        if (!plugin.getConfig().getBoolean("player-leash.enabled")) return;
-
-        Player player = event.getPlayer();
-
-        // Try to leash the player.
-        try {
-            leashPlayerService.playerLeashPlayer(player, (Player) event.getRightClicked());
-        } catch (NoPermissionException ignored) {
-        } catch (LeashException e) {
-            ExceptionUtils.handleLeashException(player, event, e, plugin);
         }
     }
 }
