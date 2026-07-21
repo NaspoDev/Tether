@@ -8,9 +8,7 @@ import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.*;
-import org.bukkit.event.entity.EntityUnleashEvent;
 import org.bukkit.event.player.PlayerUnleashEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -151,6 +149,7 @@ public class LeashMobService {
     /**
      * Handles interacting with a mob with shears in hand.
      * Specifically checks if the player has permission to unleash the mob.
+     *
      * @param player The player who interacted with an entity while holding shears.
      * @param entity The LivingEntity that was sneak-interacted with. (Not `Mob` because NPCs are supported).
      * @throws LeashException
@@ -194,8 +193,9 @@ public class LeashMobService {
 
     /**
      * Checks if leashing is allowed by land protection integrations.
+     *
      * @param location The location where leashing would occur. (i.e. the location of a clicked LivingEntity or fence post).
-     * @param player The player trying to leash.
+     * @param player   The player trying to leash.
      * @throws LeashException
      */
     private void checkLandProtection(Location location, Player player) throws LeashException {
