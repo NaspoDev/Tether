@@ -19,28 +19,30 @@ public class PlayerUnleashEntityListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler
-    private void onPlayerUnleashEntity(PlayerUnleashEntityEvent event) {
-        if (!(event.getEntity() instanceof LivingEntity)) return;
-        LivingEntity entity = (LivingEntity) event.getEntity();
-
-        /*
-        Wait 1 tick for event outcome, then check if a lead was dropped. If not, drop one.
-        Reason: PlayerUnleashEntityEvent doesn't trigger for mobs not leashable by default that are being transferred
-        from a fence or mob to a player, so we trigger it manually. Therefore, we need to differentiate from a manual
-        call and a natural one by checking if a lead was dropped.
-         */
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            for (Entity e : entity.getWorld().getNearbyEntities(entity.getLocation(), 1, 1, 1)) {
-                if (e instanceof Item item) {
-                    if (item.getItemStack().getType() == Material.LEAD) {
-                        // A lead was dropped, return.
-                        return;
-                    }
-                }
-            }
-            // A lead could not be found, so one must have never dropped. Drop one.
-            entity.getWorld().dropItemNaturally(entity.getLocation(), new ItemStack(Material.LEAD, 1));
-        }, 1L);
-    }
+    // TODO: Delete this entire file if the moving of logic to LeashMobService to just drop a lead works.
+    // TODO: Because now we can isolate mobs that aren't leashable by default and just drop a lead when needed.
+//    @EventHandler
+//    private void onPlayerUnleashEntity(PlayerUnleashEntityEvent event) {
+//        if (!(event.getEntity() instanceof LivingEntity)) return;
+//        LivingEntity entity = (LivingEntity) event.getEntity();
+//
+//        /*
+//        Wait 1 tick for event outcome, then check if a lead was dropped. If not, drop one.
+//        Reason: PlayerUnleashEntityEvent doesn't trigger for mobs not leashable by default that are being transferred
+//        from a fence or mob to a player, so we trigger it manually. Therefore, we need to differentiate from a manual
+//        call and a natural one by checking if a lead was dropped.
+//         */
+//        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+//            for (Entity e : entity.getWorld().getNearbyEntities(entity.getLocation(), 1, 1, 1)) {
+//                if (e instanceof Item item) {
+//                    if (item.getItemStack().getType() == Material.LEAD) {
+//                        // A lead was dropped, return.
+//                        return;
+//                    }
+//                }
+//            }
+//            // A lead could not be found, so one must have never dropped. Drop one.
+//            entity.getWorld().dropItemNaturally(entity.getLocation(), new ItemStack(Material.LEAD, 1));
+//        }, 1L);
+//    }
 }

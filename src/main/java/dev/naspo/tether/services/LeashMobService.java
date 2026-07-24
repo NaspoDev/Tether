@@ -1,5 +1,6 @@
 package dev.naspo.tether.services;
 
+import dev.naspo.tether.DefaultLeashableMobsKt;
 import dev.naspo.tether.Tether;
 import dev.naspo.tether.exceptions.NoPermissionException;
 import dev.naspo.tether.exceptions.leashexception.LeashErrorType;
@@ -8,6 +9,7 @@ import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.player.PlayerUnleashEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -57,15 +59,17 @@ public class LeashMobService {
             }
         }
 
-        /*
-        If the entity is leashed to a fence or other mob, trigger a PlayerUnleashEntityEvent so that it can handle
-        unleashing the mob and dropping a lead. We have to manually call this event is because it doesn't
-        trigger for mobs that aren't leashable by default that are being transferred from a fence or mob to a player.
-        (There is logic in my listener for it to check for duplicate calls, since we are still manually calling this
-        even for mobs that are leashable by default).
-         */
+        // If the mob is leashable by default, let the game handle leashing.
+        if (entity instanceof Mob && DefaultLeashableMobsKt.isMobLeashableByDefault((Mob) entity)) {
+            return;
+        }
+
+        // TODO: Check if this works! Previous duplicate lead drop logic in PlayerUnleashEntityListener has been commented out.
+        // If the target entity is leashed to a fence or other mob, drop a lead.
+        // This must be done because PlayerUnleashEntityEvent, which drops a lead for a mob upon being unleashed, doesn't
+        // trigger for mobs that aren't leashable by default that are being transferred from a fence or mob to a player.
         if (entity.isLeashed() && (entity.getLeashHolder() instanceof LeashHitch || entity.getLeashHolder() instanceof Mob)) {
-            plugin.getServer().getPluginManager().callEvent(new PlayerUnleashEntityEvent(entity, player, EquipmentSlot.HAND));
+            entity.getWorld().dropItemNaturally(entity.getLocation(), new ItemStack(Material.LEAD, 1));
         }
 
         // Begin the leashing process.
