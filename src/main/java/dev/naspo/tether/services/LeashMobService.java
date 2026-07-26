@@ -59,7 +59,6 @@ public class LeashMobService {
             return;
         }
 
-        // TODO: Check if this works! Previous duplicate lead drop logic in PlayerUnleashEntityListener has been commented out.
         // If the target entity is leashed to a fence or other mob, drop a lead.
         // This must be done because PlayerUnleashEntityEvent, which drops a lead for a mob upon being unleashed, doesn't
         // trigger for mobs that aren't leashable by default that are being transferred from a fence or mob to a player.
