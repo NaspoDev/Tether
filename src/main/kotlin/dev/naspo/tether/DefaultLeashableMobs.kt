@@ -71,9 +71,7 @@ private val unconditionalDefaultLeashableMobs: List<EntityType> = listOf(
     EntityType.SNOW_GOLEM,
     EntityType.SQUID,
     EntityType.STRIDER,
-    // TODO: Uncomment this and test on 26.2 once everything else is done.
-    // TODO: This also means that this new version of Tether would be minimum 26.2
-//    EntityType.SULFUR_CUBE,
+    EntityType.SULFUR_CUBE,
     EntityType.TRADER_LLAMA,
     EntityType.ZOGLIN
 )
@@ -110,16 +108,7 @@ fun isMobLeashableByDefault(mob: Mob): Boolean {
     } else if (conditionalDefaultLeashableMobs.keys.contains(mob.type)) {
         // Check if leash conditions are met for the mob.
         val leashConditions: List<LeashCondition> = conditionalDefaultLeashableMobs[mob.type] ?: return false
-//        leashConditions.all { it.isMet(mob) }
-
-        // TODO: TEMP - uncomment above and remove when done
-        val res = leashConditions.all { it.isMet(mob) }
-        if (res) {
-            Bukkit.getServer().logger.info("The mob ${mob.type.name} is conditionally leashable by default, and all conditions passed.")
-        } else {
-            Bukkit.getServer().logger.info("The mob ${mob.type.name} is conditionally leashable by default, conditions did NOT pass.")
-        }
-        res
+        leashConditions.all { it.isMet(mob) }
     } else {
         false
     }

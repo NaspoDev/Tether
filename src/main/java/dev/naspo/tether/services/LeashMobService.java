@@ -245,15 +245,14 @@ public class LeashMobService {
         return leashedMobs;
     }
 
-    // TODO: maybe make this only transfer mobs which are not leashable by default
     private void transferMobsFromFenceToPlayer(Player player, Location fenceLocation) {
         List<Mob> mobs = getMobsLeashedToFence(fenceLocation);
         for (Mob mob : mobs) {
+            // (There is no default leashable mob check here, this logic can overlap with the game and it's fine).
             mob.setLeashHolder(player);
         }
     }
 
-    // TODO: maybe make this only transfer mobs which are not leashable by default
     private void transferMobsFromPlayerToFence(Player player, Location fenceLocation) {
         List<Mob> leashedMobs = getMobsLeashedByPlayer(player);
 
@@ -277,6 +276,7 @@ public class LeashMobService {
             }
         } else {
             for (Mob mob : leashedMobs) {
+                // (There is no default leashable mob check here, this logic can overlap with the game and it's fine).
                 mob.setLeashHolder(leashHitch);
             }
         }

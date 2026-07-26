@@ -1,7 +1,7 @@
 name: Tether
 version: '${project.version}'
 main: dev.naspo.tether.Tether
-api-version: 1.18
+api-version: 26.2
 author: Naspo
 description: The ultimate leashing solution. Leash any mob or player and take full control over leashing across your server.
 
