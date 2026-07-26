@@ -17,8 +17,9 @@ public class PlayerLeashEntityListener implements Listener {
     // if it's to do with a LivingEntity.
     @EventHandler
     private void onPlayerLeashEntity(PlayerLeashEntityEvent event) {
-        if (event.getEntity() instanceof LivingEntity) {
-            event.setCancelled(true);
-        }
+        // TODO: I can probably fully delete this listener. Decide after testing
+//        if (event.getEntity() instanceof LivingEntity) {
+//            event.setCancelled(true);
+//        }
     }
 }

@@ -71,7 +71,9 @@ private val unconditionalDefaultLeashableMobs: List<EntityType> = listOf(
     EntityType.SNOW_GOLEM,
     EntityType.SQUID,
     EntityType.STRIDER,
-    EntityType.SULFUR_CUBE,
+    // TODO: Uncomment this and test on 26.2 once everything else is done.
+    // TODO: This also means that this new version of Tether would be minimum 26.2
+//    EntityType.SULFUR_CUBE,
     EntityType.TRADER_LLAMA,
     EntityType.ZOGLIN
 )

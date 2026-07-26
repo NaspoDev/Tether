@@ -11,11 +11,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
-import org.bukkit.event.player.PlayerUnleashEntityEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,17 +33,15 @@ public class LeashMobService {
      *
      * @param player The player to be the leash holder.
      * @param entity The non-player LivingEntity to be leashed. (Not `Mob` because NPCs are supported).
-     * @throws InvalidParameterException if the LivingEntity passed in is a Player.
-     * @throws NoPermissionException     if the player does not have permission.
-     * @throws LeashException            when the leash operation fails for a given reason (LeashErrorType).
+     * @throws IllegalArgumentException if the LivingEntity passed in is a Player.
+     * @throws NoPermissionException    if the player does not have permission.
+     * @throws LeashException           when the leash operation fails for a given reason (LeashErrorType).
      */
-    public void playerLeashMob(Player player, LivingEntity entity) throws InvalidParameterException,
+    public void playerLeashMob(Player player, LivingEntity entity) throws IllegalArgumentException,
             NoPermissionException, LeashException {
-        if (entity instanceof Player) throw new InvalidParameterException();
-
+        if (entity instanceof Player) throw new IllegalArgumentException("Target entity must not be a player.");
         // Blacklist/whitelist check.
         if (isEntityRestricted(entity)) throw new LeashException(LeashErrorType.MOB_RESTRICTED);
-
         // Land protection integration check.
         checkLandProtection(entity.getLocation(), player);
 
@@ -103,6 +98,7 @@ public class LeashMobService {
      *
      * @param player   The player that right-clicked the fence or leash hitch.
      * @param location The location of the fence or leash hitch.
+     * @throws LeashException when the leash operation fails for a given reason (LeashErrorType).
      */
     public void handleFenceLeashing(Player player, Location location) throws LeashException {
         List<Mob> mobsLeashedByPlayer = getMobsLeashedByPlayer(player);
@@ -122,11 +118,8 @@ public class LeashMobService {
         // leashable by default).
         if (mobsLeashedByPlayer.isEmpty() && !mobsLeashedToFence.isEmpty()) {
             transferMobsFromFenceToPlayer(player, location);
-            return;
-        }
-
-        // Leashing mobs to a fence:
-        if (!mobsLeashedByPlayer.isEmpty()) {
+        } else if (!mobsLeashedByPlayer.isEmpty()) {
+            // Leashing mobs to a fence:
             transferMobsFromPlayerToFence(player, location);
         }
     }
@@ -137,34 +130,41 @@ public class LeashMobService {
      *
      * @param player The player who sneak-interacted with an entity.
      * @param entity The LivingEntity that was sneak-interacted with. (Not `Mob` because NPCs are supported).
+     * @throws LeashException when the leash operation fails for a given reason (LeashErrorType).
      */
-    public void handleSneakInteract(Player player, LivingEntity entity) throws LeashException {
-        if (entity instanceof Player) return;
+    public void handleSneakInteract(Player player, LivingEntity entity) throws IllegalArgumentException, LeashException {
+        if (entity instanceof Player) throw new IllegalArgumentException("Target entity must not be a player.");
+        // If the target entity is leashed by the player, exit and allow the game to handle unleashing the entity.
         if (entity.isLeashed() && entity.getLeashHolder().equals(player)) return;
 
         // Land protection integration check.
         checkLandProtection(entity.getLocation(), player);
 
         for (Mob mob : getMobsLeashedByPlayer(player)) {
-            mob.setLeashHolder(entity);
+            // TODO: This isMobLeashableByDefault check is new. Check if it still works
+            // If the mob is not leashable by default, leash it to the target entity,
+            // otherwise let the game handle it for that mob.
+            if (!DefaultLeashableMobsKt.isMobLeashableByDefault(mob)) {
+                mob.setLeashHolder(entity);
+            }
         }
     }
 
     /**
      * Handles interacting with a mob with shears in hand.
-     * Specifically checks if the player has permission to unleash the mob.
      *
      * @param player The player who interacted with an entity while holding shears.
      * @param entity The LivingEntity that was sneak-interacted with. (Not `Mob` because NPCs are supported).
-     * @throws LeashException
+     * @throws IllegalArgumentException if the LivingEntity provided was a Player.
+     * @throws LeashException           when the leash operation fails for a given reason (LeashErrorType).
      */
-    public void handleShearsInteract(Player player, LivingEntity entity) throws LeashException {
-        if (entity instanceof Player) return;
+    public void handleShearsInteract(Player player, LivingEntity entity) throws IllegalArgumentException, LeashException {
+        if (entity instanceof Player) throw new IllegalArgumentException("Target entity must not be a player.");
+        if (!entity.isLeashed()) return;
 
-        if (entity.isLeashed()) {
-            if (entity.getLeashHolder().equals(player)) {
-                return;
-            }
+        // If the player is the leasher, don't check permissions, always allow to unleash.
+        if (entity.getLeashHolder().equals(player)) {
+        } else {
             checkLandProtection(entity.getLocation(), player);
         }
     }
@@ -177,7 +177,7 @@ public class LeashMobService {
             // Whitelist check.
             // Getting whitelist values and converting all to uppercase.
             List<String> whitelist = plugin.getConfig().getStringList("whitelisted-mobs")
-                    .stream().map(String::toUpperCase).collect(Collectors.toList());
+                    .stream().map(String::toUpperCase).toList();
 
             if (!whitelist.contains(entity.getType().name())) {
                 return true;
@@ -186,7 +186,7 @@ public class LeashMobService {
             // Blacklist check.
             // Getting blacklist values and converting all to uppercase.
             List<String> blacklist = plugin.getConfig().getStringList("blacklisted-mobs")
-                    .stream().map(String::toUpperCase).collect(Collectors.toList());
+                    .stream().map(String::toUpperCase).toList();
 
             if (blacklist.contains(entity.getType().name())) {
                 return true;
@@ -200,7 +200,6 @@ public class LeashMobService {
      *
      * @param location The location where leashing would occur. (i.e. the location of a clicked LivingEntity or fence post).
      * @param player   The player trying to leash.
-     * @throws LeashException
      */
     private void checkLandProtection(Location location, Player player) throws LeashException {
         if (!integrationManager.canLeash(location, player)) {
@@ -249,6 +248,7 @@ public class LeashMobService {
         return leashedMobs;
     }
 
+    // TODO: maybe make this only transfer mobs which are not leashable by default
     private void transferMobsFromFenceToPlayer(Player player, Location fenceLocation) {
         List<Mob> mobs = getMobsLeashedToFence(fenceLocation);
         for (Mob mob : mobs) {
@@ -256,6 +256,7 @@ public class LeashMobService {
         }
     }
 
+    // TODO: maybe make this only transfer mobs which are not leashable by default
     private void transferMobsFromPlayerToFence(Player player, Location fenceLocation) {
         List<Mob> leashedMobs = getMobsLeashedByPlayer(player);
 

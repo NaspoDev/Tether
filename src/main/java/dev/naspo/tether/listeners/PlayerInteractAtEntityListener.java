@@ -18,6 +18,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
+import java.util.logging.Level;
+
 // PlayerInteractAtEntityEvent is used as its more general than PlayerLeashEntityEvent, which is needed
 // for handling mobs that are not leasable by default.
 public class PlayerInteractAtEntityListener implements Listener {
@@ -36,6 +38,8 @@ public class PlayerInteractAtEntityListener implements Listener {
 
     @EventHandler
     private void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
+        if (event.getHand() == EquipmentSlot.OFF_HAND) return;
+
         switch (event.getRightClicked()) {
             case Player _ -> handlePlayerInteractAtPlayer(event);
             // It's important that the LivingEntity check happens after the Player check, as we want to exclude
@@ -48,7 +52,6 @@ public class PlayerInteractAtEntityListener implements Listener {
     }
 
     private void handlePlayerInteractAtPlayer(PlayerInteractAtEntityEvent event) {
-        if (event.getHand() == EquipmentSlot.OFF_HAND) return;
         if (!leashPlayerService.isPlayerLeashEnabled()) return;
 
         Player player = event.getPlayer();
@@ -63,8 +66,6 @@ public class PlayerInteractAtEntityListener implements Listener {
     }
 
     private void handlePlayerInteractAtMob(PlayerInteractAtEntityEvent event) {
-        if (event.getHand() == EquipmentSlot.OFF_HAND) return;
-
         // We cast to LivingEntity because we also treat NPCs as mobs here.
         LivingEntity entity = (LivingEntity) event.getRightClicked();
         Player player = event.getPlayer();
@@ -73,6 +74,8 @@ public class PlayerInteractAtEntityListener implements Listener {
         if (player.getInventory().getItemInMainHand().getType().equals(Material.SHEARS)) {
             try {
                 leashMobService.handleShearsInteract(player, entity);
+            } catch (IllegalArgumentException e) {
+                plugin.getLogger().log(Level.SEVERE, e.getMessage());
             } catch (LeashException e) {
                 // If the interaction is denied, we must cancel the event.
                 event.setCancelled(true);
@@ -85,6 +88,8 @@ public class PlayerInteractAtEntityListener implements Listener {
         if (player.isSneaking()) {
             try {
                 leashMobService.handleSneakInteract(player, entity);
+            } catch (IllegalArgumentException e) {
+                plugin.getLogger().log(Level.SEVERE, e.getMessage());
             } catch (LeashException e) {
                 ExceptionUtils.handleLeashException(player, event, e, plugin);
             }
@@ -102,6 +107,8 @@ public class PlayerInteractAtEntityListener implements Listener {
             // Try to leash the mob.
             try {
                 leashMobService.playerLeashMob(player, entity);
+            } catch (IllegalArgumentException e) {
+                plugin.getLogger().log(Level.SEVERE, e.getMessage());
             } catch (NoPermissionException e) {
                 event.setCancelled(true);
             } catch (LeashException e) {
@@ -111,8 +118,6 @@ public class PlayerInteractAtEntityListener implements Listener {
     }
 
     private void handlePlayerInteractAtLeashHitch(PlayerInteractAtEntityEvent event) {
-        if (event.getHand() == EquipmentSlot.OFF_HAND) return;
-
         try {
             leashMobService.handleFenceLeashing(event.getPlayer(), event.getRightClicked().getLocation());
         } catch (LeashException e) {
