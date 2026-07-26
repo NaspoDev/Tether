@@ -48,7 +48,6 @@ public final class Tether extends JavaPlugin {
     private void registerEvents() {
         this.getServer().getPluginManager().registerEvents(new PlayerInteractAtEntityListener(this, leashMobService, leashPlayerService), this);
         this.getServer().getPluginManager().registerEvents(new PlayerInteractListener(this, leashMobService), this);
-        this.getServer().getPluginManager().registerEvents(new PlayerLeashEntityListener(leashMobService), this);
         this.getServer().getPluginManager().registerEvents(new EntityDeathListener(), this);
         this.getServer().getPluginManager().registerEvents(new EntityDismountListener(this, leashPlayerService), this);
         this.getServer().getPluginManager().registerEvents(new EntityUnleashListener(), this);
