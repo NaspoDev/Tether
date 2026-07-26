@@ -140,13 +140,11 @@ public class LeashMobService {
         // Land protection integration check.
         checkLandProtection(entity.getLocation(), player);
 
+        // Execute the leash holder transfer.
+        // Set the leash holder of all mobs leashed by the player to the target entity.
+        // (No default leashable mob check here, this logic can overlap with the game and it's fine).
         for (Mob mob : getMobsLeashedByPlayer(player)) {
-            // TODO: This isMobLeashableByDefault check is new. Check if it still works
-            // If the mob is not leashable by default, leash it to the target entity,
-            // otherwise let the game handle it for that mob.
-            if (!DefaultLeashableMobsKt.isMobLeashableByDefault(mob)) {
-                mob.setLeashHolder(entity);
-            }
+            mob.setLeashHolder(entity);
         }
     }
 

@@ -22,9 +22,7 @@ public class PlayerInteractListener implements Listener {
 
     @EventHandler
     private void onPlayerInteract(PlayerInteractEvent event) {
-        // Ensuring it's a right-click on a fence with the main hand.
-        // Used for fence post functionality for mobs that are not leashable by default as fence post
-        // functionality won't work for them.
+        // Check for fence leashing.
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if (event.getHand() != EquipmentSlot.HAND) return;
         if (!event.getClickedBlock().getType().name().toLowerCase().endsWith("fence")) return;
