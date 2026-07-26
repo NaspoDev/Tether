@@ -111,14 +111,9 @@ public class LeashMobService {
         // Land protection integration check.
         checkLandProtection(location, player);
 
-        // Transfer mobs from fence to player:
-        // First wait for the PlayerLeashEntityEvent to finish then set the player as the leash holder for the rest of
-        // the mobs still leashed to the fence. (The mobs still leashed to the fence at that point would be mobs not
-        // leashable by default).
         if (mobsLeashedByPlayer.isEmpty() && !mobsLeashedToFence.isEmpty()) {
             transferMobsFromFenceToPlayer(player, location);
         } else if (!mobsLeashedByPlayer.isEmpty()) {
-            // Leashing mobs to a fence:
             transferMobsFromPlayerToFence(player, location);
         }
     }
