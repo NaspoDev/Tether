@@ -110,6 +110,7 @@ public class PlayerInteractAtEntityListener implements Listener {
                 event.setCancelled(true);
             } catch (LeashException e) {
                 ExceptionUtils.handleLeashException(player, event, e, plugin);
+                event.setCancelled(true);
             }
         }
     }

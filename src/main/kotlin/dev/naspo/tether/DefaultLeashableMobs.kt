@@ -99,6 +99,11 @@ private val conditionalDefaultLeashableMobs: Map<EntityType, List<LeashCondition
 )
 
 /**
+ * The token used in the blacklist/whitelist in the config to refer to all default leashable mobs.
+ */
+const val DEFAULT_LEASHABLE_MOBS_CONFIG_TOKEN: String = "DEFAULT_LEASHABLE_MOBS"
+
+/**
  * Returns true if a mob is leashable by default.
  */
 fun isMobLeashableByDefault(mob: Mob): Boolean {

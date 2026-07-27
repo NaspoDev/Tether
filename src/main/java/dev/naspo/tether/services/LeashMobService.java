@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 // Responsible for logic related to leashing mobs.
 public class LeashMobService {
@@ -39,8 +40,7 @@ public class LeashMobService {
     public void leashMobToPlayer(Player player, LivingEntity entity) throws IllegalArgumentException,
             NoPermissionException, LeashException {
         if (entity instanceof Player) throw new IllegalArgumentException("Target entity must not be a player.");
-        // Blacklist/whitelist check.
-        if (isEntityRestricted(entity)) throw new LeashException(LeashErrorType.MOB_RESTRICTED);
+
         // Land protection integration check.
         checkLandProtection(entity.getLocation(), player);
 
@@ -53,16 +53,30 @@ public class LeashMobService {
             }
         }
 
+        // From this point on the entity must be a Mob.
+        Mob mob;
+        if (entity instanceof Mob) {
+            mob = (Mob) entity;
+        } else {
+            plugin.getLogger().log(
+                    Level.SEVERE,
+                    "Entity is expected to be a Mob, but is not. Aborting leash mob to player flow.");
+            return;
+        }
+
+        // Blacklist/whitelist check.
+        if (isEntityRestricted(mob)) throw new LeashException(LeashErrorType.MOB_RESTRICTED);
+
         // If the mob is leashable by default, let the game handle leashing.
-        if (entity instanceof Mob && DefaultLeashableMobsKt.isMobLeashableByDefault((Mob) entity)) {
+        if (DefaultLeashableMobsKt.isMobLeashableByDefault(mob)) {
             return;
         }
 
         // If the target entity is leashed to a fence or other mob, drop a lead.
         // This must be done because PlayerUnleashEntityEvent, which drops a lead for a mob upon being unleashed, doesn't
         // trigger for mobs that aren't leashable by default that are being transferred from a fence or mob to a player.
-        if (entity.isLeashed() && (entity.getLeashHolder() instanceof LeashHitch || entity.getLeashHolder() instanceof Mob)) {
-            entity.getWorld().dropItemNaturally(entity.getLocation(), new ItemStack(Material.LEAD, 1));
+        if (mob.isLeashed() && (mob.getLeashHolder() instanceof LeashHitch || mob.getLeashHolder() instanceof Mob)) {
+            mob.getWorld().dropItemNaturally(mob.getLocation(), new ItemStack(Material.LEAD, 1));
         }
 
         // Begin the leashing process.
@@ -75,7 +89,7 @@ public class LeashMobService {
         // The actual leashing process has to run in a scheduler with a slight delay,
         // due to the way the event works.
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            entity.setLeashHolder(player);
+            mob.setLeashHolder(player);
 
             // If a lead was not removed from the player's inventory, remove one.
             if (player.getInventory().getItemInMainHand().getAmount() == (leads - 1)) {
@@ -161,29 +175,36 @@ public class LeashMobService {
     }
 
     // Checks the whitelist or blacklist to see whether the entity is restricted from being leashed or not.
-    public boolean isEntityRestricted(Entity entity) {
-        // Use whitelist check.
-        // If whitelist is set to be used over blacklist, check the whitelist only, else use blacklist.
+    public boolean isEntityRestricted(Mob mob) {
+        String mobName = mob.getType().name().toUpperCase();
+
+        // If whitelist is set to be used over blacklist, check the whitelist only.
         if (plugin.getConfig().getBoolean("use-whitelist-over-blacklist")) {
-            // Whitelist check.
-            // Getting whitelist values and converting all to uppercase.
             List<String> whitelist = plugin.getConfig().getStringList("whitelisted-mobs")
                     .stream().map(String::toUpperCase).toList();
 
-            if (!whitelist.contains(entity.getType().name())) {
+            if (whitelist.contains(mobName)) {
+                return false;
+            } else if (whitelist.contains(DefaultLeashableMobsKt.DEFAULT_LEASHABLE_MOBS_CONFIG_TOKEN) &&
+                    DefaultLeashableMobsKt.isMobLeashableByDefault(mob)) {
+                return false;
+            } else {
                 return true;
             }
         } else {
-            // Blacklist check.
-            // Getting blacklist values and converting all to uppercase.
+            // Blacklist is set to be used...
             List<String> blacklist = plugin.getConfig().getStringList("blacklisted-mobs")
                     .stream().map(String::toUpperCase).toList();
 
-            if (blacklist.contains(entity.getType().name())) {
+            if (blacklist.contains(mobName)) {
                 return true;
+            } else if (blacklist.contains(DefaultLeashableMobsKt.DEFAULT_LEASHABLE_MOBS_CONFIG_TOKEN) &&
+                    DefaultLeashableMobsKt.isMobLeashableByDefault(mob)) {
+                return true;
+            } else {
+                return false;
             }
         }
-        return false;
     }
 
     /**
