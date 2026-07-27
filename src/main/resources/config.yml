@@ -1,26 +1,30 @@
-# The Tether plugin allows players to attach a lead to any mob in Minecraft.
+# Tether is the ultimate leashing solution.
+# You can leash any mob or player, and can take full control over leashing across your server with a
+# multitude of configuration options and integrations.
 
 # If set to true, the mob blacklist will be ignored and the whitelist will be used.
 use-whitelist-over-blacklist: false
 
 # Write mobs that you don't want leashable here.
+# Tip: You can also write DEFAULT_LEASHABLE_MOBS to target all mobs that are leashable by default.
 blacklisted-mobs:
   - EXAMPLEMOB
 
 # Mobs written here will be the only mobs leashable.
 # *Note: Requires that 'use-whitelist-over-blacklist' is set to true above.
+# Tip: You can also write DEFAULT_LEASHABLE_MOBS to target all mobs that are leashable by default.
 whitelisted-mobs:
   - EXAMPLEMOB
 
-# Player Leash settings
+# Player Leash Settings
 player-leash:
-  # Should players be leashable? (Also requires the player leashing to have tether.use.players).
+  # Should players be leashable? (Also requires the player leashing to have the tether.use.players permission).
   enabled: false
-  # Should leashed players be able to escape by crouching? (Recommended: true). (Redundant if player-leash is false).
+  # Should leashed players be able to escape by crouching?
   escapable: true
-  # Should players receive a message when they've been leashed? (Redundant if player-leash is false).
+  # Should players receive a message when they've been leashed?
   message-on-leashed: true
-  # If you are already riding, you can no longer tether other players, This does not affect leash mobs
+  # Prevents leashed players from leashing other players.
   prevent-nesting: false
 
 # Should Tether hook into the following land management plugins?
