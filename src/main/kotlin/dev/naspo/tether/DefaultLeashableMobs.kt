@@ -102,14 +102,13 @@ private val conditionalDefaultLeashableMobs: Map<EntityType, List<LeashCondition
  * Returns true if a mob is leashable by default.
  */
 fun isMobLeashableByDefault(mob: Mob): Boolean {
-    return if (unconditionalDefaultLeashableMobs.contains(mob.type)) {
-        Bukkit.getServer().logger.info("The mob ${mob.type.name} is unconditionally leashable by default.")
-        true
+    if (unconditionalDefaultLeashableMobs.contains(mob.type)) {
+        return true
     } else if (conditionalDefaultLeashableMobs.keys.contains(mob.type)) {
         // Check if leash conditions are met for the mob.
         val leashConditions: List<LeashCondition> = conditionalDefaultLeashableMobs[mob.type] ?: return false
-        leashConditions.all { it.isMet(mob) }
+        return leashConditions.all { it.isMet(mob) }
     } else {
-        false
+        return false
     }
 }
