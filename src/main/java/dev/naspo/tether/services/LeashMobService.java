@@ -15,7 +15,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 // Responsible for logic related to leashing mobs.
 public class LeashMobService {
@@ -28,7 +27,7 @@ public class LeashMobService {
     }
 
     /**
-     * Have the player leash a mob if they are allowed.
+     * Leash a mob to a player if allowed.
      * Checks things like current land claims, player permissions, and more.
      *
      * @param player The player to be the leash holder.
@@ -37,7 +36,7 @@ public class LeashMobService {
      * @throws NoPermissionException    if the player does not have permission.
      * @throws LeashException           when the leash operation fails for a given reason (LeashErrorType).
      */
-    public void playerLeashMob(Player player, LivingEntity entity) throws IllegalArgumentException,
+    public void leashMobToPlayer(Player player, LivingEntity entity) throws IllegalArgumentException,
             NoPermissionException, LeashException {
         if (entity instanceof Player) throw new IllegalArgumentException("Target entity must not be a player.");
         // Blacklist/whitelist check.

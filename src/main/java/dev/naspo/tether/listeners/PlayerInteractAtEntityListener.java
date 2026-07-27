@@ -1,17 +1,14 @@
 package dev.naspo.tether.listeners;
 
-import dev.naspo.tether.DefaultLeashableMobsKt;
 import dev.naspo.tether.Tether;
 import dev.naspo.tether.utils.ExceptionUtils;
 import dev.naspo.tether.exceptions.NoPermissionException;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
 import dev.naspo.tether.services.LeashMobService;
 import dev.naspo.tether.services.LeashPlayerService;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.LeashHitch;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -106,7 +103,7 @@ public class PlayerInteractAtEntityListener implements Listener {
 
             // Try to leash the mob.
             try {
-                leashMobService.playerLeashMob(player, entity);
+                leashMobService.leashMobToPlayer(player, entity);
             } catch (IllegalArgumentException e) {
                 plugin.getLogger().log(Level.SEVERE, e.getMessage());
             } catch (NoPermissionException e) {
