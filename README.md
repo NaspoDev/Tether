@@ -15,7 +15,7 @@ Available on [Spigot](https://www.spigotmc.org/resources/tether.100941/), [Modri
 - Attach any leashed mob to a fence (right-click the fence).
 - Leash any mobs together (sneak + right-click the mob).
 - Mob leash blacklist and whitelist.
-  - Tip: You can also write DEFAULT_LEASHABLE_MOBS to target all mobs that are leashable by default.
+  - Tip: You can also write DEFAULT_LEASHABLE_ENTITIES to target all mobs that are leashable by default.
 - Leash players.
 
 ## Integrations

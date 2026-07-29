@@ -6,13 +6,13 @@
 use-whitelist-over-blacklist: false
 
 # Write mobs that you don't want leashable here.
-# Tip: You can also write DEFAULT_LEASHABLE_MOBS to target all mobs that are leashable by default.
+# Tip: You can also write DEFAULT_LEASHABLE_ENTITIES to target all mobs that are leashable by default.
 blacklisted-mobs:
   - EXAMPLEMOB
 
 # Mobs written here will be the only mobs leashable.
 # *Note: Requires that 'use-whitelist-over-blacklist' is set to true above.
-# Tip: You can also write DEFAULT_LEASHABLE_MOBS to target all mobs that are leashable by default.
+# Tip: You can also write DEFAULT_LEASHABLE_ENTITIES to target all mobs that are leashable by default.
 whitelisted-mobs:
   - EXAMPLEMOB
 

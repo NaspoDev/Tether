@@ -4,13 +4,13 @@ import dev.naspo.tether.commands.Commands;
 import dev.naspo.tether.commands.TabCompleter;
 import dev.naspo.tether.listeners.*;
 import dev.naspo.tether.services.IntegrationManager;
-import dev.naspo.tether.services.LeashMobService;
+import dev.naspo.tether.services.LeashEntityService;
 import dev.naspo.tether.services.LeashPlayerService;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Tether extends JavaPlugin {
     private IntegrationManager integrationManager;
-    private LeashMobService leashMobService;
+    private LeashEntityService leashEntityService;
     private LeashPlayerService leashPlayerService;
 
     @Override
@@ -41,13 +41,13 @@ public final class Tether extends JavaPlugin {
 
     private void instantiateClasses() {
         integrationManager = new IntegrationManager(this);
-        leashMobService = new LeashMobService(this, integrationManager);
+        leashEntityService = new LeashEntityService(this, integrationManager);
         leashPlayerService = new LeashPlayerService(this, integrationManager);
     }
 
     private void registerEvents() {
-        this.getServer().getPluginManager().registerEvents(new PlayerInteractAtEntityListener(this, leashMobService, leashPlayerService), this);
-        this.getServer().getPluginManager().registerEvents(new PlayerInteractListener(this, leashMobService), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerInteractAtEntityListener(this, leashEntityService, leashPlayerService), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerInteractListener(this, leashEntityService), this);
         this.getServer().getPluginManager().registerEvents(new EntityDeathListener(), this);
         this.getServer().getPluginManager().registerEvents(new EntityDismountListener(this, leashPlayerService), this);
         this.getServer().getPluginManager().registerEvents(new EntityUnleashListener(), this);

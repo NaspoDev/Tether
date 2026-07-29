@@ -15,31 +15,31 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 // Responsible for logic related to leashing mobs.
-public class LeashMobService {
+public class LeashEntityService {
     private final Tether plugin;
     private final IntegrationManager integrationManager;
 
-    public LeashMobService(Tether plugin, IntegrationManager integrationManager) {
+    public LeashEntityService(Tether plugin, IntegrationManager integrationManager) {
         this.plugin = plugin;
         this.integrationManager = integrationManager;
     }
 
     /**
-     * Leash a mob to a player if allowed.
+     * Leash a non-player entity to a player if allowed.
      * Checks things like current land claims, player permissions, and more.
      *
      * @param player The player to be the leash holder.
-     * @param entity The non-player LivingEntity to be leashed. (Not `Mob` because NPCs are supported).
-     * @throws IllegalArgumentException if the LivingEntity passed in is a Player.
+     * @param entity The non-player entity to be leashed.
+     * @throws IllegalArgumentException if the entity provided is a Player or is not Leashable.
      * @throws NoPermissionException    if the player does not have permission.
      * @throws LeashException           when the leash operation fails for a given reason (LeashErrorType).
      */
-    public void leashMobToPlayer(Player player, LivingEntity entity) throws IllegalArgumentException,
+    public void leashEntityToPlayer(Player player, Entity entity) throws IllegalArgumentException,
             NoPermissionException, LeashException {
         if (entity instanceof Player) throw new IllegalArgumentException("Target entity must not be a player.");
+        if (!(entity instanceof Leashable leashable)) throw new IllegalArgumentException("Target entity must be leashable.");
 
         // Land protection integration check.
         checkLandProtection(entity.getLocation(), player);
@@ -53,30 +53,19 @@ public class LeashMobService {
             }
         }
 
-        // From this point on the entity must be a Mob.
-        Mob mob;
-        if (entity instanceof Mob) {
-            mob = (Mob) entity;
-        } else {
-            plugin.getLogger().log(
-                    Level.SEVERE,
-                    "Entity is expected to be a Mob, but is not. Aborting leash mob to player flow.");
-            return;
-        }
-
         // Blacklist/whitelist check.
-        if (isEntityRestricted(mob)) throw new LeashException(LeashErrorType.MOB_RESTRICTED);
+        if (isEntityRestricted(entity)) throw new LeashException(LeashErrorType.MOB_RESTRICTED);
 
         // If the mob is leashable by default, let the game handle leashing.
-        if (DefaultLeashableEntitiesKt.isEntityLeashableByDefault(mob)) {
+        if (DefaultLeashableEntitiesKt.isEntityLeashableByDefault(entity)) {
             return;
         }
 
         // If the target entity is leashed to a fence or other mob, drop a lead.
         // This must be done because PlayerUnleashEntityEvent, which drops a lead for a mob upon being unleashed, doesn't
         // trigger for mobs that aren't leashable by default that are being transferred from a fence or mob to a player.
-        if (mob.isLeashed() && (mob.getLeashHolder() instanceof LeashHitch || mob.getLeashHolder() instanceof Mob)) {
-            mob.getWorld().dropItemNaturally(mob.getLocation(), new ItemStack(Material.LEAD, 1));
+        if (leashable.isLeashed() && (leashable.getLeashHolder() instanceof LeashHitch || leashable.getLeashHolder() instanceof Mob)) {
+            entity.getWorld().dropItemNaturally(entity.getLocation(), new ItemStack(Material.LEAD, 1));
         }
 
         // Begin the leashing process.
@@ -89,7 +78,7 @@ public class LeashMobService {
         // The actual leashing process has to run in a scheduler with a slight delay,
         // due to the way the event works.
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            mob.setLeashHolder(player);
+            leashable.setLeashHolder(player);
 
             // If a lead was not removed from the player's inventory, remove one.
             if (player.getInventory().getItemInMainHand().getAmount() == (leads - 1)) {
@@ -132,17 +121,19 @@ public class LeashMobService {
     }
 
     /**
-     * Deals with sneak-interaction, specifically looks for leashing mobs together and will
+     * Deals with sneak-interaction, specifically looks for leashing entities together and will
      * do so if applicable.
      *
      * @param player The player who sneak-interacted with an entity.
-     * @param entity The LivingEntity that was sneak-interacted with. (Not `Mob` because NPCs are supported).
+     * @param entity The leashable entity that was sneak-interacted with.
+     * @throws IllegalArgumentException if the entity provided is a Player or is not Leashable.
      * @throws LeashException when the leash operation fails for a given reason (LeashErrorType).
      */
-    public void handleSneakInteract(Player player, LivingEntity entity) throws IllegalArgumentException, LeashException {
+    public void handleSneakInteract(Player player, Entity entity) throws IllegalArgumentException, LeashException {
         if (entity instanceof Player) throw new IllegalArgumentException("Target entity must not be a player.");
+        if (!(entity instanceof Leashable leashable)) throw new IllegalArgumentException("Target entity must be leashable.");
         // If the target entity is leashed by the player, exit and allow the game to handle unleashing the entity.
-        if (entity.isLeashed() && entity.getLeashHolder().equals(player)) return;
+        if (leashable.isLeashed() && leashable.getLeashHolder().equals(player)) return;
 
         // Land protection integration check.
         checkLandProtection(entity.getLocation(), player);
@@ -156,27 +147,28 @@ public class LeashMobService {
     }
 
     /**
-     * Handles interacting with a mob with shears in hand.
+     * Handles interacting with a Leashable Entity with shears in hand.
      *
      * @param player The player who interacted with an entity while holding shears.
-     * @param entity The LivingEntity that was sneak-interacted with. (Not `Mob` because NPCs are supported).
-     * @throws IllegalArgumentException if the LivingEntity provided was a Player.
+     * @param entity The leashable entity that was sneak-interacted with.
+     * @throws IllegalArgumentException if the Entity provided is a Player or is not Leashable.
      * @throws LeashException           when the leash operation fails for a given reason (LeashErrorType).
      */
-    public void handleShearsInteract(Player player, LivingEntity entity) throws IllegalArgumentException, LeashException {
+    public void handleShearsInteract(Player player, Entity entity) throws IllegalArgumentException, LeashException {
         if (entity instanceof Player) throw new IllegalArgumentException("Target entity must not be a player.");
-        if (!entity.isLeashed()) return;
+        if (!(entity instanceof Leashable leashable)) throw new IllegalArgumentException("Target entity must be leashable.");
+        if (!leashable.isLeashed()) return;
 
         // If the player is the leasher, don't check permissions, always allow to unleash.
-        if (entity.getLeashHolder().equals(player)) {
+        if (leashable.getLeashHolder().equals(player)) {
         } else {
             checkLandProtection(entity.getLocation(), player);
         }
     }
 
     // Checks the whitelist or blacklist to see whether the entity is restricted from being leashed or not.
-    public boolean isEntityRestricted(Mob mob) {
-        String mobName = mob.getType().name().toUpperCase();
+    public boolean isEntityRestricted(Entity entity) {
+        String mobName = entity.getType().name().toUpperCase();
 
         // If whitelist is set to be used over blacklist, check the whitelist only.
         if (plugin.getConfig().getBoolean("use-whitelist-over-blacklist")) {
@@ -186,7 +178,7 @@ public class LeashMobService {
             if (whitelist.contains(mobName)) {
                 return false;
             } else if (whitelist.contains(DefaultLeashableEntitiesKt.DEFAULT_LEASHABLE_ENTITIES_CONFIG_TOKEN) &&
-                    DefaultLeashableEntitiesKt.isEntityLeashableByDefault(mob)) {
+                    DefaultLeashableEntitiesKt.isEntityLeashableByDefault(entity)) {
                 return false;
             } else {
                 return true;
@@ -199,7 +191,7 @@ public class LeashMobService {
             if (blacklist.contains(mobName)) {
                 return true;
             } else if (blacklist.contains(DefaultLeashableEntitiesKt.DEFAULT_LEASHABLE_ENTITIES_CONFIG_TOKEN) &&
-                    DefaultLeashableEntitiesKt.isEntityLeashableByDefault(mob)) {
+                    DefaultLeashableEntitiesKt.isEntityLeashableByDefault(entity)) {
                 return true;
             } else {
                 return false;
