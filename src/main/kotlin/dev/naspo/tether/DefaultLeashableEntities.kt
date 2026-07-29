@@ -1,16 +1,15 @@
 package dev.naspo.tether
 
-import org.bukkit.Bukkit
+import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
-import org.bukkit.entity.Mob
 import org.bukkit.entity.Monster
 
-// Defines mobs which are leashable by default in the vanilla game, and provides utility for checking
-// if a mob is leashable by default.
-// Default leashable mob data is based on this: https://minecraft.wiki/w/Lead
+// Defines entities which are leashable by default in the vanilla game, and provides utility for checking
+// if an entity is leashable by default.
+// Default leashable entity data is based on this: https://minecraft.wiki/w/Lead
 
-// A list of mobs that are unconditionally leashable by default. i.e. they are always leashable by default.
-private val unconditionalDefaultLeashableMobs: List<EntityType> = listOf(
+// A list of entities that are unconditionally leashable by default. i.e. they are always leashable by default.
+private val unconditionalDefaultLeashableEntities: List<EntityType> = listOf(
     // Mobs
     EntityType.ALLAY,
     EntityType.ARMADILLO,
@@ -77,20 +76,20 @@ private val unconditionalDefaultLeashableMobs: List<EntityType> = listOf(
 )
 
 /**
- * A condition under which a mob becomes leashable.
- * (Some mobs are only leashable under certain conditions).
+ * A condition under which an entity becomes leashable.
+ * (Some entities are only leashable under certain conditions).
  * @param isMet A lambda which performs the leash condition check.
  */
-private enum class LeashCondition(val isMet: (Mob) -> Boolean) {
+private enum class LeashCondition(val isMet: (Entity) -> Boolean) {
     NOT_HOSTILE({ it !is Monster }),
-    NOT_MOUNTED_BY_HOSTILE_MOB({ mob ->
-        mob.passengers.none { it is Monster }
+    NOT_MOUNTED_BY_HOSTILE_MOB({ entity ->
+        entity.passengers.none { it is Monster }
     })
 }
 
-// A list of mobs that are conditionally leashable by default. i.e. they are only leashable under certain conditions.
-// Some mobs need multiple conditions to be met for them to become leashable.
-private val conditionalDefaultLeashableMobs: Map<EntityType, List<LeashCondition>> = mapOf(
+// A list of entities that are conditionally leashable by default. i.e. they are only leashable under certain conditions.
+// Some entities need multiple conditions to be met for them to become leashable.
+private val conditionalDefaultLeashableEntities: Map<EntityType, List<LeashCondition>> = mapOf(
     EntityType.NAUTILUS to listOf(LeashCondition.NOT_HOSTILE),
     EntityType.WOLF to listOf(LeashCondition.NOT_HOSTILE),
     EntityType.ZOMBIE_NAUTILUS to listOf(LeashCondition.NOT_HOSTILE, LeashCondition.NOT_MOUNTED_BY_HOSTILE_MOB),
@@ -99,20 +98,20 @@ private val conditionalDefaultLeashableMobs: Map<EntityType, List<LeashCondition
 )
 
 /**
- * The token used in the blacklist/whitelist in the config to refer to all default leashable mobs.
+ * The token used in the blacklist/whitelist in the config to refer to all default leashable entities.
  */
-const val DEFAULT_LEASHABLE_MOBS_CONFIG_TOKEN: String = "DEFAULT_LEASHABLE_MOBS"
+const val DEFAULT_LEASHABLE_ENTITIES_CONFIG_TOKEN: String = "DEFAULT_LEASHABLE_ENTITIES"
 
 /**
  * Returns true if a mob is leashable by default.
  */
-fun isMobLeashableByDefault(mob: Mob): Boolean {
-    if (unconditionalDefaultLeashableMobs.contains(mob.type)) {
+fun isEntityLeashableByDefault(entity: Entity): Boolean {
+    if (unconditionalDefaultLeashableEntities.contains(entity.type)) {
         return true
-    } else if (conditionalDefaultLeashableMobs.keys.contains(mob.type)) {
-        // Check if leash conditions are met for the mob.
-        val leashConditions: List<LeashCondition> = conditionalDefaultLeashableMobs[mob.type] ?: return false
-        return leashConditions.all { it.isMet(mob) }
+    } else if (conditionalDefaultLeashableEntities.keys.contains(entity.type)) {
+        // Check if leash conditions are met for the entity.
+        val leashConditions: List<LeashCondition> = conditionalDefaultLeashableEntities[entity.type] ?: return false
+        return leashConditions.all { it.isMet(entity) }
     } else {
         return false
     }

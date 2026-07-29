@@ -1,6 +1,6 @@
 package dev.naspo.tether.services;
 
-import dev.naspo.tether.DefaultLeashableMobsKt;
+import dev.naspo.tether.DefaultLeashableEntitiesKt;
 import dev.naspo.tether.Tether;
 import dev.naspo.tether.exceptions.NoPermissionException;
 import dev.naspo.tether.exceptions.leashexception.LeashErrorType;
@@ -68,7 +68,7 @@ public class LeashMobService {
         if (isEntityRestricted(mob)) throw new LeashException(LeashErrorType.MOB_RESTRICTED);
 
         // If the mob is leashable by default, let the game handle leashing.
-        if (DefaultLeashableMobsKt.isMobLeashableByDefault(mob)) {
+        if (DefaultLeashableEntitiesKt.isEntityLeashableByDefault(mob)) {
             return;
         }
 
@@ -185,8 +185,8 @@ public class LeashMobService {
 
             if (whitelist.contains(mobName)) {
                 return false;
-            } else if (whitelist.contains(DefaultLeashableMobsKt.DEFAULT_LEASHABLE_MOBS_CONFIG_TOKEN) &&
-                    DefaultLeashableMobsKt.isMobLeashableByDefault(mob)) {
+            } else if (whitelist.contains(DefaultLeashableEntitiesKt.DEFAULT_LEASHABLE_ENTITIES_CONFIG_TOKEN) &&
+                    DefaultLeashableEntitiesKt.isEntityLeashableByDefault(mob)) {
                 return false;
             } else {
                 return true;
@@ -198,8 +198,8 @@ public class LeashMobService {
 
             if (blacklist.contains(mobName)) {
                 return true;
-            } else if (blacklist.contains(DefaultLeashableMobsKt.DEFAULT_LEASHABLE_MOBS_CONFIG_TOKEN) &&
-                    DefaultLeashableMobsKt.isMobLeashableByDefault(mob)) {
+            } else if (blacklist.contains(DefaultLeashableEntitiesKt.DEFAULT_LEASHABLE_ENTITIES_CONFIG_TOKEN) &&
+                    DefaultLeashableEntitiesKt.isEntityLeashableByDefault(mob)) {
                 return true;
             } else {
                 return false;
