@@ -2,18 +2,18 @@
 # You can leash any mob or player, and can take full control over leashing across your server with a
 # multitude of configuration options and integrations.
 
-# If set to true, the mob blacklist will be ignored and the whitelist will be used.
+# If set to true, the entity blacklist will be ignored and the whitelist will be used.
 use-whitelist-over-blacklist: false
 
-# Write mobs that you don't want leashable here.
-# Tip: You can also write DEFAULT_LEASHABLE_ENTITIES to target all mobs that are leashable by default.
-blacklisted-mobs:
+# Write entities that you don't want leashable here.
+# Tip: You can also write DEFAULT_LEASHABLE_ENTITIES to target all entities that are leashable by default.
+entity-blacklist:
   - EXAMPLEMOB
 
-# Mobs written here will be the only mobs leashable.
+# Entities written here will be the only entities leashable.
 # *Note: Requires that 'use-whitelist-over-blacklist' is set to true above.
-# Tip: You can also write DEFAULT_LEASHABLE_ENTITIES to target all mobs that are leashable by default.
-whitelisted-mobs:
+# Tip: You can also write DEFAULT_LEASHABLE_ENTITIES to target all entities that are leashable by default.
+entity-whitelist:
   - EXAMPLEMOB
 
 # Player Leash Settings
