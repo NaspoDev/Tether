@@ -38,8 +38,7 @@ public class LeashEntityService {
      */
     public void leashEntityToPlayer(Player player, Entity entity) throws IllegalArgumentException,
             NoPermissionException, LeashException {
-        if (entity instanceof Player) throw new IllegalArgumentException("Target entity must not be a player.");
-        if (!(entity instanceof Leashable leashable)) throw new IllegalArgumentException("Target entity must be leashable.");
+        Leashable leashable = validateTarget(entity);
 
         // Land protection integration check.
         checkLandProtection(entity.getLocation(), player);
@@ -130,8 +129,7 @@ public class LeashEntityService {
      * @throws LeashException when the leash operation fails for a given reason (LeashErrorType).
      */
     public void handleSneakInteract(Player player, Entity entity) throws IllegalArgumentException, LeashException {
-        if (entity instanceof Player) throw new IllegalArgumentException("Target entity must not be a player.");
-        if (!(entity instanceof Leashable leashable)) throw new IllegalArgumentException("Target entity must be leashable.");
+        Leashable leashable = validateTarget(entity);
         // If the target entity is leashed by the player, exit and allow the game to handle unleashing the entity.
         if (leashable.isLeashed() && leashable.getLeashHolder().equals(player)) return;
 
@@ -155,8 +153,7 @@ public class LeashEntityService {
      * @throws LeashException           when the leash operation fails for a given reason (LeashErrorType).
      */
     public void handleShearsInteract(Player player, Entity entity) throws IllegalArgumentException, LeashException {
-        if (entity instanceof Player) throw new IllegalArgumentException("Target entity must not be a player.");
-        if (!(entity instanceof Leashable leashable)) throw new IllegalArgumentException("Target entity must be leashable.");
+        Leashable leashable = validateTarget(entity);
         if (!leashable.isLeashed()) return;
 
         // If the player is the leasher, don't check permissions, always allow to unleash.
@@ -197,6 +194,19 @@ public class LeashEntityService {
                 return false;
             }
         }
+    }
+
+    /**
+     * Validates that the given entity is a legal target for leash operations.
+     * Meaning that it must be {@link Leashable} but not a {@link Player}.
+     * @param entity The entity to validate.
+     * @return the given entity, narrowed to {@link Leashable}.
+     * @throws IllegalArgumentException if the Entity is a Player or is not Leashable.
+     */
+    private Leashable validateTarget(Entity entity) throws IllegalArgumentException {
+        if (entity instanceof Player) throw new IllegalArgumentException("Target entity must not be a player.");
+        if (!(entity instanceof Leashable leashable)) throw new IllegalArgumentException("Target entity must be leashable.");
+        return leashable;
     }
 
     /**
