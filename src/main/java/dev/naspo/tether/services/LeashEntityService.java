@@ -16,7 +16,11 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-// Responsible for logic related to leashing mobs.
+/**
+ * Responsible for leashing logic for any {@link Leashable} that is not a {@link Player}
+ *
+ * @see LeashPlayerService
+ */
 public class LeashEntityService {
     private final Tether plugin;
     private final IntegrationManager integrationManager;

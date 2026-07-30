@@ -35,8 +35,6 @@ public class PlayerInteractAtEntityListener implements Listener {
     private void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         if (event.getHand() == EquipmentSlot.OFF_HAND) return;
 
-        // TODO: REMOVE THIS
-        plugin.getLogger().info("Entity right clicked: " + event.getRightClicked().getType());
         // Important: The order of cases are important as we want to filter out Player and LeashHitch.
         switch (event.getRightClicked()) {
             case Player _ -> handlePlayerInteractAtPlayer(event);
@@ -66,8 +64,6 @@ public class PlayerInteractAtEntityListener implements Listener {
      * @throws IllegalArgumentException if the event's entity is a Player, a LeashHitch, or is not Leashable.
      */
     private void handlePlayerInteractAtEntity(PlayerInteractAtEntityEvent event) throws IllegalArgumentException {
-        // TODO: REMOVE THIS
-        plugin.getLogger().info("we got to handlePlayerInteractAtEntity");
         Entity entity = event.getRightClicked();
         Player player = event.getPlayer();
 
