@@ -2,6 +2,8 @@ package dev.naspo.tether.services;
 
 import dev.naspo.tether.DefaultLeashableEntitiesKt;
 import dev.naspo.tether.Tether;
+import dev.naspo.tether.config.ConfigToken;
+import dev.naspo.tether.config.ConfigTokenKt;
 import dev.naspo.tether.exceptions.NoPermissionException;
 import dev.naspo.tether.exceptions.leashexception.LeashErrorType;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
@@ -178,7 +180,7 @@ public class LeashEntityService {
 
             if (whitelist.contains(mobName)) {
                 return false;
-            } else if (whitelist.contains(DefaultLeashableEntitiesKt.DEFAULT_LEASHABLE_ENTITIES_CONFIG_TOKEN) &&
+            } else if (ConfigTokenKt.containsConfigToken(whitelist, ConfigToken.DEFAULT_LEASHABLE_ENTITIES) &&
                     DefaultLeashableEntitiesKt.isEntityLeashableByDefault(entity)) {
                 return false;
             } else {
@@ -191,7 +193,7 @@ public class LeashEntityService {
 
             if (blacklist.contains(mobName)) {
                 return true;
-            } else if (blacklist.contains(DefaultLeashableEntitiesKt.DEFAULT_LEASHABLE_ENTITIES_CONFIG_TOKEN) &&
+            } else if (ConfigTokenKt.containsConfigToken(blacklist, ConfigToken.DEFAULT_LEASHABLE_ENTITIES) &&
                     DefaultLeashableEntitiesKt.isEntityLeashableByDefault(entity)) {
                 return true;
             } else {

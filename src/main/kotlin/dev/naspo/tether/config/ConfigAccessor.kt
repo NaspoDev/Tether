@@ -8,6 +8,12 @@ class ConfigAccessor(private val plugin: Tether) {
     private val config
         get() = plugin.config
 
+    /**
+     * Gets the value of a [ConfigKey] from the plugin's config.yml.
+     *
+     * If the ConfigKey's path doesn't exist, it's legacy paths will be searched for (if applicable).
+     * If it's legacy paths don't exist, it's default value will be returned.
+     */
     fun <T> get(configKey: ConfigKey<T>): T {
         val path: String? = resolvePath(configKey)
         if (path == null) {
