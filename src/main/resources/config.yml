@@ -45,4 +45,4 @@ messages:
   player-leashed-escapable: "&7You've been leashed! Press &6crouch &7to escape."
   player-leashed-not-escapable: "&7You've been leashed!"
   cannot-leash-riding-player: "&7You cannot leash players that are riding an entity."
-  prevent-nesting: "&7You cannot leash a player while mounted"
+  prevent-nesting: "&7You cannot leash a player while your are leashed."
