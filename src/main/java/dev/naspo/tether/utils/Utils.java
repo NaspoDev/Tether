@@ -9,12 +9,12 @@ import org.bukkit.event.Cancellable;
 // General plugin utils.
 public class Utils {
 
-    // Returns the plugins prefix.
-    public static String getPrefix(Tether plugin) {
-        return plugin.getConfig().getString("messages.prefix");
-    }
-
-    // Utility method to make using ChatColor easier.
+    /**
+     * Utility method to make using ChatColor easier.
+     *
+     * @param text The string to translate into supporting colour codes.
+     * @return The translated string.
+     */
     public static String chatColor(String text) {
         return ChatColor.translateAlternateColorCodes('&', text);
     }

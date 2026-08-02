@@ -1,6 +1,7 @@
 package dev.naspo.tether.commands;
 
 import dev.naspo.tether.Tether;
+import dev.naspo.tether.config.ConfigAccessor;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -10,11 +11,12 @@ import org.bukkit.entity.Player;
 import java.util.Objects;
 
 public class Commands implements CommandExecutor {
+    private final Tether plugin;
+    private final ConfigAccessor configAccessor;
 
-    Tether plugin;
-
-    public Commands(Tether plugin) {
+    public Commands(Tether plugin, ConfigAccessor configAccessor) {
         this.plugin = plugin;
+        this.configAccessor = configAccessor;
     }
 
     @Override

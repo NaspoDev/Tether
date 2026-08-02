@@ -1,6 +1,7 @@
 package dev.naspo.tether.services;
 
 import dev.naspo.tether.Tether;
+import dev.naspo.tether.config.ConfigAccessor;
 import dev.naspo.tether.utils.Utils;
 import dev.naspo.tether.exceptions.NoPermissionException;
 import dev.naspo.tether.exceptions.leashexception.LeashErrorType;
@@ -21,11 +22,13 @@ import org.bukkit.metadata.FixedMetadataValue;
 public class LeashPlayerService {
     private final Tether plugin;
     private final IntegrationManager integrationManager;
+    private final ConfigAccessor configAccessor;
     public final static String PLAYER_LEASH_MOB_METADATA_KEY = "naspodev_tether_plugin";
 
-    public LeashPlayerService(Tether plugin, IntegrationManager integrationManager) {
+    public LeashPlayerService(Tether plugin, IntegrationManager integrationManager, ConfigAccessor configAccessor) {
         this.plugin = plugin;
         this.integrationManager = integrationManager;
+        this.configAccessor = configAccessor;
     }
 
     /**

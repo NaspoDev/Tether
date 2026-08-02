@@ -1,6 +1,7 @@
 package dev.naspo.tether.utils;
 
 import dev.naspo.tether.Tether;
+import dev.naspo.tether.config.ConfigAccessor;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -13,9 +14,13 @@ public class ExceptionUtils {
      * @param player The player involved with the event.
      * @param event The event. Should be Cancellable.
      * @param exception The LeashException.
-     * @param plugin The Tether plugin instance.
+     * @param configAccessor A {@link ConfigAccessor} instance.
      */
-    public static void handleLeashException(Player player, Cancellable event, LeashException exception, Tether plugin) {
+    public static void handleLeashException(
+            Player player,
+            Cancellable event,
+            LeashException exception,
+            ConfigAccessor configAccessor) {
         switch (exception.getType()) {
             case TARGET_PLAYER_RIDING -> player.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) +
                     plugin.getConfig().getString("messages.cannot-leash-riding-player")));

@@ -2,6 +2,7 @@ package dev.naspo.tether;
 
 import dev.naspo.tether.commands.Commands;
 import dev.naspo.tether.commands.TabCompleter;
+import dev.naspo.tether.config.ConfigAccessor;
 import dev.naspo.tether.listeners.*;
 import dev.naspo.tether.services.IntegrationManager;
 import dev.naspo.tether.services.LeashEntityService;
@@ -10,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Tether extends JavaPlugin {
     private IntegrationManager integrationManager;
+    private ConfigAccessor configAccessor;
     private LeashEntityService leashEntityService;
     private LeashPlayerService leashPlayerService;
 
@@ -41,8 +43,9 @@ public final class Tether extends JavaPlugin {
 
     private void instantiateClasses() {
         integrationManager = new IntegrationManager(this);
+        configAccessor = new ConfigAccessor(this);
         leashEntityService = new LeashEntityService(this, integrationManager);
-        leashPlayerService = new LeashPlayerService(this, integrationManager);
+        leashPlayerService = new LeashPlayerService(this, integrationManager, configAccessor);
     }
 
     private void registerEvents() {
@@ -54,7 +57,7 @@ public final class Tether extends JavaPlugin {
     }
 
     private void registerCommands() {
-        this.getCommand("tether").setExecutor(new Commands(this));
+        this.getCommand("tether").setExecutor(new Commands(this, configAccessor));
         this.getCommand("tether").setTabCompleter(new TabCompleter());
     }
 }
