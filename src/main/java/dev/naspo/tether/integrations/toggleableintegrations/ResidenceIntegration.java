@@ -4,6 +4,8 @@ import com.bekvon.bukkit.residence.Residence;
 import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import com.bekvon.bukkit.residence.protection.ResidencePermissions;
 import dev.naspo.tether.Tether;
+import dev.naspo.tether.config.ConfigAccessor;
+import dev.naspo.tether.config.ConfigKey;
 import dev.naspo.tether.integrations.IntegrationEnablePhase;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
@@ -12,8 +14,8 @@ import org.bukkit.entity.Player;
 public class ResidenceIntegration extends ToggleableIntegration {
     private Residence residenceAPI;
 
-    public ResidenceIntegration(Tether tetherPlugin) {
-        super(tetherPlugin, "Residence", "residence");
+    public ResidenceIntegration(Tether tetherPlugin, ConfigKey<Boolean> configKey, ConfigAccessor configAccessor) {
+        super(tetherPlugin, "Residence", configKey, configAccessor);
     }
 
     @Override

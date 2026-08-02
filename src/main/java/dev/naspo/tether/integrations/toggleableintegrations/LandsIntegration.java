@@ -1,6 +1,8 @@
 package dev.naspo.tether.integrations.toggleableintegrations;
 
 import dev.naspo.tether.Tether;
+import dev.naspo.tether.config.ConfigAccessor;
+import dev.naspo.tether.config.ConfigKey;
 import dev.naspo.tether.integrations.IntegrationEnablePhase;
 import me.angeschossen.lands.api.land.Area;
 import me.angeschossen.lands.api.land.Land;
@@ -11,8 +13,8 @@ import org.bukkit.entity.Player;
 public class LandsIntegration extends ToggleableIntegration {
     private me.angeschossen.lands.api.LandsIntegration landsAPI;
 
-    public LandsIntegration(Tether tetherPlugin) {
-        super(tetherPlugin, "Lands", "lands");
+    public LandsIntegration(Tether tetherPlugin, ConfigKey<Boolean> configKey, ConfigAccessor configAccessor) {
+        super(tetherPlugin, "Lands", configKey, configAccessor);
     }
 
     @Override

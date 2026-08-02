@@ -10,8 +10,8 @@ import dev.naspo.tether.leash.LeashPlayerService;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Tether extends JavaPlugin {
-    private IntegrationManager integrationManager;
     private ConfigAccessor configAccessor;
+    private IntegrationManager integrationManager;
     private LeashEntityService leashEntityService;
     private LeashPlayerService leashPlayerService;
 
@@ -42,8 +42,8 @@ public final class Tether extends JavaPlugin {
     }
 
     private void instantiateClasses() {
-        integrationManager = new IntegrationManager(this);
         configAccessor = new ConfigAccessor(this);
+        integrationManager = new IntegrationManager(this, configAccessor);
         leashEntityService = new LeashEntityService(this, integrationManager);
         leashPlayerService = new LeashPlayerService(this, integrationManager, configAccessor);
     }

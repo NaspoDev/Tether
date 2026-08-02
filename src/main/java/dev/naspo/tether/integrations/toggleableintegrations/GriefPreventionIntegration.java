@@ -1,6 +1,8 @@
 package dev.naspo.tether.integrations.toggleableintegrations;
 
 import dev.naspo.tether.Tether;
+import dev.naspo.tether.config.ConfigAccessor;
+import dev.naspo.tether.config.ConfigKey;
 import dev.naspo.tether.integrations.IntegrationEnablePhase;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.ClaimPermission;
@@ -12,8 +14,8 @@ import org.bukkit.entity.Player;
 public class GriefPreventionIntegration extends ToggleableIntegration {
     private DataStore dataStore;
 
-    public GriefPreventionIntegration(Tether tetherPlugin) {
-        super(tetherPlugin, "GriefPrevention", "griefprevention");
+    public GriefPreventionIntegration(Tether tetherPlugin, ConfigKey<Boolean> configKey, ConfigAccessor configAccessor) {
+        super(tetherPlugin, "GriefPrevention", configKey, configAccessor);
     }
 
     @Override

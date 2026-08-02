@@ -5,6 +5,8 @@ import com.griefdefender.api.GriefDefender;
 import com.griefdefender.api.claim.Claim;
 import com.griefdefender.api.claim.TrustTypes;
 import dev.naspo.tether.Tether;
+import dev.naspo.tether.config.ConfigAccessor;
+import dev.naspo.tether.config.ConfigKey;
 import dev.naspo.tether.integrations.IntegrationEnablePhase;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -12,8 +14,8 @@ import org.bukkit.entity.Player;
 public class GriefDefenderIntegration extends ToggleableIntegration {
     private Core griefDefenderAPI;
 
-    public GriefDefenderIntegration(Tether tetherPlugin) {
-        super(tetherPlugin, "GriefDefender", "griefdefender");
+    public GriefDefenderIntegration(Tether tetherPlugin, ConfigKey<Boolean> configKey, ConfigAccessor configAccessor) {
+        super(tetherPlugin, "GriefDefender", configKey, configAccessor);
     }
 
     @Override

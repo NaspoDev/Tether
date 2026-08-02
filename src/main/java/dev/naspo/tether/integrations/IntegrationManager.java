@@ -1,6 +1,8 @@
 package dev.naspo.tether.integrations;
 
 import dev.naspo.tether.Tether;
+import dev.naspo.tether.config.ConfigAccessor;
+import dev.naspo.tether.config.ConfigKeys;
 import dev.naspo.tether.integrations.standardintegrations.WorldGuardIntegration;
 import dev.naspo.tether.integrations.toggleableintegrations.*;
 import org.bukkit.Location;
@@ -11,12 +13,14 @@ import java.util.List;
 
 // Manages integrations.
 public class IntegrationManager {
-    private Tether plugin;
+    private final Tether plugin;
+    private final ConfigAccessor configAccessor;
 
     private final List<Integration> integrations;
 
-    public IntegrationManager(Tether plugin) {
+    public IntegrationManager(Tether plugin, ConfigAccessor configAccessor) {
         this.plugin = plugin;
+        this.configAccessor = configAccessor;
 
         // Immutable list of integrations.
         integrations = initializeIntegrationClasses();
@@ -68,19 +72,19 @@ public class IntegrationManager {
             list.add(new WorldGuardIntegration(plugin));
         }
         if (isPluginPresent("GriefPrevention")) {
-            list.add(new GriefPreventionIntegration(plugin));
+            list.add(new GriefPreventionIntegration(plugin, ConfigKeys.Hooks.INSTANCE.getGriefPreventionEnabled(), configAccessor));
         }
         if (isPluginPresent("Towny")) {
-            list.add(new TownyIntegration(plugin));
+            list.add(new TownyIntegration(plugin, ConfigKeys.Hooks.INSTANCE.getTownyEnabled(), configAccessor));
         }
         if (isPluginPresent("Lands")) {
-            list.add(new LandsIntegration(plugin));
+            list.add(new LandsIntegration(plugin, ConfigKeys.Hooks.INSTANCE.getLandsEnabled(), configAccessor));
         }
         if (isPluginPresent("GriefDefender")) {
-            list.add(new GriefDefenderIntegration(plugin));
+            list.add(new GriefDefenderIntegration(plugin, ConfigKeys.Hooks.INSTANCE.getGriefDefenderEnabled(), configAccessor));
         }
         if (isPluginPresent("Residence")) {
-            list.add(new ResidenceIntegration(plugin));
+            list.add(new ResidenceIntegration(plugin, ConfigKeys.Hooks.INSTANCE.getResidenceEnabled(), configAccessor));
         }
 
         // Return an immutable list by making a copy of our temporary mutable builder list.
