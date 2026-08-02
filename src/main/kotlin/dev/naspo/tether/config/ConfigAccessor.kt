@@ -2,6 +2,10 @@ package dev.naspo.tether.config
 
 import dev.naspo.tether.Tether
 
+/**
+ * Used to access values from the plugin configuration.
+ * Supports backwards compatability.
+ */
 class ConfigAccessor(private val plugin: Tether) {
 
     // Private helper property. Shorthand to `plugin.config`
