@@ -1,9 +1,9 @@
 package dev.naspo.tether.listeners;
 
 import dev.naspo.tether.Tether;
-import dev.naspo.tether.utils.ExceptionUtils;
+import dev.naspo.tether.exceptions.ExceptionUtils;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
-import dev.naspo.tether.services.LeashEntityService;
+import dev.naspo.tether.leash.LeashEntityService;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;

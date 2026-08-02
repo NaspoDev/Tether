@@ -1,15 +1,24 @@
 package dev.naspo.tether.integrations.toggleableintegrations;
 
 import dev.naspo.tether.Tether;
+import dev.naspo.tether.config.ConfigAccessor;
+import dev.naspo.tether.config.ConfigKey;
 import dev.naspo.tether.integrations.Integration;
 
 // An integration that is toggleable via the config (aka a hook).
 public abstract class ToggleableIntegration extends Integration {
-    private final String configKey;
+    /** This integration's {@link ConfigKey}. */
+    private final ConfigKey<Boolean> configKey;
+    private final ConfigAccessor configAccessor;
 
-    public ToggleableIntegration(Tether tetherPlugin, String pluginName, String configKey) {
+    public ToggleableIntegration(
+            Tether tetherPlugin,
+            String pluginName,
+            ConfigKey<Boolean> configKey,
+            ConfigAccessor configAccessor) {
         super(tetherPlugin, pluginName);
         this.configKey = configKey;
+        this.configAccessor = configAccessor;
     }
 
     @Override
@@ -32,6 +41,6 @@ public abstract class ToggleableIntegration extends Integration {
      * @return true if the integration is set to enabled in the config.
      */
     private boolean isEnabledInConfig() {
-        return tetherPlugin.getConfig().getBoolean("hooks." + configKey);
+        return configAccessor.get(configKey);
     }
 }

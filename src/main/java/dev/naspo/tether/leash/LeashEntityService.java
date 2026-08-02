@@ -1,12 +1,12 @@
-package dev.naspo.tether.services;
+package dev.naspo.tether.leash;
 
-import dev.naspo.tether.DefaultLeashableEntitiesKt;
 import dev.naspo.tether.Tether;
 import dev.naspo.tether.config.ConfigToken;
 import dev.naspo.tether.config.ConfigTokenKt;
 import dev.naspo.tether.exceptions.NoPermissionException;
 import dev.naspo.tether.exceptions.leashexception.LeashErrorType;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
+import dev.naspo.tether.integrations.IntegrationManager;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.Bukkit;

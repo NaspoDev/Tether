@@ -1,7 +1,7 @@
 package dev.naspo.tether.listeners;
 
 import dev.naspo.tether.Tether;
-import dev.naspo.tether.services.LeashPlayerService;
+import dev.naspo.tether.leash.LeashPlayerService;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDismountEvent;

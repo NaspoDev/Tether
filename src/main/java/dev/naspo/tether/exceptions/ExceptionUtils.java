@@ -1,8 +1,8 @@
-package dev.naspo.tether.utils;
+package dev.naspo.tether.exceptions;
 
-import dev.naspo.tether.Tether;
 import dev.naspo.tether.config.ConfigAccessor;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
+import dev.naspo.tether.utils.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 

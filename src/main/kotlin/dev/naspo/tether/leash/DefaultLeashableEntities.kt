@@ -1,4 +1,4 @@
-package dev.naspo.tether
+package dev.naspo.tether.leash
 
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType

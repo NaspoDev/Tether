@@ -1,8 +1,6 @@
-package dev.naspo.tether.services;
+package dev.naspo.tether.integrations;
 
 import dev.naspo.tether.Tether;
-import dev.naspo.tether.integrations.Integration;
-import dev.naspo.tether.integrations.IntegrationEnablePhase;
 import dev.naspo.tether.integrations.standardintegrations.WorldGuardIntegration;
 import dev.naspo.tether.integrations.toggleableintegrations.*;
 import org.bukkit.Location;

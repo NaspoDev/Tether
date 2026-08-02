@@ -4,9 +4,9 @@ import dev.naspo.tether.commands.Commands;
 import dev.naspo.tether.commands.TabCompleter;
 import dev.naspo.tether.config.ConfigAccessor;
 import dev.naspo.tether.listeners.*;
-import dev.naspo.tether.services.IntegrationManager;
-import dev.naspo.tether.services.LeashEntityService;
-import dev.naspo.tether.services.LeashPlayerService;
+import dev.naspo.tether.integrations.IntegrationManager;
+import dev.naspo.tether.leash.LeashEntityService;
+import dev.naspo.tether.leash.LeashPlayerService;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Tether extends JavaPlugin {
