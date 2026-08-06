@@ -53,11 +53,10 @@ public class LeashPlayerService {
 
         // If the target is already riding an entity...
         if (target.getVehicle() != null) {
-            // If the entity they are riding is now the plugin's player leashing entity, don't allow the leash.
+            // If the entity they are riding is not the plugin's player leashing entity, don't allow the leash.
             if (!(target.getVehicle().hasMetadata(LeashPlayerService.PLAYER_LEASH_MOB_METADATA_KEY))) {
                 throw new LeashException(LeashErrorType.TARGET_PLAYER_RIDING);
             }
-            // If they are riding the plugin's player leashing entity, i.e. hasMetadata(LeashPlayerService.PLAYER_LEASH_MOB_METADATA_KEY),
             // kill the entity.
             ((LivingEntity) target.getVehicle()).setHealth(0);
             return;

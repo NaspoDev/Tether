@@ -98,7 +98,7 @@ private val conditionalDefaultLeashableEntities: Map<EntityType, List<LeashCondi
 )
 
 /**
- * Returns true if a mob is leashable by default.
+ * Returns true if an entity is leashable by default.
  */
 fun isEntityLeashableByDefault(entity: Entity): Boolean {
     if (unconditionalDefaultLeashableEntities.contains(entity.type)) {

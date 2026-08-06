@@ -14,13 +14,13 @@ Available on [Spigot](https://www.spigotmc.org/resources/tether.100941/), [Modri
 - Leash any mob in Minecraft.
 - Attach any leashed mob to a fence (right-click the fence).
 - Leash any mobs together (sneak + right-click the mob).
-- Mob leash blacklist and whitelist.
-  - Tip: You can also write DEFAULT_LEASHABLE_ENTITIES to target all mobs that are leashable by default.
+- Entity leash blacklist and whitelist.
+  - Tip: You can also write DEFAULT_LEASHABLE_ENTITIES to target all entities that are leashable by default.
 - Leash players.
 
 ## Integrations
 
-Tether integrates with the following plugins (for both mob and player leashing):
+Tether integrates with the following plugins (for both entity and player leashing):
 
 - WorldGuard (using the "leash" flag).
   - The "leash" flag respects the default INTERACT flag, which in turn respects the BUILD flag.

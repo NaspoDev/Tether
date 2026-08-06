@@ -18,7 +18,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import java.util.logging.Level;
 
 // PlayerInteractAtEntityEvent is used as its more general than PlayerLeashEntityEvent, which is needed
-// for handling mobs that are not leasable by default.
+// for handling entities that are not leasable by default.
 public class PlayerInteractAtEntityListener implements Listener {
     private final Tether plugin;
     private final ConfigAccessor configAccessor;
@@ -106,11 +106,11 @@ public class PlayerInteractAtEntityListener implements Listener {
         if (player.getInventory().getItemInMainHand().getType().equals(Material.LEAD)) {
             // If the entity is already leashed by a player, return.
             // Explanation:
-            // Either the leash holder is the player in this event, in which case other game events can handle unleashing the mob;
+            // Either the leash holder is the player in this event, in which case other game events can handle unleashing the entity;
             // or it's leashed by another player, in which case the game can handle denying them the leash.
             if (leashable.isLeashed() && leashable.getLeashHolder() instanceof Player) return;
 
-            // Try to leash the mob.
+            // Try to leash the entity.
             try {
                 leashEntityService.leashEntityToPlayer(player, entity);
             } catch (IllegalArgumentException e) {

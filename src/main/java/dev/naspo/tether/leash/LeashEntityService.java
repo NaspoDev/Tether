@@ -60,9 +60,9 @@ public class LeashEntityService {
         }
 
         // Blacklist/whitelist check.
-        if (isEntityRestricted(entity)) throw new LeashException(LeashErrorType.MOB_RESTRICTED);
+        if (isEntityRestricted(entity)) throw new LeashException(LeashErrorType.ENTITY_RESTRICTED);
 
-        // If the mob is leashable by default, let the game handle leashing.
+        // If the entity is leashable by default, let the game handle leashing.
         if (DefaultLeashableEntitiesKt.isEntityLeashableByDefault(entity)) {
             return;
         }
@@ -80,7 +80,7 @@ public class LeashEntityService {
         ItemStack itemStackInMainHand = player.getInventory().getItemInMainHand();
         int leads = itemStackInMainHand.getAmount();
 
-        // Leashing the mob.
+        // Leashing the entity.
         // The actual leashing process has to run in a scheduler with a slight delay,
         // due to the way the event works.
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
@@ -101,7 +101,7 @@ public class LeashEntityService {
     }
 
     /**
-     * Deals with leashing mobs to and from a fence.
+     * Deals with leashing entities to and from a fence.
      *
      * @param player   The player that right-clicked the fence or leash hitch.
      * @param location The location of the fence or leash hitch.
@@ -172,14 +172,14 @@ public class LeashEntityService {
 
     // Checks the whitelist or blacklist to see whether the entity is restricted from being leashed or not.
     public boolean isEntityRestricted(Entity entity) {
-        String mobName = entity.getType().name().toUpperCase();
+        String entityName = entity.getType().name().toUpperCase();
 
         // If whitelist is set to be used over blacklist, check the whitelist only.
         if (configAccessor.get(ConfigKeys.EntityLeash.INSTANCE.getUseWhitelistOverBlacklist())) {
             List<String> whitelist = configAccessor.get(ConfigKeys.EntityLeash.INSTANCE.getEntityWhitelist())
                     .stream().map(String::toUpperCase).toList();
 
-            if (whitelist.contains(mobName)) {
+            if (whitelist.contains(entityName)) {
                 return false;
             } else if (ConfigTokenKt.containsConfigToken(whitelist, ConfigToken.DEFAULT_LEASHABLE_ENTITIES) &&
                     DefaultLeashableEntitiesKt.isEntityLeashableByDefault(entity)) {
@@ -192,7 +192,7 @@ public class LeashEntityService {
             List<String> blacklist = configAccessor.get(ConfigKeys.EntityLeash.INSTANCE.getEntityBlacklist())
                     .stream().map(String::toUpperCase).toList();
 
-            if (blacklist.contains(mobName)) {
+            if (blacklist.contains(entityName)) {
                 return true;
             } else if (ConfigTokenKt.containsConfigToken(blacklist, ConfigToken.DEFAULT_LEASHABLE_ENTITIES) &&
                     DefaultLeashableEntitiesKt.isEntityLeashableByDefault(entity)) {
