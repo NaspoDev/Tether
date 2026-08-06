@@ -1,6 +1,8 @@
 package dev.naspo.tether.listeners;
 
 import dev.naspo.tether.Tether;
+import dev.naspo.tether.config.ConfigAccessor;
+import dev.naspo.tether.config.ConfigKeys;
 import dev.naspo.tether.exceptions.ExceptionUtils;
 import dev.naspo.tether.exceptions.NoPermissionException;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
@@ -19,14 +21,17 @@ import java.util.logging.Level;
 // for handling mobs that are not leasable by default.
 public class PlayerInteractAtEntityListener implements Listener {
     private final Tether plugin;
+    private final ConfigAccessor configAccessor;
     private final LeashEntityService leashEntityService;
     private final LeashPlayerService leashPlayerService;
 
     public PlayerInteractAtEntityListener(
             Tether plugin,
+            ConfigAccessor configAccessor,
             LeashEntityService leashEntityService,
             LeashPlayerService leashPlayerService) {
         this.plugin = plugin;
+        this.configAccessor = configAccessor;
         this.leashEntityService = leashEntityService;
         this.leashPlayerService = leashPlayerService;
     }
@@ -44,7 +49,7 @@ public class PlayerInteractAtEntityListener implements Listener {
     }
 
     private void handlePlayerInteractAtPlayer(PlayerInteractAtEntityEvent event) {
-        if (!leashPlayerService.isPlayerLeashEnabled()) return;
+        if (!configAccessor.get(ConfigKeys.PlayerLeash.INSTANCE.getEnabled())) return;
 
         Player player = event.getPlayer();
 
@@ -53,7 +58,7 @@ public class PlayerInteractAtEntityListener implements Listener {
             leashPlayerService.playerLeashPlayer(player, (Player) event.getRightClicked());
         } catch (NoPermissionException ignored) {
         } catch (LeashException e) {
-            ExceptionUtils.handleLeashException(player, event, e, plugin);
+            ExceptionUtils.handleLeashException(player, event, e, configAccessor);
         }
     }
 
@@ -80,7 +85,7 @@ public class PlayerInteractAtEntityListener implements Listener {
             } catch (LeashException e) {
                 // If the interaction is denied, we must cancel the event.
                 event.setCancelled(true);
-                ExceptionUtils.handleLeashException(player, event, e, plugin);
+                ExceptionUtils.handleLeashException(player, event, e, configAccessor);
             }
             return;
         }
@@ -92,7 +97,7 @@ public class PlayerInteractAtEntityListener implements Listener {
             } catch (IllegalArgumentException e) {
                 plugin.getLogger().log(Level.SEVERE, e.getMessage());
             } catch (LeashException e) {
-                ExceptionUtils.handleLeashException(player, event, e, plugin);
+                ExceptionUtils.handleLeashException(player, event, e, configAccessor);
             }
             return;
         }
@@ -113,7 +118,7 @@ public class PlayerInteractAtEntityListener implements Listener {
             } catch (NoPermissionException e) {
                 event.setCancelled(true);
             } catch (LeashException e) {
-                ExceptionUtils.handleLeashException(player, event, e, plugin);
+                ExceptionUtils.handleLeashException(player, event, e, configAccessor);
                 event.setCancelled(true);
             }
         }
@@ -123,7 +128,7 @@ public class PlayerInteractAtEntityListener implements Listener {
         try {
             leashEntityService.handleFenceLeashing(event.getPlayer(), event.getRightClicked().getLocation());
         } catch (LeashException e) {
-            ExceptionUtils.handleLeashException(event.getPlayer(), event, e, plugin);
+            ExceptionUtils.handleLeashException(event.getPlayer(), event, e, configAccessor);
         }
     }
 }

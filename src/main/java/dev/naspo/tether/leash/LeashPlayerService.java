@@ -2,10 +2,12 @@ package dev.naspo.tether.leash;
 
 import dev.naspo.tether.Tether;
 import dev.naspo.tether.config.ConfigAccessor;
+import dev.naspo.tether.config.ConfigKeys;
 import dev.naspo.tether.integrations.IntegrationManager;
 import dev.naspo.tether.exceptions.NoPermissionException;
 import dev.naspo.tether.exceptions.leashexception.LeashErrorType;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
+import dev.naspo.tether.utils.UtilsKt;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -66,8 +68,8 @@ public class LeashPlayerService {
             throw new LeashException(LeashErrorType.LAND_PROTECTED);
         }
 
-        // Nesting check. Checks if the player is riding an entity.
-        if (plugin.getConfig().getBoolean("player-leash.prevent-nesting")) {
+        // Nesting check.
+        if (configAccessor.get(ConfigKeys.PlayerLeash.INSTANCE.getPreventNesting())) {
             if (player.getVehicle() != null) {
                 throw new LeashException(LeashErrorType.PREVENT_NESTING);
             }
@@ -99,13 +101,17 @@ public class LeashPlayerService {
 
                 // If players should receive a message upon being leashed, send them the appropriate message
                 // based on whether player leashing is set to escapable or not.
-                if (plugin.getConfig().getBoolean("player-leash.message-on-leashed")) {
-                    if (plugin.getConfig().getBoolean("player-leash.escapable")) {
-                        target.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) +
-                                plugin.getConfig().getString("messages.player-leashed-escapable")));
+                if (configAccessor.get(ConfigKeys.PlayerLeash.INSTANCE.getMessageOnLeashed())) {
+                    if (configAccessor.get(ConfigKeys.PlayerLeash.INSTANCE.getEscapable())) {
+                        UtilsKt.sendPlayerPrefixedMessage(
+                                target,
+                                configAccessor.get(ConfigKeys.Messages.INSTANCE.getPlayerLeashedEscapable()),
+                                configAccessor);
                     } else {
-                        target.sendMessage(Utils.chatColor(Utils.getPrefix(plugin) +
-                                plugin.getConfig().getString("messages.player-leashed-not-escapable")));
+                        UtilsKt.sendPlayerPrefixedMessage(
+                                target,
+                                configAccessor.get(ConfigKeys.Messages.INSTANCE.getPlayerLeashedNotEscapable()),
+                                configAccessor);
                     }
                 }
 
@@ -127,20 +133,6 @@ public class LeashPlayerService {
     // Cancels the EntityDismountEvent, preventing the player from dismounting.
     public void onDismountNotEscapable(EntityDismountEvent event) {
         event.setCancelled(true);
-    }
-
-    /**
-     * Returns true if player leashing is enabled.
-     */
-    public boolean isPlayerLeashEnabled() {
-        return plugin.getConfig().getBoolean("player-leash.enabled");
-    }
-
-    /**
-     * Returns true if player leashing is set to escapable.
-     */
-    public boolean isPlayerLeashEscapable() {
-        return plugin.getConfig().getBoolean("player-leash.escapable");
     }
 
     /**

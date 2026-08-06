@@ -27,7 +27,7 @@ fun sendPlayerMessage(player: Player, message: String) {
 /**
  * Send a chat color translated message to a player with plugin prefix.
  */
-fun sendPlayerMessageWithPrefix(
+fun sendPlayerPrefixedMessage(
     player: Player,
     message: String,
     configAccessor: ConfigAccessor

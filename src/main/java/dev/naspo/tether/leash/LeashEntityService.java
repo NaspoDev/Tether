@@ -1,8 +1,7 @@
 package dev.naspo.tether.leash;
 
 import dev.naspo.tether.Tether;
-import dev.naspo.tether.config.ConfigToken;
-import dev.naspo.tether.config.ConfigTokenKt;
+import dev.naspo.tether.config.*;
 import dev.naspo.tether.exceptions.NoPermissionException;
 import dev.naspo.tether.exceptions.leashexception.LeashErrorType;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
@@ -25,10 +24,12 @@ import java.util.List;
  */
 public class LeashEntityService {
     private final Tether plugin;
+    private ConfigAccessor configAccessor;
     private final IntegrationManager integrationManager;
 
-    public LeashEntityService(Tether plugin, IntegrationManager integrationManager) {
+    public LeashEntityService(Tether plugin, ConfigAccessor configAccessor, IntegrationManager integrationManager) {
         this.plugin = plugin;
+        this.configAccessor = configAccessor;
         this.integrationManager = integrationManager;
     }
 
@@ -174,8 +175,8 @@ public class LeashEntityService {
         String mobName = entity.getType().name().toUpperCase();
 
         // If whitelist is set to be used over blacklist, check the whitelist only.
-        if (plugin.getConfig().getBoolean("use-whitelist-over-blacklist")) {
-            List<String> whitelist = plugin.getConfig().getStringList("whitelisted-mobs")
+        if (configAccessor.get(ConfigKeys.EntityLeash.INSTANCE.getUseWhitelistOverBlacklist())) {
+            List<String> whitelist = configAccessor.get(ConfigKeys.EntityLeash.INSTANCE.getEntityWhitelist())
                     .stream().map(String::toUpperCase).toList();
 
             if (whitelist.contains(mobName)) {
@@ -188,7 +189,7 @@ public class LeashEntityService {
             }
         } else {
             // Blacklist is set to be used...
-            List<String> blacklist = plugin.getConfig().getStringList("blacklisted-mobs")
+            List<String> blacklist = configAccessor.get(ConfigKeys.EntityLeash.INSTANCE.getEntityBlacklist())
                     .stream().map(String::toUpperCase).toList();
 
             if (blacklist.contains(mobName)) {

@@ -2,6 +2,8 @@ package dev.naspo.tether.commands;
 
 import dev.naspo.tether.Tether;
 import dev.naspo.tether.config.ConfigAccessor;
+import dev.naspo.tether.config.ConfigKeys;
+import dev.naspo.tether.utils.UtilsKt;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -26,26 +28,23 @@ public class Commands implements CommandExecutor {
                 //player stuff
                 Player player = (Player) sender;
                 if (!(player.hasPermission("tether.reload"))) {
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(
-                            plugin.getConfig().getString("messages.no-permission"))));
+                    UtilsKt.sendPlayerMessage(player, configAccessor.get(ConfigKeys.Messages.INSTANCE.getNoPermission()));
                     return true;
                 }
                 if (args.length == 0) {
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                            Objects.requireNonNull(plugin.getConfig().getString("messages.prefix"))
-                                    + "Did you mean &6/tether reload?"));
+                    UtilsKt.sendPlayerPrefixedMessage(player, "Did you mean &6/tether reload?", configAccessor);
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("reload")) {
                     plugin.reloadConfig();
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', Objects.
-                            requireNonNull(plugin.getConfig().getString("messages.prefix")) +
-                            Objects.requireNonNull(plugin.getConfig().getString("messages.reload"))));
+                    UtilsKt.sendPlayerPrefixedMessage(
+                            player,
+                            configAccessor.get(ConfigKeys.Messages.INSTANCE.getPluginReloaded()),
+                            configAccessor
+                    );
                     return true;
                 }
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                        Objects.requireNonNull(plugin.getConfig().getString("messages.prefix"))
-                                + "Did you mean &6/tether reload?"));
+                UtilsKt.sendPlayerPrefixedMessage(player, "Did you mean &6/tether reload?", configAccessor);
             }
             //console stuff
             if (args.length == 0) {
