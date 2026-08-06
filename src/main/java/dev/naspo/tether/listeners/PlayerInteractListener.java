@@ -1,6 +1,7 @@
 package dev.naspo.tether.listeners;
 
 import dev.naspo.tether.Tether;
+import dev.naspo.tether.config.ConfigAccessor;
 import dev.naspo.tether.exceptions.ExceptionUtils;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
 import dev.naspo.tether.leash.LeashEntityService;
@@ -11,11 +12,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 public class PlayerInteractListener implements Listener {
-    private final Tether plugin;
+    private final ConfigAccessor configAccessor;
     private final LeashEntityService leashEntityService;
 
-    public PlayerInteractListener(Tether plugin, LeashEntityService leashEntityService) {
-        this.plugin = plugin;
+    public PlayerInteractListener(ConfigAccessor configAccessor, LeashEntityService leashEntityService) {
+        this.configAccessor = configAccessor;
         this.leashEntityService = leashEntityService;
     }
 
@@ -28,7 +29,7 @@ public class PlayerInteractListener implements Listener {
         try {
             leashEntityService.handleFenceLeashing(event.getPlayer(), event.getClickedBlock().getLocation());
         } catch (LeashException e) {
-            ExceptionUtils.handleLeashException(event.getPlayer(), event, e, plugin);
+            ExceptionUtils.handleLeashException(event.getPlayer(), event, e, configAccessor);
         }
     }
 }
