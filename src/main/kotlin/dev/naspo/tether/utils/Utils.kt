@@ -17,15 +17,20 @@ fun chatColor(text: String): String {
     return ChatColor.translateAlternateColorCodes('&', text)
 }
 
-fun sendPlayerMessage(
-    player: Player,
-    configAccessor: ConfigAccessor,
-    message: String,
-    withPrefix: Boolean = true
-) {
-    var msg = message
-    if (withPrefix) {
-        msg = configAccessor.get(ConfigKeys.Messages.pluginPrefix) + message
-    }
+/**
+ * Send a chat color translated message to a player (without plugin prefix).
+ */
+fun sendPlayerMessage(player: Player, message: String) {
     player.sendMessage(chatColor(message))
+}
+
+/**
+ * Send a chat color translated message to a player with plugin prefix.
+ */
+fun sendPlayerMessageWithPrefix(
+    player: Player,
+    message: String,
+    configAccessor: ConfigAccessor
+) {
+    player.sendMessage(chatColor(configAccessor.get(ConfigKeys.Messages.pluginPrefix) + message))
 }
