@@ -35,12 +35,12 @@ public class LeashEntityService {
     }
 
     /**
-     * Leash a non-player entity to a player if allowed.
+     * Leash a {@link Leashable} entity to a player if allowed.
      * Checks things like current land claims, player permissions, and more.
      *
      * @param player The player to be the leash holder.
-     * @param entity The non-player entity to be leashed.
-     * @throws IllegalArgumentException if the entity provided is a Player or is not Leashable.
+     * @param entity The {@link Leashable} entity to be leashed.
+     * @throws IllegalArgumentException if the entity provided is not {@link Leashable}.
      * @throws NoPermissionException    if the player does not have permission.
      * @throws LeashException           when the leash operation fails for a given reason (LeashErrorType).
      */
@@ -70,7 +70,7 @@ public class LeashEntityService {
 
         // If the target entity is leashed to a fence or other leashable entity, drop a lead.
         // This must be done because PlayerUnleashEntityEvent, which drops a lead for a leashable entity upon being
-        // unleashed, doesn't trigger for mobs that aren't leashable by default that are being transferred from
+        // unleashed, doesn't trigger for entities that aren't leashable by default that are being transferred from
         // a fence or leashable entity to a player.
         if (leashable.isLeashed() &&
                 (leashable.getLeashHolder() instanceof LeashHitch || leashable.getLeashHolder() instanceof Leashable)) {
@@ -111,21 +111,21 @@ public class LeashEntityService {
      * @throws LeashException when the leash operation fails for a given reason (LeashErrorType).
      */
     public void handleFenceLeashing(Player player, Location location) throws LeashException {
-        List<Mob> mobsLeashedByPlayer = getMobsLeashedByPlayer(player);
-        List<Mob> mobsLeashedToFence = getMobsLeashedToFence(location);
+        List<Leashable> entitiesLeashedByPlayer = getEntitiesLeashedByPlayer(player);
+        List<Leashable> entitiesLeashedToFence = getEntitiesLeashedToFence(location);
 
         // If the following condition is met, then this has nothing to do with fence leashing. Return.
-        if (mobsLeashedByPlayer.isEmpty() && mobsLeashedToFence.isEmpty()) {
+        if (entitiesLeashedByPlayer.isEmpty() && entitiesLeashedToFence.isEmpty()) {
             return;
         }
 
         // Land protection integration check.
         checkLandProtection(location, player);
 
-        if (mobsLeashedByPlayer.isEmpty() && !mobsLeashedToFence.isEmpty()) {
-            transferMobsFromFenceToPlayer(player, location);
-        } else if (!mobsLeashedByPlayer.isEmpty()) {
-            transferMobsFromPlayerToFence(player, location);
+        if (entitiesLeashedByPlayer.isEmpty() && !entitiesLeashedToFence.isEmpty()) {
+            transferEntitiesFromFenceToPlayer(player, location);
+        } else if (!entitiesLeashedByPlayer.isEmpty()) {
+            transferEntitiesFromPlayerToFence(player, location);
         }
     }
 
@@ -134,8 +134,8 @@ public class LeashEntityService {
      * do so if applicable.
      *
      * @param player The player who sneak-interacted with an entity.
-     * @param entity The leashable entity that was sneak-interacted with.
-     * @throws IllegalArgumentException if the entity provided is a Player or is not Leashable.
+     * @param entity The {@link Leashable} entity that was sneak-interacted with.
+     * @throws IllegalArgumentException if the entity provided is not {@link Leashable}.
      * @throws LeashException when the leash operation fails for a given reason (LeashErrorType).
      */
     public void handleSneakInteract(Player player, Entity entity) throws IllegalArgumentException, LeashException {
@@ -147,19 +147,19 @@ public class LeashEntityService {
         checkLandProtection(entity.getLocation(), player);
 
         // Execute the leash holder transfer.
-        // Set the leash holder of all mobs leashed by the player to the target entity.
-        // (No default leashable mob check here, this logic can overlap with the game and it's fine).
-        for (Mob mob : getMobsLeashedByPlayer(player)) {
-            mob.setLeashHolder(entity);
+        // Set the leash holder of all entities leashed by the player to the target entity.
+        // (No default leashable entity check here, this logic can overlap with the game and it's fine).
+        for (Leashable l : getEntitiesLeashedByPlayer(player)) {
+            l.setLeashHolder(entity);
         }
     }
 
     /**
-     * Handles interacting with a Leashable Entity with shears in hand.
+     * Handles interacting with a {@link Leashable} Entity with shears in hand.
      *
      * @param player The player who interacted with an entity while holding shears.
-     * @param entity The leashable entity that was sneak-interacted with.
-     * @throws IllegalArgumentException if the Entity provided is a Player or is not Leashable.
+     * @param entity The {@link Leashable} entity that was sneak-interacted with.
+     * @throws IllegalArgumentException if the Entity provided is not {@link Leashable}.
      * @throws LeashException           when the leash operation fails for a given reason (LeashErrorType).
      */
     public void handleShearsInteract(Player player, Entity entity) throws IllegalArgumentException, LeashException {
@@ -230,24 +230,31 @@ public class LeashEntityService {
         }
     }
 
-    private List<Mob> getMobsLeashedByPlayer(Player player) {
-        List<Mob> leashedMobs = new ArrayList<>();
+    /**
+     * Gets the entities which are currently leashed by the player.
+     * @return A list of {@link Leashable} entities.
+     */
+    private List<Leashable> getEntitiesLeashedByPlayer(Player player) {
+        List<Leashable> leashedEntities = new ArrayList<>();
         for (Entity entity : player.getNearbyEntities(10, 10, 10)) {
-            if (entity instanceof Mob mob) {
-                if (mob.isLeashed() && mob.getLeashHolder() instanceof Player holder && holder.equals(player)) {
-                    leashedMobs.add(mob);
+            if (entity instanceof Leashable leashable) {
+                if (leashable.isLeashed()
+                        && leashable.getLeashHolder() instanceof Player holder
+                        && holder.equals(player)) {
+                    leashedEntities.add(leashable);
                 }
             }
         }
-        return leashedMobs;
+        return leashedEntities;
     }
 
     /**
+     * Gets the entities which are currently leashed to a fence at the given location.
      * @param location The location of the fence or leash hitch.
-     * @return The list of mobs leashed to that fence.
+     * @return The list of entities leashed to that fence.
      */
-    private List<Mob> getMobsLeashedToFence(Location location) {
-        List<Mob> leashedMobs = new ArrayList<>();
+    private List<Leashable> getEntitiesLeashedToFence(Location location) {
+        List<Leashable> leashedEntities = new ArrayList<>();
 
         // Find the leash hitch.
         LeashHitch leashHitch = null;
@@ -261,26 +268,28 @@ public class LeashEntityService {
         // If there is a leash hitch, find all entities leashed to it.
         if (leashHitch != null) {
             for (Entity entity : leashHitch.getWorld().getNearbyEntities(leashHitch.getLocation(), 10, 10, 10)) {
-                if (entity instanceof Mob mob) {
-                    if (mob.isLeashed() && mob.getLeashHolder() instanceof LeashHitch holder && holder.equals(leashHitch)) {
-                        leashedMobs.add(mob);
+                if (entity instanceof Leashable leashable) {
+                    if (leashable.isLeashed()
+                            && leashable.getLeashHolder() instanceof LeashHitch holder
+                            && holder.equals(leashHitch)) {
+                        leashedEntities.add(leashable);
                     }
                 }
             }
         }
-        return leashedMobs;
+        return leashedEntities;
     }
 
-    private void transferMobsFromFenceToPlayer(Player player, Location fenceLocation) {
-        List<Mob> mobs = getMobsLeashedToFence(fenceLocation);
-        for (Mob mob : mobs) {
-            // (There is no default leashable mob check here, this logic can overlap with the game and it's fine).
-            mob.setLeashHolder(player);
+    private void transferEntitiesFromFenceToPlayer(Player player, Location fenceLocation) {
+        List<Leashable> entities = getEntitiesLeashedToFence(fenceLocation);
+        for (Leashable leashable : entities) {
+            // (There is no default leashable entity check here, this logic can overlap with the game and it's fine).
+            leashable.setLeashHolder(player);
         }
     }
 
-    private void transferMobsFromPlayerToFence(Player player, Location fenceLocation) {
-        List<Mob> leashedMobs = getMobsLeashedByPlayer(player);
+    private void transferEntitiesFromPlayerToFence(Player player, Location fenceLocation) {
+        List<Leashable> leashedEntities = getEntitiesLeashedByPlayer(player);
 
         // Finding the leash hitch on the fence.
         LeashHitch leashHitch = null;
@@ -297,13 +306,13 @@ public class LeashEntityService {
             // 0.5 is added to properly visually align the hitch.
             Location hitchLocation = fenceLocation.clone().add(0.5, 0.5, 0.5);
             leashHitch = (LeashHitch) fenceLocation.getWorld().spawnEntity(hitchLocation, EntityType.LEASH_KNOT);
-            for (Mob mob : leashedMobs) {
-                mob.setLeashHolder(leashHitch);
+            for (Leashable leashable : leashedEntities) {
+                leashable.setLeashHolder(leashHitch);
             }
         } else {
-            for (Mob mob : leashedMobs) {
-                // (There is no default leashable mob check here, this logic can overlap with the game and it's fine).
-                mob.setLeashHolder(leashHitch);
+            for (Leashable leashable : leashedEntities) {
+                // (There is no default leashable entity check here, this logic can overlap with the game and it's fine).
+                leashable.setLeashHolder(leashHitch);
             }
         }
     }
