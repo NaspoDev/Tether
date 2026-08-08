@@ -42,7 +42,9 @@ class ConfigAccessor(private val plugin: Tether) {
      */
     private fun <T> resolvePath(configKey: ConfigKey<T>): String? {
         val path: String = configKey.path
-        if (config.contains(path)) {
+        // ignoreDefault = true to ignore default config values in check, so
+        // it only looks at what's actually set in the config.yml file.
+        if (config.contains(path, true)) {
             return path
         } else {
             // Try and find a legacy path.
