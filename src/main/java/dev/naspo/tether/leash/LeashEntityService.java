@@ -68,10 +68,12 @@ public class LeashEntityService {
             return;
         }
 
-        // If the target entity is leashed to a fence or other mob, drop a lead.
-        // This must be done because PlayerUnleashEntityEvent, which drops a lead for a mob upon being unleashed, doesn't
-        // trigger for mobs that aren't leashable by default that are being transferred from a fence or mob to a player.
-        if (leashable.isLeashed() && (leashable.getLeashHolder() instanceof LeashHitch || leashable.getLeashHolder() instanceof Mob)) {
+        // If the target entity is leashed to a fence or other leashable entity, drop a lead.
+        // This must be done because PlayerUnleashEntityEvent, which drops a lead for a leashable entity upon being
+        // unleashed, doesn't trigger for mobs that aren't leashable by default that are being transferred from
+        // a fence or leashable entity to a player.
+        if (leashable.isLeashed() &&
+                (leashable.getLeashHolder() instanceof LeashHitch || leashable.getLeashHolder() instanceof Leashable)) {
             entity.getWorld().dropItemNaturally(entity.getLocation(), new ItemStack(Material.LEAD, 1));
         }
 
