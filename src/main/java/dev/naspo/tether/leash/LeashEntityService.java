@@ -136,7 +136,7 @@ public class LeashEntityService {
      * @param player The player who sneak-interacted with an entity.
      * @param entity The {@link Leashable} entity that was sneak-interacted with.
      * @throws IllegalArgumentException if the entity provided is not {@link Leashable}.
-     * @throws LeashException when the leash operation fails for a given reason (LeashErrorType).
+     * @throws LeashException           when the leash operation fails for a given reason (LeashErrorType).
      */
     public void handleSneakInteract(Player player, Entity entity) throws IllegalArgumentException, LeashException {
         Leashable leashable = validateTarget(entity);
@@ -209,12 +209,14 @@ public class LeashEntityService {
     /**
      * Validates that the given entity is a legal target for leash operations.
      * Meaning that it must be {@link Leashable}.
+     *
      * @param entity The entity to validate.
      * @return the given entity, narrowed to {@link Leashable}.
      * @throws IllegalArgumentException if the Entity is not Leashable.
      */
     private Leashable validateTarget(Entity entity) throws IllegalArgumentException {
-        if (!(entity instanceof Leashable leashable)) throw new IllegalArgumentException("Target entity must be leashable.");
+        if (!(entity instanceof Leashable leashable))
+            throw new IllegalArgumentException("Target entity must be leashable.");
         return leashable;
     }
 
@@ -232,6 +234,7 @@ public class LeashEntityService {
 
     /**
      * Gets the entities which are currently leashed by the player.
+     *
      * @return A list of {@link Leashable} entities.
      */
     private List<Leashable> getEntitiesLeashedByPlayer(Player player) {
@@ -250,6 +253,7 @@ public class LeashEntityService {
 
     /**
      * Gets the entities which are currently leashed to a fence at the given location.
+     *
      * @param location The location of the fence or leash hitch.
      * @return The list of entities leashed to that fence.
      */
@@ -283,8 +287,10 @@ public class LeashEntityService {
     private void transferEntitiesFromFenceToPlayer(Player player, Location fenceLocation) {
         List<Leashable> entities = getEntitiesLeashedToFence(fenceLocation);
         for (Leashable leashable : entities) {
-            // (There is no default leashable entity check here, this logic can overlap with the game and it's fine).
-            leashable.setLeashHolder(player);
+            // Only transfer entities which are not leashable by default. Let the game handle the default ones.
+            if (!DefaultLeashableEntitiesKt.isEntityLeashableByDefault(leashable)) {
+                leashable.setLeashHolder(player);
+            }
         }
     }
 
@@ -306,12 +312,11 @@ public class LeashEntityService {
             // 0.5 is added to properly visually align the hitch.
             Location hitchLocation = fenceLocation.clone().add(0.5, 0.5, 0.5);
             leashHitch = (LeashHitch) fenceLocation.getWorld().spawnEntity(hitchLocation, EntityType.LEASH_KNOT);
-            for (Leashable leashable : leashedEntities) {
-                leashable.setLeashHolder(leashHitch);
-            }
-        } else {
-            for (Leashable leashable : leashedEntities) {
-                // (There is no default leashable entity check here, this logic can overlap with the game and it's fine).
+        }
+        // Transfer the entities from the player to the fence (leash hitch.
+        for (Leashable leashable : leashedEntities) {
+            // Only transfer entities which are not leashable by default. Let the game handle the default ones.
+            if (!DefaultLeashableEntitiesKt.isEntityLeashableByDefault(leashable)) {
                 leashable.setLeashHolder(leashHitch);
             }
         }
