@@ -62,6 +62,14 @@ public class PlayerInteractAtEntityListener implements Listener {
         }
     }
 
+    private void handlePlayerInteractAtLeashHitch(PlayerInteractAtEntityEvent event) {
+        try {
+            leashEntityService.handleFenceLeashing(event.getPlayer(), event.getRightClicked().getLocation());
+        } catch (LeashException e) {
+            ExceptionUtils.handleLeashException(event.getPlayer(), event, e, configAccessor);
+        }
+    }
+
     /**
      * Handles PlayerInteractAtEntityEvent where the entity is NOT a Player or LeashHitch.
      *
@@ -121,14 +129,6 @@ public class PlayerInteractAtEntityListener implements Listener {
                 ExceptionUtils.handleLeashException(player, event, e, configAccessor);
                 event.setCancelled(true);
             }
-        }
-    }
-
-    private void handlePlayerInteractAtLeashHitch(PlayerInteractAtEntityEvent event) {
-        try {
-            leashEntityService.handleFenceLeashing(event.getPlayer(), event.getRightClicked().getLocation());
-        } catch (LeashException e) {
-            ExceptionUtils.handleLeashException(event.getPlayer(), event, e, configAccessor);
         }
     }
 }
