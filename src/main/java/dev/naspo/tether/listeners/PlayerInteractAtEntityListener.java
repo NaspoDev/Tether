@@ -72,17 +72,15 @@ public class PlayerInteractAtEntityListener implements Listener {
     }
 
     /**
-     * Handles PlayerInteractAtEntityEvent where the entity is NOT a Player or LeashHitch.
+     * Handles PlayerInteractAtEntityEvent where the entity is {@link Leashable}.
      *
      * @param event The PlayerInteractAtEntityEvent to handle.
-     * @throws IllegalArgumentException if the event's entity is a Player, a LeashHitch, or is not Leashable.
+     * @throws IllegalArgumentException if the event's entity is not {@link Leashable}.
      */
     private void handlePlayerInteractAtEntity(PlayerInteractAtEntityEvent event) throws IllegalArgumentException {
         Entity entity = event.getRightClicked();
         Player player = event.getPlayer();
 
-        if (entity instanceof Player) throw new IllegalArgumentException("Event entity must not be a Player here.");
-        if (entity instanceof LeashHitch) throw new IllegalArgumentException("Event entity must not be a LeashHitch here.");
         if (!(entity instanceof Leashable leashable)) throw new IllegalArgumentException("Event entity must be Leashable here.");
 
         // If they are holding shears, try to process the interaction.

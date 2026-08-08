@@ -206,13 +206,12 @@ public class LeashEntityService {
 
     /**
      * Validates that the given entity is a legal target for leash operations.
-     * Meaning that it must be {@link Leashable} but not a {@link Player}.
+     * Meaning that it must be {@link Leashable}.
      * @param entity The entity to validate.
      * @return the given entity, narrowed to {@link Leashable}.
-     * @throws IllegalArgumentException if the Entity is a Player or is not Leashable.
+     * @throws IllegalArgumentException if the Entity is not Leashable.
      */
     private Leashable validateTarget(Entity entity) throws IllegalArgumentException {
-        if (entity instanceof Player) throw new IllegalArgumentException("Target entity must not be a player.");
         if (!(entity instanceof Leashable leashable)) throw new IllegalArgumentException("Target entity must be leashable.");
         return leashable;
     }
