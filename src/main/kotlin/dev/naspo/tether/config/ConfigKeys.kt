@@ -50,20 +50,20 @@ object ConfigKeys {
 
     object Messages {
         val pluginPrefix: ConfigKey<String> =
-            ConfigKeyFactory.createString("messages.prefix", "&8[&6Tether&8] &r")
+            ConfigKeyFactory.createString("messages.prefix", "<dark_gray>[<gold>Tether<dark_gray>] <reset>")
         val pluginReloaded: ConfigKey<String> =
-            ConfigKeyFactory.createString("messages.reload", "&7Tether has been reloaded!")
+            ConfigKeyFactory.createString("messages.reload", "<gray>Tether has been reloaded!")
         val noPermission: ConfigKey<String> =
-            ConfigKeyFactory.createString("messages.no-permission", "&cYou do not have permission!")
+            ConfigKeyFactory.createString("messages.no-permission", "<red>You do not have permission!")
         val leashTargetInProtectedLand: ConfigKey<String> =
-            ConfigKeyFactory.createString("messages.leash-target-in-protected-land", "&7Leash target is in protected land.")
+            ConfigKeyFactory.createString("messages.leash-target-in-protected-land", "<gray>Leash target is in protected land.")
         val playerLeashedEscapable: ConfigKey<String> =
-            ConfigKeyFactory.createString("messages.player-leashed-escapable", "&7You've been leashed! Press &6crouch &7to escape.")
+            ConfigKeyFactory.createString("messages.player-leashed-escapable", "<gray>You've been leashed! Press <gold>crouch <gray>to escape.")
         val playerLeashedNotEscapable: ConfigKey<String> =
-            ConfigKeyFactory.createString("messages.player-leashed-not-escapable", "&7You've been leashed!")
+            ConfigKeyFactory.createString("messages.player-leashed-not-escapable", "<gray>You've been leashed!")
         val cannotLeashRidingPlayer: ConfigKey<String> =
-            ConfigKeyFactory.createString("messages.cannot-leash-riding-player", "&7You cannot leash players that are riding an entity.")
+            ConfigKeyFactory.createString("messages.cannot-leash-riding-player", "<gray>You cannot leash players that are riding an entity.")
         val preventNesting: ConfigKey<String> =
-            ConfigKeyFactory.createString("messages.prevent-nesting", "&7You cannot leash a player while your are leashed.")
+            ConfigKeyFactory.createString("messages.prevent-nesting", "<gray>You cannot leash a player while your are leashed.")
     }
 }
