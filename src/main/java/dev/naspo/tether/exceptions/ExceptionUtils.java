@@ -3,7 +3,7 @@ package dev.naspo.tether.exceptions;
 import dev.naspo.tether.config.ConfigAccessor;
 import dev.naspo.tether.config.ConfigKeys;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
-import dev.naspo.tether.utils.UtilsKt;
+import dev.naspo.tether.messages.MessagesKt;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
@@ -23,20 +23,20 @@ public class ExceptionUtils {
             LeashException exception,
             ConfigAccessor configAccessor) {
         switch (exception.getType()) {
-            case TARGET_PLAYER_RIDING -> UtilsKt.sendPlayerPrefixedMessage(
+            case TARGET_PLAYER_RIDING -> MessagesKt.sendPlayerPrefixedMessage(
                     player,
                     configAccessor.get(ConfigKeys.Messages.INSTANCE.getCannotLeashRidingPlayer()),
                     configAccessor
             );
             case LAND_PROTECTED -> {
                 event.setCancelled(true);
-                UtilsKt.sendPlayerPrefixedMessage(
+                MessagesKt.sendPlayerPrefixedMessage(
                         player,
                         configAccessor.get(ConfigKeys.Messages.INSTANCE.getLeashTargetInProtectedLand()),
                         configAccessor
                 );
             }
-            case PREVENT_NESTING -> UtilsKt.sendPlayerPrefixedMessage(
+            case PREVENT_NESTING -> MessagesKt.sendPlayerPrefixedMessage(
                     player,
                     configAccessor.get(ConfigKeys.Messages.INSTANCE.getPreventNesting()),
                     configAccessor

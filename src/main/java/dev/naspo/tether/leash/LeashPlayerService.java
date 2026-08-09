@@ -7,7 +7,7 @@ import dev.naspo.tether.integrations.IntegrationManager;
 import dev.naspo.tether.exceptions.NoPermissionException;
 import dev.naspo.tether.exceptions.leashexception.LeashErrorType;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
-import dev.naspo.tether.utils.UtilsKt;
+import dev.naspo.tether.messages.MessagesKt;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -102,12 +102,12 @@ public class LeashPlayerService {
                 // based on whether player leashing is set to escapable or not.
                 if (configAccessor.get(ConfigKeys.PlayerLeash.INSTANCE.getMessageOnLeashed())) {
                     if (configAccessor.get(ConfigKeys.PlayerLeash.INSTANCE.getEscapable())) {
-                        UtilsKt.sendPlayerPrefixedMessage(
+                        MessagesKt.sendPlayerPrefixedMessage(
                                 target,
                                 configAccessor.get(ConfigKeys.Messages.INSTANCE.getPlayerLeashedEscapable()),
                                 configAccessor);
                     } else {
-                        UtilsKt.sendPlayerPrefixedMessage(
+                        MessagesKt.sendPlayerPrefixedMessage(
                                 target,
                                 configAccessor.get(ConfigKeys.Messages.INSTANCE.getPlayerLeashedNotEscapable()),
                                 configAccessor);

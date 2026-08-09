@@ -38,11 +38,11 @@ hooks:
 
 # Messages
 messages:
-  prefix: "&8[&6Tether&8] &r"
-  reload: "&7Tether has been reloaded!"
-  no-permission: "&cYou do not have permission!"
-  leash-target-in-protected-land: "&7Leash target is in protected land."
-  player-leashed-escapable: "&7You've been leashed! Press &6crouch &7to escape."
-  player-leashed-not-escapable: "&7You've been leashed!"
-  cannot-leash-riding-player: "&7You cannot leash players that are riding an entity."
-  prevent-nesting: "&7You cannot leash a player while your are leashed."
+  prefix: "<dark_gray>[<gold>Tether<dark_gray>] <reset>"
+  reload: "<gray>Tether has been reloaded!"
+  no-permission: "<red>You do not have permission!"
+  leash-target-in-protected-land: "<gray>Leash target is in protected land."
+  player-leashed-escapable: "<gray>You've been leashed! Press <gold>crouch <gray>to escape."
+  player-leashed-not-escapable: "<gray>You've been leashed!"
+  cannot-leash-riding-player: "<gray>You cannot leash players that are riding an entity."
+  prevent-nesting: "<gray>You cannot leash a player while your are leashed."

@@ -3,14 +3,11 @@ package dev.naspo.tether.commands;
 import dev.naspo.tether.Tether;
 import dev.naspo.tether.config.ConfigAccessor;
 import dev.naspo.tether.config.ConfigKeys;
-import dev.naspo.tether.utils.UtilsKt;
-import org.bukkit.ChatColor;
+import dev.naspo.tether.messages.MessagesKt;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.Objects;
 
 public class Commands implements CommandExecutor {
     private final Tether plugin;
@@ -28,23 +25,23 @@ public class Commands implements CommandExecutor {
                 //player stuff
                 Player player = (Player) sender;
                 if (!(player.hasPermission("tether.reload"))) {
-                    UtilsKt.sendPlayerMessage(player, configAccessor.get(ConfigKeys.Messages.INSTANCE.getNoPermission()));
+                    MessagesKt.sendPlayerMessage(player, configAccessor.get(ConfigKeys.Messages.INSTANCE.getNoPermission()));
                     return true;
                 }
                 if (args.length == 0) {
-                    UtilsKt.sendPlayerPrefixedMessage(player, "Did you mean &6/tether reload?", configAccessor);
+                    MessagesKt.sendPlayerPrefixedMessage(player, "Did you mean <gold>/tether reload?", configAccessor);
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("reload")) {
                     plugin.reloadConfig();
-                    UtilsKt.sendPlayerPrefixedMessage(
+                    MessagesKt.sendPlayerPrefixedMessage(
                             player,
                             configAccessor.get(ConfigKeys.Messages.INSTANCE.getPluginReloaded()),
                             configAccessor
                     );
                     return true;
                 }
-                UtilsKt.sendPlayerPrefixedMessage(player, "Did you mean &6/tether reload?", configAccessor);
+                MessagesKt.sendPlayerPrefixedMessage(player, "Did you mean <gold>/tether reload?", configAccessor);
             }
             //console stuff
             if (args.length == 0) {
