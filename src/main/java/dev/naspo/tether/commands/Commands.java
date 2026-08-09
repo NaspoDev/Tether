@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 public class Commands implements CommandExecutor {
     private final Tether plugin;
     private final ConfigAccessor configAccessor;
+    private final static String didYouMeanReloadMessage = "Did you mean <gold>/tether reload<reset>?";
 
     public Commands(Tether plugin, ConfigAccessor configAccessor) {
         this.plugin = plugin;
@@ -29,7 +30,7 @@ public class Commands implements CommandExecutor {
                     return true;
                 }
                 if (args.length == 0) {
-                    MessagesKt.sendPlayerPrefixedMessage(player, "Did you mean <gold>/tether reload?", configAccessor);
+                    MessagesKt.sendPlayerPrefixedMessage(player, didYouMeanReloadMessage, configAccessor);
                     return true;
                 }
                 if (args[0].equalsIgnoreCase("reload")) {
@@ -41,7 +42,7 @@ public class Commands implements CommandExecutor {
                     );
                     return true;
                 }
-                MessagesKt.sendPlayerPrefixedMessage(player, "Did you mean <gold>/tether reload?", configAccessor);
+                MessagesKt.sendPlayerPrefixedMessage(player, didYouMeanReloadMessage, configAccessor);
             }
             //console stuff
             if (args.length == 0) {
