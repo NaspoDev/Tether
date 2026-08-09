@@ -12,7 +12,10 @@ import org.bukkit.entity.Player;
 public class Commands implements CommandExecutor {
     private final Tether plugin;
     private final ConfigAccessor configAccessor;
-    private final static String didYouMeanReloadMessage = "Did you mean <gold>/tether reload<reset>?";
+
+    // "Did you mean /tether reload?" messages.
+    private final static String didYouMeanReloadMessageFormatted = "<gray>Did you mean <gold>/tether reload<gray>?";
+    private final static String didYouMeanReloadMessagePlain = "Did you mean /tether reload?";
 
     public Commands(Tether plugin, ConfigAccessor configAccessor) {
         this.plugin = plugin;
@@ -21,40 +24,50 @@ public class Commands implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (label.equalsIgnoreCase("tether")) {
-            if (sender instanceof Player) {
-                //player stuff
-                Player player = (Player) sender;
-                if (!(player.hasPermission("tether.reload"))) {
-                    MessagesKt.sendPlayerMessage(player, configAccessor.get(ConfigKeys.Messages.INSTANCE.getNoPermission()));
-                    return true;
-                }
-                if (args.length == 0) {
-                    MessagesKt.sendPlayerPrefixedMessage(player, didYouMeanReloadMessage, configAccessor);
-                    return true;
-                }
-                if (args[0].equalsIgnoreCase("reload")) {
-                    plugin.reloadConfig();
-                    MessagesKt.sendPlayerPrefixedMessage(
-                            player,
-                            configAccessor.get(ConfigKeys.Messages.INSTANCE.getPluginReloaded()),
-                            configAccessor
-                    );
-                    return true;
-                }
-                MessagesKt.sendPlayerPrefixedMessage(player, didYouMeanReloadMessage, configAccessor);
+        // Player command stuff.
+        if (sender instanceof Player player) {
+            // The only command is the reload command, so perform a one-and-only permission check here.
+            if (!(player.hasPermission("tether.reload"))) {
+                MessagesKt.sendPlayerMessage(player, configAccessor.get(ConfigKeys.Messages.INSTANCE.getNoPermission()));
+                return true;
             }
-            //console stuff
-            if (args.length == 0) {
-                sender.sendMessage("Did you mean /tether reload?");
-            } else if (args[0].equalsIgnoreCase("reload")) {
+
+            // If there is anything but 1 arg, send "did you mean /tether reload?" message.
+            if (args.length != 1) {
+                MessagesKt.sendPlayerPrefixedMessage(player, didYouMeanReloadMessageFormatted, configAccessor);
+                return false;
+            }
+
+            // Reload command.
+            if (args[0].equalsIgnoreCase("reload")) {
                 plugin.reloadConfig();
-                sender.sendMessage("Tether has been reloaded");
+                MessagesKt.sendPlayerPrefixedMessage(
+                        player,
+                        configAccessor.get(ConfigKeys.Messages.INSTANCE.getPluginReloaded()),
+                        configAccessor
+                );
+                return true;
             } else {
-                sender.sendMessage("Did you mean /tether reload?");
+                // If args[0] is not "reload", send "did you mean /tether reload?" message.
+                MessagesKt.sendPlayerPrefixedMessage(player, didYouMeanReloadMessageFormatted, configAccessor);
             }
+            return false;
         }
 
+        // Console command stuff.
+        if (args.length != 1) {
+            // If there is anything but 1 arg, send "did you mean /tether reload?" message.
+            sender.sendMessage(didYouMeanReloadMessagePlain);
+            return false;
+        } else if (args[0].equalsIgnoreCase("reload")) {
+            // Reload command.
+            plugin.reloadConfig();
+            sender.sendMessage("Tether has been reloaded.");
+            return true;
+        } else {
+            // If args[0] is not "reload", send "did you mean /tether reload?" message.
+            sender.sendMessage(didYouMeanReloadMessagePlain);
+        }
         return false;
     }
 }
