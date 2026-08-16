@@ -9,7 +9,7 @@ import dev.naspo.tether.leash.LeashEntityService;
 import dev.naspo.tether.leash.LeashPlayerService;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class Tether extends JavaPlugin {
+public class Tether extends JavaPlugin {
     private ConfigAccessor configAccessor;
     private IntegrationManager integrationManager;
     private LeashEntityService leashEntityService;
