@@ -40,10 +40,18 @@ class ConfigKeysTests {
         val missingKeys: Set<String> = configFileKeys - configKeyPaths
         val extraKeys: Set<String> = configKeyPaths - configFileKeys
         val message: () -> String = {
-            var result = "Defined ConfigKeys do not match the keys in the config.yml."
-            if (missingKeys.isNotEmpty()) result += "\nMissing ConfigKeys for paths: $missingKeys"
-            if (extraKeys.isNotEmpty()) result += "\nExtra ConfigKeys for paths: $extraKeys"
-            result
+            buildString {
+                append("Defined ConfigKeys do not match the keys in the config.yml.")
+
+                if (missingKeys.isNotEmpty()) {
+                    append("\nMissing ConfigKeys for paths: $missingKeys")
+                    append("\nEither a ConfigKey is actually missing, or a new sub-object on ConfigKeys was " +
+                            "created but not referenced in the @BeforeEach setUp() method for this test, " +
+                            "therefore making it unreachable by this test.")
+                }
+
+                if (extraKeys.isNotEmpty()) append("\nExtra ConfigKeys for paths: $extraKeys")
+            }
         }
 
         assertTrue(missingKeys.isEmpty() && extraKeys.isEmpty(), message)
