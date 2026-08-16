@@ -41,7 +41,7 @@ object ConfigKeyFactory {
     private val _all = mutableListOf<ConfigKey<*>>()
     /**
      * A list that stores all ConfigKeys created.
-     * The primary purposes for its existence is for testing, so that all ConfigKeys can easily be accessed.
+     * The primary purpose for its existence is for testing, so that all ConfigKeys can easily be accessed.
      * */
     val all: List<ConfigKey<*>> get() = _all
 
