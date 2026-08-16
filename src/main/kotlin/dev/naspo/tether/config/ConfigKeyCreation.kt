@@ -37,19 +37,27 @@ private object ConfigReaders {
  * Factory for creating [ConfigKey]s of certain types.
  */
 object ConfigKeyFactory {
+    // Private backing field of `all`.
+    private val _all = mutableListOf<ConfigKey<*>>()
+    /**
+     * A list that stores all ConfigKeys created.
+     * The primary purposes for its existence is for testing, so that all ConfigKeys can easily be accessed.
+     * */
+    val all: List<ConfigKey<*>> get() = _all
+
     fun createString(path: String, defaultValue: String, legacyPaths: List<String> = emptyList()): ConfigKey<String> {
-        return ConfigKey(path, defaultValue, legacyPaths, ConfigReaders.string)
+        return ConfigKey(path, defaultValue, legacyPaths, ConfigReaders.string).also { _all.add(it) }
     }
 
     fun createBoolean(path: String, defaultValue: Boolean, legacyPaths: List<String> = emptyList()): ConfigKey<Boolean> {
-        return ConfigKey(path, defaultValue, legacyPaths, ConfigReaders.boolean)
+        return ConfigKey(path, defaultValue, legacyPaths, ConfigReaders.boolean).also { _all.add(it) }
     }
 
     fun createInt(path: String, defaultValue: Int, legacyPaths: List<String> = emptyList()): ConfigKey<Int> {
-        return ConfigKey(path, defaultValue, legacyPaths, ConfigReaders.int)
+        return ConfigKey(path, defaultValue, legacyPaths, ConfigReaders.int).also { _all.add(it) }
     }
 
     fun createStringList(path: String, defaultValue: List<String>, legacyPaths: List<String> = emptyList()): ConfigKey<List<String>> {
-        return ConfigKey(path, defaultValue, legacyPaths, ConfigReaders.stringList)
+        return ConfigKey(path, defaultValue, legacyPaths, ConfigReaders.stringList).also { _all.add(it) }
     }
 }

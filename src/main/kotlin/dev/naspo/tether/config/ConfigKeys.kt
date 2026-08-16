@@ -28,9 +28,9 @@ object ConfigKeys {
         val useWhitelistOverBlacklist: ConfigKey<Boolean> =
             ConfigKeyFactory.createBoolean("use-whitelist-over-blacklist", false)
         val entityBlacklist: ConfigKey<List<String>> =
-            ConfigKeyFactory.createStringList("entity-blacklist", emptyList(), listOf("blacklisted-mobs"))
+            ConfigKeyFactory.createStringList("entity-blacklist", listOf("EXAMPLEMOB"), listOf("blacklisted-mobs"))
         val entityWhitelist: ConfigKey<List<String>> =
-            ConfigKeyFactory.createStringList("entity-whitelist", emptyList(),listOf("whitelisted-mobs"))
+            ConfigKeyFactory.createStringList("entity-whitelist", listOf("EXAMPLEMOB"),listOf("whitelisted-mobs"))
     }
 
     object PlayerLeash {
