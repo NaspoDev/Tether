@@ -2,7 +2,7 @@ package dev.naspo.tether;
 
 import dev.naspo.tether.commands.Commands;
 import dev.naspo.tether.commands.TabCompleter;
-import dev.naspo.tether.config.ConfigAccessor;
+import dev.naspo.tether.config.*;
 import dev.naspo.tether.listeners.*;
 import dev.naspo.tether.integrations.IntegrationManager;
 import dev.naspo.tether.leash.LeashEntityService;
@@ -25,6 +25,7 @@ public class Tether extends JavaPlugin {
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
+        migrateConfigGracefully();
         this.getConfig().options().copyDefaults(true);
         this.saveConfig();
 
@@ -46,6 +47,7 @@ public class Tether extends JavaPlugin {
         integrationManager = new IntegrationManager(this, configAccessor);
         leashEntityService = new LeashEntityService(this, configAccessor, integrationManager);
         leashPlayerService = new LeashPlayerService(this, integrationManager, configAccessor);
+        ConfigKeys.INSTANCE.ensureInitialized();
     }
 
     private void registerEvents() {
@@ -60,5 +62,12 @@ public class Tether extends JavaPlugin {
     private void registerCommands() {
         this.getCommand("tether").setExecutor(new Commands(this, configAccessor));
         this.getCommand("tether").setTabCompleter(new TabCompleter());
+    }
+
+    private void migrateConfigGracefully() {
+        this.getLogger().info("ConfigKeys:");
+        for (ConfigKey configKey : ConfigKeyFactory.INSTANCE.getAll()) {
+            this.getLogger().info(configKey.getPath());
+        }
     }
 }

@@ -21,14 +21,7 @@ class ConfigKeysTests {
             InputStreamReader(stream, StandardCharsets.UTF_8)
         )
 
-        // Reference ConfigKeys and it's sub-objects to initialize them (since objects are lazy-init).
-        // We need to do this because each key in these sub-objects initializes itself with the ConfigKeyFactory,
-        // which will add each created ConfigKey to its `all` property for our tests to use.
-        ConfigKeys.EntityLeash
-        ConfigKeys.PlayerLeash
-        ConfigKeys.Hooks
-        ConfigKeys.Messages
-
+        ConfigKeys.ensureInitialized()
         allConfigKeys = ConfigKeyFactory.all
     }
 
@@ -46,7 +39,7 @@ class ConfigKeysTests {
                 if (missingKeys.isNotEmpty()) {
                     append("\nMissing ConfigKeys for paths: $missingKeys")
                     append("\nEither a ConfigKey is actually missing, or a new sub-object on ConfigKeys was " +
-                            "created but not referenced in the @BeforeEach setUp() method for this test, " +
+                            "created but not referenced in ConfigKeys.ensureInitialized() " +
                             "therefore making it unreachable by this test.")
                 }
 

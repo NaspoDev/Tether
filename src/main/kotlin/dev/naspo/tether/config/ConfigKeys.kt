@@ -24,6 +24,17 @@ class ConfigKey<T>(
  */
 object ConfigKeys {
 
+    /**
+     * References all sub-objects to initialize them (since objects are lazy-init).
+     *
+     * This is expected to be called on plugin enable.
+     * We need to do this because each key in these sub-objects initializes itself with the ConfigKeyFactory,
+     * which will add each created ConfigKey to ConfigKeyFactory.all. ConfigKeyFactory.all is needed early on.
+     */
+    fun ensureInitialized() {
+        EntityLeash; PlayerLeash; Hooks; Messages;
+    }
+
     object EntityLeash {
         val useWhitelistOverBlacklist: ConfigKey<Boolean> =
             ConfigKeyFactory.createBoolean("use-whitelist-over-blacklist", false)
