@@ -7,7 +7,10 @@ import dev.naspo.tether.listeners.*;
 import dev.naspo.tether.integrations.IntegrationManager;
 import dev.naspo.tether.leash.LeashEntityService;
 import dev.naspo.tether.leash.LeashPlayerService;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.List;
 
 public class Tether extends JavaPlugin {
     private ConfigAccessor configAccessor;
@@ -25,7 +28,7 @@ public class Tether extends JavaPlugin {
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
-        migrateConfigGracefully();
+        ConfigMigrationKt.migrateConfigGracefully(this);
         this.getConfig().options().copyDefaults(true);
         this.saveConfig();
 
@@ -62,12 +65,5 @@ public class Tether extends JavaPlugin {
     private void registerCommands() {
         this.getCommand("tether").setExecutor(new Commands(this, configAccessor));
         this.getCommand("tether").setTabCompleter(new TabCompleter());
-    }
-
-    private void migrateConfigGracefully() {
-        this.getLogger().info("ConfigKeys:");
-        for (ConfigKey configKey : ConfigKeyFactory.INSTANCE.getAll()) {
-            this.getLogger().info(configKey.getPath());
-        }
     }
 }
