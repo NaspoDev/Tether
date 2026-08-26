@@ -17,6 +17,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDismountEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -132,6 +133,17 @@ public class LeashPlayerService {
     // Cancels the EntityDismountEvent, preventing the player from dismounting.
     public void onDismountNotEscapable(EntityDismountEvent event) {
         event.setCancelled(true);
+    }
+
+    /**
+     * Returns true if the player is leashed (via the player leashing feature).
+     * @param player The player to check.
+     * @return True if the player is leashed.
+     */
+    public boolean isPlayerLeashed(Player player) {
+        // If the player is riding the special player leash mob, then they are considered leashed.
+        return player.getVehicle() != null &&
+                player.getVehicle().hasMetadata(LeashPlayerService.PLAYER_LEASH_MOB_METADATA_KEY);
     }
 
     /**

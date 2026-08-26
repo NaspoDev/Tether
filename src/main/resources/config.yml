@@ -26,6 +26,9 @@ player-leash:
   message-on-leashed: true
   # Prevents leashed players from leashing other players.
   prevent-nesting: false
+  # Prevents leashed players from interacting with anything in any way.
+  # Example: They cannot place blocks, hit players, interact with stuff, etc...
+  suppress-leashed-player: false
 
 # Should Tether hook into the following land management plugins?
 # (Requires restart upon change).

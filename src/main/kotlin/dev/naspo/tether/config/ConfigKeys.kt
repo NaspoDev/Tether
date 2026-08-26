@@ -49,6 +49,7 @@ object ConfigKeys {
         val escapable: ConfigKey<Boolean> = ConfigKeyFactory.createBoolean("player-leash.escapable", true)
         val messageOnLeashed: ConfigKey<Boolean> = ConfigKeyFactory.createBoolean("player-leash.message-on-leashed", true)
         val preventNesting: ConfigKey<Boolean> = ConfigKeyFactory.createBoolean("player-leash.prevent-nesting", false)
+        val suppressLeashedPlayer: ConfigKey<Boolean> = ConfigKeyFactory.createBoolean("player-leash.suppress-leashed-player", false)
     }
 
     object Hooks {
