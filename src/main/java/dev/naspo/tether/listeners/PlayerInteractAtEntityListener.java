@@ -6,7 +6,7 @@ import dev.naspo.tether.config.ConfigKeys;
 import dev.naspo.tether.exceptions.ExceptionUtils;
 import dev.naspo.tether.exceptions.NoPermissionException;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
-import dev.naspo.tether.leash.LeashEntityService;
+import dev.naspo.tether.leash.entityleash.LeashEntityService;
 import dev.naspo.tether.leash.LeashPlayerService;
 import io.papermc.paper.entity.Leashable;
 import org.bukkit.Material;

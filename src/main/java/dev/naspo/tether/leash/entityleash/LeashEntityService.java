@@ -1,4 +1,4 @@
-package dev.naspo.tether.leash;
+package dev.naspo.tether.leash.entityleash;
 
 import dev.naspo.tether.Tether;
 import dev.naspo.tether.config.*;
@@ -6,6 +6,7 @@ import dev.naspo.tether.exceptions.NoPermissionException;
 import dev.naspo.tether.exceptions.leashexception.LeashErrorType;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
 import dev.naspo.tether.integrations.IntegrationManager;
+import dev.naspo.tether.leash.LeashPlayerService;
 import io.papermc.paper.entity.Leashable;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;

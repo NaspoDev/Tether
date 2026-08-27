@@ -5,7 +5,7 @@ import dev.naspo.tether.config.ConfigAccessor;
 import dev.naspo.tether.config.ConfigKeys;
 import dev.naspo.tether.exceptions.ExceptionUtils;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
-import dev.naspo.tether.leash.LeashEntityService;
+import dev.naspo.tether.leash.entityleash.LeashEntityService;
 import dev.naspo.tether.leash.LeashPlayerService;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

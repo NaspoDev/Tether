@@ -5,12 +5,9 @@ import dev.naspo.tether.commands.TabCompleter;
 import dev.naspo.tether.config.*;
 import dev.naspo.tether.listeners.*;
 import dev.naspo.tether.integrations.IntegrationManager;
-import dev.naspo.tether.leash.LeashEntityService;
+import dev.naspo.tether.leash.entityleash.LeashEntityService;
 import dev.naspo.tether.leash.LeashPlayerService;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.List;
 
 public class Tether extends JavaPlugin {
     private ConfigAccessor configAccessor;
