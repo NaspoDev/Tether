@@ -11,50 +11,77 @@ import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitTask
 
 /**
- * The special invisible entity used in player leashing.
- *
- * ### How It Works
- * The proxy entity is a special invisible, invulnerable, no AI entity. It was what the leash holder actually leashes,
- * and the proxied player is constantly teleported to this entity every tick.
- * This is how player leashing actually works.
- *
- * ### Upon Initialization
- * - The proxy entity will be spawned (with its special properties) at the proxied player's location.
- * - The proxy entity, and therefore its proxied player, will be leashed to the leash holder.
- * - The proxied player will be constantly teleported to this entity every tick.
- *
- * ### Properties & Exceptions
- * @property proxiedPlayer The player for which this entity is the proxy of.
- * @property leashHolder The leash holder of this proxy entity, and therefore also it's proxied player.
- * @property plugin The plugin instance.
- * @throws Exception Throws the error that occurred during creation and attachment of this proxy entity, if one occurred.
+ * A proxy entity is a special invisible, invulnerable, no AI entity that is used for player leashing.
+ * It was what the leash holder actually leashes, and the proxied player is constantly teleported to
+ * this entity every tick. This is how player leashing works.
  */
-class ProxyEntity(
+class ProxyEntity private constructor(
     private val proxiedPlayer: Player,
-    private val leashHolder: Player,
+    private val entity: LivingEntity, // The actual backing entity.
     private val plugin: Tether
 ) {
     companion object {
         private val entityType: Class<Zombie> = Zombie::class.java
         private const val PDC_KEY = "naspodev_tether_playerleash_proxy_entity"
-    }
 
-    // The actual backing entity.
-    private val entity: LivingEntity = spawn()
-    // NamespacedKey for Persistent Data Container
-    private val namespacedKey = NamespacedKey(plugin, PDC_KEY)
-    // The repeating task to teleport the proxied player to the proxy entity every tick.
-    private var teleportationTask: BukkitTask? = null
+        /**
+         * This method performs the following actions:
+         * - Spawns the proxy entity (with its special properties) at the proxied player's location.
+         * - Leashes the proxy entity, and therefore its proxied player, to the leash holder.
+         * - Has the proxied player be constantly teleported to this entity every tick.
+         *
+         * @param proxiedPlayer The player for which this entity is the proxy of.
+         * @param leashHolder The leash holder of this proxy entity, and therefore also it's proxied player.
+         * @param plugin The plugin instance.
+         * @return The created ProxyEntity.
+         * @throws Exception Throws the error that occurred during creation and attachment of this proxy entity,
+         * if one occurred.
+         */
+        fun attach(proxiedPlayer: Player, leashHolder: Player, plugin: Tether): ProxyEntity {
+            val entity: LivingEntity = spawn(proxiedPlayer, plugin)
+            val proxyEntity = ProxyEntity(proxiedPlayer, entity, plugin)
 
-    init {
-        try {
-            entity.setLeashHolder(leashHolder)
-            startTeleportationTask()
-        } catch (e: Exception) {
-            destroy()
-            throw e
+            try {
+                proxyEntity.setLeashHolder(leashHolder)
+                proxyEntity.startTeleportationTask()
+            } catch (e: Exception) {
+                proxyEntity.destroy()
+                throw e
+            }
+
+            return proxyEntity
+        }
+
+        /**
+         * Spawn the proxy entity at its player's location.
+         */
+        private fun spawn(proxiedPlayer: Player, plugin: Tether): LivingEntity {
+            val location: Location = proxiedPlayer.location
+            val world: World = proxiedPlayer.world
+
+            return world.spawn(location, entityType) {
+                attachPDC(it, plugin)
+                configureAttributes(it)
+            }
+        }
+
+        // Creates and attaches a Persistent Data Container to the entity, marking is as a special proxy entity.
+        private fun attachPDC(entity: LivingEntity, plugin: Tether) {
+            val pdc = entity.persistentDataContainer
+            pdc.set(NamespacedKey(plugin, PDC_KEY), PersistentDataType.STRING, "_")
+        }
+
+        // Sets special properties on the entity. (Ex. invisible, no AI, etc...)
+        private fun configureAttributes(entity: LivingEntity) {
+            entity.isInvisible = true
+            entity.isInvulnerable = true
+            entity.isSilent = true
+            entity.setAI(false)
         }
     }
+
+    // The repeating task to teleport the proxied player to the proxy entity every tick.
+    private var teleportationTask: BukkitTask? = null
 
     /**
      * Leashes this entity, and therefore its proxied player, to a player.
@@ -67,41 +94,11 @@ class ProxyEntity(
      */
     fun setLeashHolder(player: Player?) {
         entity.setLeashHolder(player)
-
         // If the entity is not leashed, i.e. player was null, then destroy this proxy entity.
-        if (!entity.isLeashed) {
-            destroy()
-        }
+        if (!entity.isLeashed) destroy()
     }
 
     // --- Private ---
-
-    /**
-     * Spawn the proxy entity at its player's location.
-     */
-    private fun spawn(): LivingEntity {
-        val location: Location = proxiedPlayer.location
-        val world: World = proxiedPlayer.world
-
-        return world.spawn(location, entityType) {
-            attachPDC(it)
-            configureAttributes(it)
-        }
-    }
-
-    // Creates and attaches a pdc to the entity, marking is as a special proxy entity.
-    private fun attachPDC(entity: LivingEntity) {
-        val pdc = entity.persistentDataContainer
-        pdc.set(namespacedKey, PersistentDataType.STRING, "_")
-    }
-
-    // Sets special properties on the entity. (Ex. invisible, no AI, etc...)
-    private fun configureAttributes(entity: LivingEntity) {
-        entity.isInvisible = true
-        entity.isInvulnerable = true
-        entity.isSilent = true
-        entity.setAI(false)
-    }
 
     // Creates and starts a task to constantly teleport the proxied player to this proxy entity every tick.
     private fun startTeleportationTask() {
