@@ -23,10 +23,11 @@ import org.bukkit.scheduler.BukkitTask
  * - The proxy entity, and therefore its proxied player, will be leashed to the leash holder.
  * - The proxied player will be constantly teleported to this entity every tick.
  *
- * ### Properties
+ * ### Properties & Exceptions
  * @property proxiedPlayer The player for which this entity is the proxy of.
  * @property leashHolder The leash holder of this proxy entity, and therefore also it's proxied player.
  * @property plugin The plugin instance.
+ * @throws Exception Throws the error that occurred during creation and attachment of this proxy entity, if one occurred.
  */
 class ProxyEntity(
     private val proxiedPlayer: Player,
@@ -46,8 +47,13 @@ class ProxyEntity(
     private var teleportationTask: BukkitTask? = null
 
     init {
-        entity.setLeashHolder(leashHolder)
-        startTeleportationTask()
+        try {
+            entity.setLeashHolder(leashHolder)
+            startTeleportationTask()
+        } catch (e: Exception) {
+            destroy()
+            throw e
+        }
     }
 
     /**
@@ -97,7 +103,7 @@ class ProxyEntity(
         entity.setAI(false)
     }
 
-    // Creates and starts a task to constatly teleport the proxied player to this proxy entity every tick.
+    // Creates and starts a task to constantly teleport the proxied player to this proxy entity every tick.
     private fun startTeleportationTask() {
         teleportationTask = plugin.server.scheduler.runTaskTimer(plugin, Runnable {
             proxiedPlayer.teleport(entity.location)
