@@ -56,13 +56,18 @@ public class PlayerInteractAtEntityListener implements Listener {
         Player interactor = event.getPlayer();
         Player target = (Player) event.getRightClicked();
 
-        // Try to leash the player.
-        try {
-            playerLeashManager.leashPlayer(target, interactor);
-        } catch (NoPermissionException ignored) {
-        } catch (LeashException e) {
-            ExceptionUtils.handleLeashException(interactor, event, e, configAccessor);
+        // If they are leashed, unleash, otherwise leash the player.
+        if (playerLeashManager.isPlayerLeashed(target)) {
+            playerLeashManager.unleashPlayer(target);
+        } else {
+            try {
+                playerLeashManager.leashPlayer(target, interactor);
+            } catch (NoPermissionException ignored) {
+            } catch (LeashException e) {
+                ExceptionUtils.handleLeashException(interactor, event, e, configAccessor);
+            }
         }
+
     }
 
     private void handlePlayerInteractAtLeashHitch(PlayerInteractAtEntityEvent event) {
