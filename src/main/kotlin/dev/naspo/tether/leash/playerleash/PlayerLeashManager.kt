@@ -19,7 +19,8 @@ class PlayerLeashManager(
     private val configAccessor: ConfigAccessor,
     private val integrationManager: IntegrationManager
 ) {
-    val leashedPlayers: MutableMap<Player, ProxyEntity> = mutableMapOf()
+    // Stores all currently leashed players with their proxy entity.
+    private val leashedPlayers: MutableMap<Player, ProxyEntity> = mutableMapOf()
 
     /**
      * Leashes a player to a player.
