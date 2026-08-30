@@ -14,7 +14,7 @@ public class Tether extends JavaPlugin {
     private ConfigAccessor configAccessor;
     private IntegrationManager integrationManager;
     private LeashEntityService leashEntityService;
-    private PlayerLeashManager playerLeashManager;
+    public PlayerLeashManager playerLeashManager;
 
     @Override
     public void onLoad() {

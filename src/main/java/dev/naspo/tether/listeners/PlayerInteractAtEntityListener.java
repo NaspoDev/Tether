@@ -16,6 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
 
@@ -56,18 +57,22 @@ public class PlayerInteractAtEntityListener implements Listener {
         Player interactor = event.getPlayer();
         Player target = (Player) event.getRightClicked();
 
-        // If they are leashed, unleash, otherwise leash the player.
-        if (playerLeashManager.isPlayerLeashed(target)) {
-            playerLeashManager.unleashPlayer(target);
+        if (!playerLeashManager.isPlayerLeashed(target)) {
+            // If the interactor is holding a lead, try to leash the player.
+            if (interactor.getInventory().getItemInMainHand().getType().equals(Material.LEAD)) {
+                try {
+                    playerLeashManager.leashPlayer(target, interactor);
+                } catch (NoPermissionException ignored) {
+                } catch (LeashException e) {
+                    ExceptionUtils.handleLeashException(interactor, event, e, configAccessor);
+                }
+            }
         } else {
-            try {
-                playerLeashManager.leashPlayer(target, interactor);
-            } catch (NoPermissionException ignored) {
-            } catch (LeashException e) {
-                ExceptionUtils.handleLeashException(interactor, event, e, configAccessor);
+            // If the interactor is the leash holder, unleash the player.
+            if (playerLeashManager.getLeashHolderForPlayer(target) == interactor) {
+                playerLeashManager.unleashPlayer(target);
             }
         }
-
     }
 
     private void handlePlayerInteractAtLeashHitch(PlayerInteractAtEntityEvent event) {

@@ -4,6 +4,8 @@ import dev.naspo.tether.Tether
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
 import org.bukkit.World
+import org.bukkit.entity.Ageable
+import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.entity.Zombie
@@ -74,12 +76,25 @@ class ProxyEntity private constructor(
 
         // Sets special properties on the entity. (Ex. invisible, no AI, etc...)
         private fun configureAttributes(entity: LivingEntity) {
-            entity.isInvisible = true
+//            entity.isInvisible = true
             entity.isInvulnerable = true
             entity.isSilent = true
             entity.setAI(false)
+            entity.canPickupItems = false
+            entity.equipment?.clear()
+
+            if (entity is Ageable) {
+                entity.setAdult()
+            }
         }
     }
+
+    // Computed property to get the leash holder.
+    /**
+     * Returns the leash holder of this proxy entity, (and therefore the leash holder of its proxied player).
+     */
+    val leashHolder: Entity
+        get() = entity.leashHolder
 
     // The repeating task to teleport the proxied player to the proxy entity every tick.
     private var teleportationTask: BukkitTask? = null

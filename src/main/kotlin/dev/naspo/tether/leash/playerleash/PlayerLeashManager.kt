@@ -7,6 +7,7 @@ import dev.naspo.tether.exceptions.NoPermissionException
 import dev.naspo.tether.exceptions.leashexception.LeashErrorType
 import dev.naspo.tether.exceptions.leashexception.LeashException
 import dev.naspo.tether.integrations.IntegrationManager
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 
 /**
@@ -40,6 +41,8 @@ class PlayerLeashManager(
         // Leash the player.
         val proxyEntity = ProxyEntity.attach(target, leashHolder, plugin)
         leashedPlayers[target] = proxyEntity
+
+
     }
 
     /**
@@ -53,8 +56,22 @@ class PlayerLeashManager(
         leashedPlayers.remove(player)
     }
 
+    /**
+     * Returns true if the given player is leashed.
+     */
     fun isPlayerLeashed(player: Player): Boolean {
         return leashedPlayers.contains(player)
+    }
+
+    /**
+     * Returns the leash holder for the given player.
+     *
+     * @throws IllegalStateException if the player is not leashed.
+     */
+    fun getLeashHolderForPlayer(player: Player): Entity {
+        val proxyEntity: ProxyEntity = leashedPlayers[player]
+            ?: throw IllegalStateException("Player was expected to be leashed but is not.")
+        return proxyEntity.leashHolder
     }
 
     // -- Private --
