@@ -25,24 +25,28 @@ class PlayerLeashManager(
      * Respects land protection integrations.
      *
      * @param target The player to be leashed.
-     * @param leashHolder The player to be the leash holder. Set to null to unleash the target.
+     * @param leashHolder The player to be the leash holder.
      *
      * @throws NoPermissionException if the leash holder does not have permission.
      * @throws LeashException when the leash operation fails for a given reason ([LeashErrorType]).
      */
-    fun leashPlayer(target: Player, leashHolder: Player?) {
-        if (leashHolder == null) {
-            val proxy: ProxyEntity = leashedPlayers[target] ?: return
-            proxy.setLeashHolder(null)
-            return
-        }
-
+    fun leashPlayer(target: Player, leashHolder: Player) {
         validateLeash(target, leashHolder)
 
         // Leash the player.
-        val proxy = ProxyEntity(target, plugin)
-        proxy.setLeashHolder(leashHolder)
-        leashedPlayers[target] = proxy
+        val proxyEntity = ProxyEntity.attach(target, leashHolder, plugin)
+        leashedPlayers[target] = proxyEntity
+    }
+
+    /**
+     * Unleash a player.
+     *
+     * @param player The player to be unleashed.
+     */
+    fun unleashPlayer(player: Player) {
+        val proxyEntity: ProxyEntity = leashedPlayers[player] ?: return
+        proxyEntity.setLeashHolder(null)
+        leashedPlayers.remove(player)
     }
 
     fun isPlayerLeashed(player: Player): Boolean {

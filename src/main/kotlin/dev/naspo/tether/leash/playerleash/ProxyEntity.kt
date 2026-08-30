@@ -31,7 +31,8 @@ class ProxyEntity private constructor(
          * - Has the proxied player be constantly teleported to this entity every tick.
          *
          * @param proxiedPlayer The player for which this entity is the proxy of.
-         * @param leashHolder The leash holder of this proxy entity, and therefore also it's proxied player.
+         * @param leashHolder The leash holder of this proxy entity (and therefore also the leasholder of its
+         * proxied player).
          * @param plugin The plugin instance.
          * @return The created ProxyEntity.
          * @throws Exception Throws the error that occurred during creation and attachment of this proxy entity,
@@ -98,7 +99,7 @@ class ProxyEntity private constructor(
         if (!entity.isLeashed) destroy()
     }
 
-    // --- Private ---
+    // -- Private --
 
     // Creates and starts a task to constantly teleport the proxied player to this proxy entity every tick.
     private fun startTeleportationTask() {
