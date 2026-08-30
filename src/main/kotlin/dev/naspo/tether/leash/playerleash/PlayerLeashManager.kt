@@ -14,9 +14,9 @@ import org.bukkit.entity.Player
  * Keeps track of all currently leashed players.
  */
 class PlayerLeashManager(
+    private val plugin: Tether,
     private val configAccessor: ConfigAccessor,
-    private val integrationManager: IntegrationManager,
-    private val plugin: Tether
+    private val integrationManager: IntegrationManager
 ) {
     val leashedPlayers: MutableMap<Player, ProxyEntity> = mutableMapOf()
 
@@ -27,9 +27,13 @@ class PlayerLeashManager(
      * @param target The player to be leashed.
      * @param leashHolder The player to be the leash holder.
      *
+     * @throws IllegalArgumentException if the target and leash holder are the same player.
      * @throws NoPermissionException if the leash holder does not have permission.
      * @throws LeashException when the leash operation fails for a given reason ([LeashErrorType]).
      */
+    // This @Throws annotation is only here for java interop. Since Kotlin doesn't have checked exceptions,
+    // java thinks that it doesn't throw anything, so we have to tell it.
+    @Throws(IllegalArgumentException::class, NoPermissionException::class, LeashException::class)
     fun leashPlayer(target: Player, leashHolder: Player) {
         validateLeash(target, leashHolder)
 
@@ -59,9 +63,11 @@ class PlayerLeashManager(
      * Performs multiple validations to check if leashHolder can leash the target player.
      *
      * @param target The player to be leashed.
-     * @param leashHodler The would-be leashHolder.
+     * @param leashHolder The would-be leashHolder.
      */
     private fun validateLeash(target: Player, leashHolder: Player) {
+        if (target == leashHolder) throw IllegalArgumentException("Target and leash holder cannot be the same player!")
+
         // Permission check. ("tether.use.players" is deprecated, here for backwards compatibility).
         if (!leashHolder.hasPermission("tether.leashplayers") &&
             !leashHolder.hasPermission("tether.use.players")

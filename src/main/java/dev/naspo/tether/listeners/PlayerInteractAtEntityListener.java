@@ -8,6 +8,7 @@ import dev.naspo.tether.exceptions.NoPermissionException;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
 import dev.naspo.tether.leash.entityleash.LeashEntityService;
 import dev.naspo.tether.leash.LeashPlayerService;
+import dev.naspo.tether.leash.playerleash.PlayerLeashManager;
 import io.papermc.paper.entity.Leashable;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
@@ -24,17 +25,17 @@ public class PlayerInteractAtEntityListener implements Listener {
     private final Tether plugin;
     private final ConfigAccessor configAccessor;
     private final LeashEntityService leashEntityService;
-    private final LeashPlayerService leashPlayerService;
+    private final PlayerLeashManager playerLeashManager;
 
     public PlayerInteractAtEntityListener(
             Tether plugin,
             ConfigAccessor configAccessor,
             LeashEntityService leashEntityService,
-            LeashPlayerService leashPlayerService) {
+            PlayerLeashManager playerLeashManager) {
         this.plugin = plugin;
         this.configAccessor = configAccessor;
         this.leashEntityService = leashEntityService;
-        this.leashPlayerService = leashPlayerService;
+        this.playerLeashManager = playerLeashManager;
     }
 
     @EventHandler
@@ -52,14 +53,15 @@ public class PlayerInteractAtEntityListener implements Listener {
     private void handlePlayerInteractAtPlayer(PlayerInteractAtEntityEvent event) {
         if (!configAccessor.get(ConfigKeys.PlayerLeash.INSTANCE.getEnabled())) return;
 
-        Player player = event.getPlayer();
+        Player interactor = event.getPlayer();
+        Player target = (Player) event.getRightClicked();
 
         // Try to leash the player.
         try {
-            leashPlayerService.playerLeashPlayer(player, (Player) event.getRightClicked());
+            playerLeashManager.leashPlayer(target, interactor);
         } catch (NoPermissionException ignored) {
         } catch (LeashException e) {
-            ExceptionUtils.handleLeashException(player, event, e, configAccessor);
+            ExceptionUtils.handleLeashException(interactor, event, e, configAccessor);
         }
     }
 

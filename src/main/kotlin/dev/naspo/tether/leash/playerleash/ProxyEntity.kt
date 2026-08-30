@@ -16,9 +16,9 @@ import org.bukkit.scheduler.BukkitTask
  * this entity every tick. This is how player leashing works.
  */
 class ProxyEntity private constructor(
+    private val plugin: Tether,
     private val proxiedPlayer: Player,
-    private val entity: LivingEntity, // The actual backing entity.
-    private val plugin: Tether
+    private val entity: LivingEntity // The actual backing entity.
 ) {
     companion object {
         private val entityType: Class<Zombie> = Zombie::class.java
@@ -40,7 +40,7 @@ class ProxyEntity private constructor(
          */
         fun attach(proxiedPlayer: Player, leashHolder: Player, plugin: Tether): ProxyEntity {
             val entity: LivingEntity = spawn(proxiedPlayer, plugin)
-            val proxyEntity = ProxyEntity(proxiedPlayer, entity, plugin)
+            val proxyEntity = ProxyEntity(plugin, proxiedPlayer, entity)
 
             try {
                 proxyEntity.setLeashHolder(leashHolder)

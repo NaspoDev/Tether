@@ -3,6 +3,7 @@ package dev.naspo.tether;
 import dev.naspo.tether.commands.Commands;
 import dev.naspo.tether.commands.TabCompleter;
 import dev.naspo.tether.config.*;
+import dev.naspo.tether.leash.playerleash.PlayerLeashManager;
 import dev.naspo.tether.listeners.*;
 import dev.naspo.tether.integrations.IntegrationManager;
 import dev.naspo.tether.leash.entityleash.LeashEntityService;
@@ -13,7 +14,7 @@ public class Tether extends JavaPlugin {
     private ConfigAccessor configAccessor;
     private IntegrationManager integrationManager;
     private LeashEntityService leashEntityService;
-    private LeashPlayerService leashPlayerService;
+    private PlayerLeashManager playerLeashManager;
 
     @Override
     public void onLoad() {
@@ -46,18 +47,17 @@ public class Tether extends JavaPlugin {
         configAccessor = new ConfigAccessor(this);
         integrationManager = new IntegrationManager(this, configAccessor);
         leashEntityService = new LeashEntityService(this, configAccessor, integrationManager);
-        leashPlayerService = new LeashPlayerService(this, integrationManager, configAccessor);
+        playerLeashManager = new PlayerLeashManager(this, configAccessor, integrationManager);
         ConfigKeys.INSTANCE.ensureInitialized();
     }
 
     private void registerEvents() {
         this.getServer().getPluginManager().registerEvents(
-                new PlayerInteractAtEntityListener(this, configAccessor, leashEntityService, leashPlayerService), this);
-        this.getServer().getPluginManager().registerEvents(new PlayerInteractListener(configAccessor, leashEntityService, leashPlayerService, this), this);
+                new PlayerInteractAtEntityListener(this, configAccessor, leashEntityService, playerLeashManager), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerInteractListener(configAccessor, leashEntityService, playerLeashManager), this);
         this.getServer().getPluginManager().registerEvents(new EntityDeathListener(), this);
-        this.getServer().getPluginManager().registerEvents(new EntityDismountListener(configAccessor, leashPlayerService), this);
         this.getServer().getPluginManager().registerEvents(new EntityUnleashListener(), this);
-        this.getServer().getPluginManager().registerEvents(new EntityDamageByEntityListener(configAccessor, leashPlayerService, this), this);
+        this.getServer().getPluginManager().registerEvents(new EntityDamageByEntityListener(configAccessor, playerLeashManager), this);
     }
 
     private void registerCommands() {

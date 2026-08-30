@@ -7,6 +7,7 @@ import dev.naspo.tether.exceptions.ExceptionUtils;
 import dev.naspo.tether.exceptions.leashexception.LeashException;
 import dev.naspo.tether.leash.entityleash.LeashEntityService;
 import dev.naspo.tether.leash.LeashPlayerService;
+import dev.naspo.tether.leash.playerleash.PlayerLeashManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -16,21 +17,20 @@ import org.bukkit.inventory.EquipmentSlot;
 public class PlayerInteractListener implements Listener {
     private final ConfigAccessor configAccessor;
     private final LeashEntityService leashEntityService;
-    private final LeashPlayerService leashPlayerService;
+    private final PlayerLeashManager playerLeashManager;
 
     public PlayerInteractListener(ConfigAccessor configAccessor,
                                   LeashEntityService leashEntityService,
-                                  LeashPlayerService leashPlayerService,
-                                  Tether plugin) {
+                                  PlayerLeashManager playerLeashManager) {
         this.configAccessor = configAccessor;
         this.leashEntityService = leashEntityService;
-        this.leashPlayerService = leashPlayerService;
+        this.playerLeashManager = playerLeashManager;
     }
 
     @EventHandler
     private void onPlayerInteract(PlayerInteractEvent event) {
         // Player leash - suppress leashed player check
-        if (leashPlayerService.isPlayerLeashed(event.getPlayer()) &&
+        if (playerLeashManager.isPlayerLeashed(event.getPlayer()) &&
                 configAccessor.get(ConfigKeys.PlayerLeash.INSTANCE.getSuppressLeashedPlayer())) {
             event.setCancelled(true);
         }
