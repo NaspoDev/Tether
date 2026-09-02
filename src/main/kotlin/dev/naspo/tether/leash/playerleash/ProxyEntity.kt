@@ -118,6 +118,14 @@ class ProxyEntity private constructor(
 
         if (entity.isLeashed) {
             startTeleportationTask()
+
+            // TEMP
+            plugin.server.mobGoals.removeAllGoals(entity)
+            var leashHodlerLocation: Location = entity.leashHolder.location
+            leashHodlerLocation = leashHodlerLocation.subtract(1.0, 0.0, 1.0)
+            entity.pathfinder.moveTo(leashHodlerLocation)
+            plugin.logger.info("entity final point: ${entity.pathfinder.currentPath?.finalPoint}")
+
 //            startVelocityRegulationTask()
         } else {
             // If the entity is not leashed, i.e. player was null, then destroy this proxy entity.
@@ -132,10 +140,10 @@ class ProxyEntity private constructor(
         teleportationTask = plugin.server.scheduler.runTaskTimer(plugin, Runnable {
             proxiedPlayer.teleport(entity.location)
 
-            plugin.server.mobGoals.removeAllGoals(entity)
-            var leashHodlerLocation: Location = entity.leashHolder.location
-            leashHodlerLocation = leashHodlerLocation.subtract(1.0, 0.0, 1.0)
-            entity.pathfinder.moveTo(leashHodlerLocation)
+//            plugin.server.mobGoals.removeAllGoals(entity)
+//            var leashHodlerLocation: Location = entity.leashHolder.location
+//            leashHodlerLocation = leashHodlerLocation.subtract(1.0, 0.0, 1.0)
+//            entity.pathfinder.moveTo(leashHodlerLocation)
         }, 0, 1)
     }
 
