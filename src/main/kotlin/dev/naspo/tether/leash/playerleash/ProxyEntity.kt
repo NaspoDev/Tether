@@ -1,16 +1,20 @@
 package dev.naspo.tether.leash.playerleash
 
+import com.bekvon.bukkit.residence.commands.placeholders
 import dev.naspo.tether.Tether
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
 import org.bukkit.World
 import org.bukkit.entity.Ageable
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Mob
 import org.bukkit.entity.Player
 import org.bukkit.entity.Zombie
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitTask
+import org.bukkit.util.Vector
 
 /**
  * A proxy entity is a special invisible, invulnerable, no AI entity that is used for player leashing.
@@ -20,7 +24,7 @@ import org.bukkit.scheduler.BukkitTask
 class ProxyEntity private constructor(
     private val plugin: Tether,
     private val proxiedPlayer: Player,
-    private val entity: LivingEntity // The actual backing entity.
+    private val entity: Mob // The actual backing entity.
 ) {
     companion object {
         private val entityType: Class<Zombie> = Zombie::class.java
@@ -41,12 +45,11 @@ class ProxyEntity private constructor(
          * if one occurred.
          */
         fun attach(proxiedPlayer: Player, leashHolder: Player, plugin: Tether): ProxyEntity {
-            val entity: LivingEntity = spawn(proxiedPlayer, plugin)
+            val entity: Mob = spawn(proxiedPlayer, plugin)
             val proxyEntity = ProxyEntity(plugin, proxiedPlayer, entity)
 
             try {
                 proxyEntity.setLeashHolder(leashHolder)
-                proxyEntity.startTeleportationTask()
             } catch (e: Exception) {
                 proxyEntity.destroy()
                 throw e
@@ -58,7 +61,7 @@ class ProxyEntity private constructor(
         /**
          * Spawn the proxy entity at its player's location.
          */
-        private fun spawn(proxiedPlayer: Player, plugin: Tether): LivingEntity {
+        private fun spawn(proxiedPlayer: Player, plugin: Tether): Mob {
             val location: Location = proxiedPlayer.location
             val world: World = proxiedPlayer.world
 
@@ -74,14 +77,14 @@ class ProxyEntity private constructor(
             pdc.set(NamespacedKey(plugin, PDC_KEY), PersistentDataType.STRING, "_")
         }
 
-        // Sets special properties on the entity. (Ex. invisible, no AI, etc...)
-        private fun configureAttributes(entity: LivingEntity) {
-//            entity.isInvisible = true
+        // Sets special properties on the entity. (Ex. invisible, silent, etc...)
+        private fun configureAttributes(entity: Mob) {
+            entity.isInvisible = true
             entity.isInvulnerable = true
             entity.isSilent = true
-            entity.setAI(false)
+//            entity.isAware = false
             entity.canPickupItems = false
-            entity.equipment?.clear()
+            entity.equipment.clear()
 
             if (entity is Ageable) {
                 entity.setAdult()
@@ -98,6 +101,8 @@ class ProxyEntity private constructor(
 
     // The repeating task to teleport the proxied player to the proxy entity every tick.
     private var teleportationTask: BukkitTask? = null
+    // Regulates the proxy entity's velocity.
+    private var velocityRegulationTask: BukkitTask? = null
 
     /**
      * Leashes this entity, and therefore its proxied player, to a player.
@@ -110,8 +115,14 @@ class ProxyEntity private constructor(
      */
     fun setLeashHolder(player: Player?) {
         entity.setLeashHolder(player)
-        // If the entity is not leashed, i.e. player was null, then destroy this proxy entity.
-        if (!entity.isLeashed) destroy()
+
+        if (entity.isLeashed) {
+            startTeleportationTask()
+//            startVelocityRegulationTask()
+        } else {
+            // If the entity is not leashed, i.e. player was null, then destroy this proxy entity.
+            destroy()
+        }
     }
 
     // -- Private --
@@ -120,7 +131,18 @@ class ProxyEntity private constructor(
     private fun startTeleportationTask() {
         teleportationTask = plugin.server.scheduler.runTaskTimer(plugin, Runnable {
             proxiedPlayer.teleport(entity.location)
+
+            plugin.server.mobGoals.removeAllGoals(entity)
+            var leashHodlerLocation: Location = entity.leashHolder.location
+            leashHodlerLocation = leashHodlerLocation.subtract(1.0, 0.0, 1.0)
+            entity.pathfinder.moveTo(leashHodlerLocation)
         }, 0, 1)
+    }
+
+    private fun startVelocityRegulationTask() {
+        velocityRegulationTask = plugin.server.scheduler.runTaskTimer(plugin, Runnable {
+            entity.velocity = entity.velocity.multiply(0)
+        }, 20, 20)
     }
 
     /**
