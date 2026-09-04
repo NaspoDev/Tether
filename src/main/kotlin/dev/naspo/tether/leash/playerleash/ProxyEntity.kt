@@ -121,10 +121,10 @@ class ProxyEntity private constructor(
 
             // TEMP
             plugin.server.mobGoals.removeAllGoals(entity)
-            var leashHodlerLocation: Location = entity.leashHolder.location
-            leashHodlerLocation = leashHodlerLocation.subtract(1.0, 0.0, 1.0)
-            entity.pathfinder.moveTo(leashHodlerLocation)
-            plugin.logger.info("entity final point: ${entity.pathfinder.currentPath?.finalPoint}")
+//            var leashHodlerLocation: Location = leashHolder.location
+//            leashHodlerLocation = leashHodlerLocation.subtract(1.0, 0.0, 1.0)
+//            entity.pathfinder.moveTo(leashHolder)
+//            plugin.logger.info("entity final point: ${entity.pathfinder.currentPath?.finalPoint}")
 
 //            startVelocityRegulationTask()
         } else {
