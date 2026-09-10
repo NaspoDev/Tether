@@ -47,7 +47,8 @@ public class PlayerInteractAtEntityListener implements Listener {
         switch (event.getRightClicked()) {
             case Player _ -> handlePlayerInteractAtPlayer(event);
             case LeashHitch _ -> handlePlayerInteractAtLeashHitch(event);
-            default -> handlePlayerInteractAtEntity(event);
+            case Leashable _ -> handlePlayerInteractAtEntity(event);
+            default -> {}
         }
     }
 
