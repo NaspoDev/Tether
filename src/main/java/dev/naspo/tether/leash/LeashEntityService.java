@@ -143,6 +143,10 @@ public class LeashEntityService {
         // If the target entity is leashed by the player, exit and allow the game to handle unleashing the entity.
         if (leashable.isLeashed() && leashable.getLeashHolder().equals(player)) return;
 
+        List<Leashable> entitiesLeashedByPlayer = getEntitiesLeashedByPlayer(player);
+        // If the player isn't leashing any other entities, then this interaction cannot be about leashing entities together.
+        if (entitiesLeashedByPlayer.isEmpty()) return;
+
         // Land protection integration check.
         checkLandProtection(entity.getLocation(), player);
 
